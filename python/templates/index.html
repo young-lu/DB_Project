@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>DatingService.gu</title>
+    <link rel="stylesheet" href="resources/style.css" />
+  </head>
+  <body>
+    <h1 class="title">
+      <img src="resources/logo.png" alt="DatingService.gu">
+    </h1>
+     <section>
+      <form action="insert" method="POST">
+        <h2>Join the Club!</h2>
+        <p>
+          <label for="FirstName">First Name:</label> <input type="text" name="firstname" id="FirstName" />
+        </p>
+        <p>
+          <label for="LastName">Last Name:</label> <input type="text" name="lastname" id="LastName" />
+        </p>
+        <p>
+          <label for="Phone">Phone Number:</label> <input type="text" name="phone" id="Phone" />
+        </p>
+        <p>
+          <label for="Age">Age:</label> <input type="number" name="age" id="Age" min="18" max="99" value="" />
+        </p>
+        <p>
+          I'm interested in&hellip;
+        </p>
+        <p>
+          {% for interest in interests %}
+            <input type="checkbox" name="interests" id="Int{{interest['id']}}" value="{{interest['id']}}"><label for="Int{{interest['id']}}">{{interest['name']}}</label> 
+          {% endfor %}
+        </p>
+        <p>
+          <input type="submit" value="Get in line!" />
+        </p>
+      </form>
+    </section>
+
+    <section id="TheLine">
+      <h2>The line:</h2>
+      <ol>
+        {% for person in people %}
+          <li>{{person['first_name']}} {{person['last_name']}}</li>
+        {% endfor %}
+      </ol>
+    </section>
+    
+  </body>
+</html>
