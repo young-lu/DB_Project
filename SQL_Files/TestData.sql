@@ -8,57 +8,19 @@
 #Interests --> category VARCHAR(40), interest VARCHAR(40)
 #Customer_Interests --> ssn VARCHAR(40)
 
-CREATE TABLE Customer_Interests # primary key is the combination of ssn and interest
-	(
-		ssn VARCHAR(40) NOT NULL,
-		interest VARCHAR(40) NOT NULL,
-		FOREIGN KEY (ssn) REFERENCES Customer (ssn) ON DELETE CASCADE,
-		PRIMARY KEY (ssn, interest)
-	);
-
-
-CREATE TABLE Matches
-	(
-		matchID CHAR(10) NOT NULL,
-		ssn1 VARCHAR(40) NOT NULL,
-		ssn2 VARCHAR(40) NOT NULL,
-		FOREIGN KEY (ssn1) REFERENCES Customer (ssn) ON DELETE CASCADE,
-		FOREIGN KEY (ssn2) REFERENCES Customer (ssn) ON DELETE CASCADE,
-		PRIMARY KEY (matchID)
-	);
-
-CREATE TABLE Dates # primary key is the combination of date_number and ssn1 and ssn2
-	(
-		date_number INT NOT NULL,
-		time TIME NOT NULL, # IS THIS RIGHT??
-		date DATE NOT NULL,
-		both_still_interested BOOLEAN NOT NULL,
-		happened BOOLEAN NOT NULL,
-		location VARCHAR(40) NOT NULL,
-		matchID CHAR(10) NOT NULL,
-		FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE,
-		PRIMARY KEY (date_number, match)
-	);
-CREATE TABLE Crimes # primary key is crime
-	(
-		crime VARCHAR(40) NOT NULL,
-		PRIMARY KEY (crime)
-	);
-CREATE TABLE Customer_Crimes #primary key is ssn
-	(
-		ssn VARCHAR(40) NOT NULL,
-		crime VARCHAR(40) NOT NULL,
-		date_recoreded DATE NOT NULL,
-		FOREIGN KEY (ssn) REFERENCES Customer (ssn) ON DELETE CASCADE,
-		PRIMARY KEY (ssn)
-	);
-CREATE TABLE Charges(
-	total_charges DECIMAL(5,2) NOT NULL,
-	ssn VARCHAR(40) NOT NULL,
-	FOREIGN KEY (ssn) REFERENCES Customer (ssn) ON DELETE CASCADE,
-	PRIMARY KEY (ssn)
-);
 
 # FAKE DATA
 # INSERT BELOW
-
+USE dating_site_project;
+INSERT INTO Interests (category, interest) VALUES ('Music', 'Jazz');
+INSERT INTO Interests (category, interest) VALUES ('Music', 'Hip Hop');
+INSERT INTO Interests (category, interest) VALUES ('Music', 'Pop');
+INSERT INTO Interests (category, interest) VALUES ('Sports', 'Basketball');
+INSERT INTO Interests (category, interest) VALUES ('Sports', 'Curling');
+INSERT INTO Interests (category, interest) VALUES ('Sports', 'Biathlon');
+INSERT INTO Roles (role) VALUES ('Specialist');
+INSERT INTO Roles (role) VALUES ('Entry-level Staff');
+INSERT INTO Roles (role) VALUES ('Customer');
+INSERT INTO Crimes (crime) VALUES ('Minor Offense');
+INSERT INTO Crimes (crime) VALUES ('Repeat Minor Offense');
+INSERT INTO Crimes (crime) VALUES ('Violent Offense');

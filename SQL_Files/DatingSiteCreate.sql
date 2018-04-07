@@ -27,6 +27,8 @@ CREATE TABLE Customers
 	(
 		ssn VARCHAR(40) NOT NULL,
 		username VARCHAR(40) NOT NULL,
+		first_name VARCHAR(40) NOT NULL,
+		last_name VARCHAR(40) NOT NULL,
 		DOB DATE NOT NULL,
 		interested_in CHAR(1) NOT NULL, # can be M or F
 		phone CHAR(10) NOT NULL, 

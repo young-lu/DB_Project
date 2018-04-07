@@ -50,28 +50,34 @@ class Database(object):
         self.conn.commit()
         return result
 
-""" update functions --->  what page format should we use? this will affect how we write the function"""
-    # def update_user(self, username, password, role): 
-    #      cur = self.conn.cursor(pymysql.cursors.DictCursor)
-    #     sql = 'UPDATE Users (username, password, role) \
-    #             SET (%s, %s, %s, NOW())'
-    #     result = cur.execute(sql, (username, password, role))
-    #     self.conn.commit()
-    #     return result
+    """ update functions --->  what page format should we use? this will affect how we write the function"""
+        # def update_user(self, username, password, role): 
+        #      cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        #     sql = 'UPDATE Users (username, password, role) \
+        #             SET (%s, %s, %s, NOW())'
+        #     result = cur.execute(sql, (username, password, role))
+        #     self.conn.commit()
+        #     return result
+
+    def get_people(self):
+        """fetch all people from the database"""
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+
+        cur.execute('SELECT * FROM Users')
+
+        return CursorIterator(cur)
+        
+    # def update_customer():
+        # """don't know how to do this yet """
 
 
-    def update_customer():
+    # def get_match(self):
+    #     # """Fetch a veuw from the database"""
+    #     # cur = self.conn.cursor(pymysql.cursors.DictCursor)
 
+    #     # cur.execute('SELECT first_name, last_name FROM People ORDER BY time_added;')
 
-
-    def get_match(self):
-        # """Fetch a veuw from the database"""
-        # cur = self.conn.cursor(pymysql.cursors.DictCursor)
-
-        # cur.execute('SELECT first_name, last_name FROM People ORDER BY time_added;')
-
-        # return CursorIterator(cur)
-
+    #     # return CursorIterator(cur)
 
     def get_interests(self):
         """Get comments for a venue"""
@@ -81,16 +87,16 @@ class Database(object):
 
         return CursorIterator(cur)
 
-    def get_user_by_id(self, user_id):
-        # TODO: implement this in DB
-        if str(user_id) == '1':
-            return {'user_id': 1, 'username': 'sean'}
-        else:
-            return None
+    # def get_user_by_id(self, user_id):
+    #     # TODO: implement this in DB
+    #     if str(user_id) == '1':
+    #         return {'user_id': 1, 'username': 'sean'}
+    #     else:
+    #         return None
 
-    def get_user_by_credentials(self, username, password):
-        # TODO: implement this in DB
-        if username == 'sean' and password == 'test':
-            return {'user_id': 1, 'username': 'sean'}
-        else:
-            return None
+    # def get_user_by_credentials(self, username, password):
+    #     # TODO: implement this in DB
+    #     if username == 'sean' and password == 'test':
+    #         return {'user_id': 1, 'username': 'sean'}
+    #     else:
+    #         return None

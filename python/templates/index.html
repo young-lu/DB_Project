@@ -6,7 +6,7 @@
   </head>
   <body>
     <h1 class="title">
-      <img src="resources/logo.png" alt="DatingService.gu">
+      <img src="IMG_0134.jpg" alt="DatingService.gu"/>
     </h1>
      <section>
       <form action="insert" method="POST">
@@ -20,19 +20,49 @@
         <p>
           <label for="Phone">Phone Number:</label> <input type="text" name="phone" id="Phone" />
         </p>
+        <!-- DOB instead of age -->
+        <!-- <p>
+          <label for="Age">Age:</label> <input type="number" name="age" id="Age" min="18" max="99"  />
+        </p> -->
         <p>
-          <label for="Age">Age:</label> <input type="number" name="age" id="Age" min="18" max="99" value="" />
+          <label for="SSN">SSN:</label> <input type="text" name="ssn" id="SSN"/>
         </p>
         <p>
-          I'm interested in&hellip;
+          <label for="DOB">Date of Birth:</label> <input type="date" name="dob" id="DOB" value="1990-01-01" />
+        </p>
+        <div ><p>Gender:</p><label for="M">Male</label><input type="radio" name="gender" id="M" value="Male" /><label for="F">Female</label><input type="radio" name="gender" id="F" value="Female" />
+        </div>
+        <p>
+          <label for="Children">Number of Children:</label><input type="number" name="children" id="Children" min="0"/>
+        </p>
+        <p>
+          <label for="Married_Prev">I was warried previously  </label><input type="checkbox" name="married_prev" id="Married_Prev" value="true">
+        </p>
+       <!--  <p>
+          <p>Relationship Status: </p>
+          <input type="radio" name="status" id="Single"><label for="Single">Single</label>
+        <p> -->
+          My hobbies include&hellip;
         </p>
         <p>
           {% for interest in interests %}
-            <input type="checkbox" name="interests" id="Int{{interest['id']}}" value="{{interest['id']}}"><label for="Int{{interest['id']}}">{{interest['name']}}</label> 
+            <input type="checkbox" name="interests" id="{{interest}}" value="{{interest['interest']}}"><label for="{{interest}}">{{interest['interest']}}</label> 
           {% endfor %}
         </p>
+        <h3>
+          I'm seeking &hellip;
+        </h3>
         <p>
-          <input type="submit" value="Get in line!" />
+          <input type="radio" name="seeking" id="M" value="males"><label for="seeking_M">Males</label>
+        </p>
+        <p>
+          <input type="radio" name="seeking" id="F" value="females"><label for="seeking_F">Females</label>
+        </p>
+         <p>
+          <input type="radio" name="seeking" id="F" value="both"><label for="seeking_B">Both</label>
+        </p>
+        <p>
+          <input type="submit" value="Get in line!"/>
         </p>
       </form>
     </section>
@@ -41,10 +71,16 @@
       <h2>The line:</h2>
       <ol>
         {% for person in people %}
-          <li>{{person['first_name']}} {{person['last_name']}}</li>
+          <li>{{person['username']}}</li>
         {% endfor %}
       </ol>
     </section>
+
+    <section id="Login">
+      <h3>Already have an account?</h3>
+      <form action="login" method="GET">
+        <input type="submit" value="Login"/>
+      </form>
     
   </body>
 </html>

@@ -30,18 +30,30 @@ def index():
     return render_template('index.html', people=people, interests=interests)
 
 
+#fix this to fit our tables; probable here submit to user tble, add customer details on seperate page
 @app.route('/insert', methods=['POST'])
 def insert():
     """Add the person"""
     firstname, lastname = request.form['firstname'], request.form['lastname']
-    phone, age = request.form['phone'], request.form['age']
-
+    phone = request.form['phone']
+    ssn = request.form['ssn']
+    dob = request.form['dob']
+    gender = request.form['gender']
+    children = request.form['children']
+    married_prev= request.form['married_prev']
+    interests = request.form.getlist("interests")
+    seeking = request.form['seeking']
     # TODO: handle interests
-
     # insert person
-    if db.insert_person(firstname, lastname, phone, age):
-        return redirect('/')
-    return "Error adding to list" # TODO: better error handling
+    # if db.insert_person(firstname, lastname, phone, age):
+    #     return redirect('/')
+    # return "Error adding to list" # TODO: better error handling
+    ret = firstname + ' ' + lastname + '<br>' + phone+ '<br>' + ssn+ '<br>' + dob + '<br>' + gender+ '<br>number of children:' + children+ '<br>' + \
+    'married previously: '+ married_prev +'<br>seeking:' + seeking+ '<br>' 
+
+    for each in interests:
+        ret = ret + " " + each
+    return ret
 
 @app.route('/logout', methods=['GET'])
 def get_logout():
@@ -58,6 +70,7 @@ def get_login():
         return redirect('/home')
     return render_template('login.html')
 
+
 @app.route('/login', methods=['POST']) 
 def post_login():
     username = request.form['username']
@@ -73,6 +86,7 @@ def post_login():
         resp = make_response(redirect('/home'))
         resp.set_cookie('userID', str(user['user_id']))
         return resp
+
 
 @app.route('/home', methods=['GET'])
 def get_home():
