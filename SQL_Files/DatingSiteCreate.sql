@@ -38,7 +38,7 @@ CREATE TABLE Customers
 		married_prev BOOLEAN NOT NULL,
 		account_opened DATE NOT NULL,
 		account_closed DATE NULL, # this is nullable (if it is open we dont have a val here)
-		status CHAR NOT NULL,
+		status CHAR NOT NULL DEFAULT 'open',
 		FOREIGN KEY (username) REFERENCES Users (username) ON DELETE CASCADE,
 		PRIMARY KEY (ssn),
 		check (children_count>=0)
@@ -121,6 +121,15 @@ CREATE TABLE Charges(
 	PRIMARY KEY (ssn, charge_count)
 );
 
+DROP TABLE IF EXISTS `DateSuccess`;
+CREATE TABLE DateSuccess(
+	matchID char(10) NOT NULL,
+	ssn VARCHAR(40) NOT NULL,
+	review VARCHAR(40) NOT NULL,
+	PRIMARY KEY (matchID,ssn),
+	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
+	FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE
+);
 -- We need a trigger to charge people for certain dates… so maybe there should be another table for keeping track of each person’s number of dates with eachother/ individually?
 
 

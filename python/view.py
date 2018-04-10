@@ -5,6 +5,7 @@ from flask import (Flask, render_template, request, send_from_directory, redirec
 
 # project modules
 import config
+import datetime
 from logic import Database
 
 
@@ -38,22 +39,25 @@ def insert():
     phone = request.form['phone']
     ssn = request.form['ssn']
     dob = request.form['dob']
+    yob = dob.split('-')[0]
+    now = datetime.datetime.now().year
+    age = now - yob
+    today = datetime.datetime.now().date()
     gender = request.form['gender']
     children = request.form['children']
     married_prev= request.form['married_prev']
     interests = request.form.getlist("interests")
     seeking = request.form['seeking']
+    status = 'open'
+
     # TODO: handle interests
     # insert person
-    # if db.insert_person(firstname, lastname, phone, age):
-    #     return redirect('/')
-    # return "Error adding to list" # TODO: better error handling
-    ret = firstname + ' ' + lastname + '<br>' + phone+ '<br>' + ssn+ '<br>' + dob + '<br>' + gender+ '<br>number of children:' + children+ '<br>' + \
-    'married previously: '+ married_prev +'<br>seeking:' + seeking+ '<br>' 
 
-    for each in interests:
-        ret = ret + " " + each
-    return ret
+
+    if db.insert_new_customer(ssn, username, dob, seeking, phone, age, gender, 
+                                children, married_prev, today, status):
+        return redirect('/')
+    return "Error adding to list" # TODO: better error handling
 
 @app.route('/logout', methods=['GET'])
 def get_logout():
@@ -62,7 +66,7 @@ def get_logout():
     resp.set_cookie('userID', '')
     return resp
 
-# this triggers when you click the button in the html doc with action= login and method= POST
+# this triggers when you click the button in the html doc with action= login and method= GET
 @app.route('/login', methods=['GET'])
 def get_login():
     if load_current_user():

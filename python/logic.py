@@ -3,6 +3,7 @@
 import pymysql
 
 
+
 class CursorIterator(object):
     """Iterator for the cursor object."""
 
@@ -40,7 +41,8 @@ class Database(object):
         return result
 
     def insert_new_customer(self, ssn, username, DOB, interested_in, phone, age, gender, 
-                                children_count, married_prev, account_opened, account_closed, status): 
+                                children_count, married_prev, account_opened, status): 
+        """ account_closed must be added to the database later """
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql = 'INSERT INTO Customers (ssn, username, DOB, interested_in, phone, age, gender, \
                 children_count, married_prev, account_opened, account_closed, status) \
