@@ -133,6 +133,23 @@ CREATE TABLE DateSuccess(
 -- We need a trigger to charge people for certain dates… so maybe there should be another table for keeping track of each person’s number of dates with eachother/ individually?
 
 
+-- triggers are written below. we have two:
+	-- one trigger works to add the charges when necessary
+	-- the other automatically closes the profile of one who has a criminal record
+----------- TRIGGERS -------------
+
+DELIMITER //
+
+CREATE TRIGGER update_criminal_status
+AFTER INSERT ON Customers FOR EACH ROW
+BEGIN
+	UPDATE Band
+	SET activity_count= activity_count + 1
+	WHERE band_name= NEW.band_name;
+END; //
+
+DELIMITER ;
+
 
 
 
