@@ -125,22 +125,26 @@ class Database(object):
         # TODO: implement this in DB
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
 
-        cur.execute('SELECT first_name,last_name FROM Customers WHERE (username = %s)', username)
-
-        return CursorIterator(cur)
+        cur.execute('SELECT * FROM Customers WHERE (username = %s)', username)
+        result=cur.fetchall()
+        return result[0]
 
 
     def get_user_by_credentials(self, username, password,role):
         # TODO: implement this in DB
-
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql1 = 'SELECT * FROM users WHERE (username = %s and password= %s and role= %s)'
         cur.execute(sql1, (username, password, role))
         result = cur.fetchall()
-        username = (result[0]['username'])
-        password = result[0]['password']
-        role = result[0]['role']
-        return {'user': username, 'password': password, 'role': role}
+
+        try:
+            username = (result[0]['username'])
+            password = result[0]['password']
+            role = result[0]['role']
+            return 1
+        except: 
+            return 0
+
             
 
         # if username == 'sean' and password == 'test':

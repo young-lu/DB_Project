@@ -82,32 +82,33 @@ def get_login():
 
 @app.route('/login', methods=['POST']) 
 def post_login():
-    u = request.form['username']
-    p = request.form['password']
-    r = request.form['role']
-    user = db.get_user_by_credentials(u, p, r)
-    password=user['password']
-    username=user['user']
-    role=user['role']
-    if (role != r) or (p != password) or (username != u):
+    username = request.form['username']
+    password = request.form['password']
+    role = request.form['role']
+    user = db.get_user_by_credentials(username, password, role)
+    if not user:
         # incorrect user id / password
-        print("wrong login!")
-        return redirect('/home')    
+        print("NO_USER")
+        return redirect('/login')   
     else:
         # Send the user to the home page and set a cookie to keep their session active
         # SECURITY NOTE: THIS IS NOT A GOOD WAY TO HANDLE USER AUTHORIZATION IN PRACTICE.
         # DO NOT DO THIS FOR A PRODUCTION WEBSITE (but it's good enough for this course project)
-        # resp = app.make_response(redirect('/home'))
-        # resp.set_cookie('userID', username)
-        # return resp
-        print('right login!')
-        return render_template('home.html', user=user)
+        resp = app.make_response(redirect('/home'))
+        resp.set_cookie('userID', username)
+        return resp
+        # if (role=="Customer"):
+        #     return render_template('home.html', username=username, password=password,role=role)
+        # elif (role=="Specialist"):
+        #     return render_template('special-home.html', username=username, password=password,role=role)
+        # elif (role=="Entry-level"):
+        #     return render_template('entry-home.html', username=username, password=password,role=role)
 
 
 @app.route('/home', methods=['GET'])
 def get_home():
     user = load_current_user()
-    print('GET HOME')
+    print(user)
     if not user:
         # Not logged in
         return redirect('/login')

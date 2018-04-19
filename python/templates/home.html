@@ -3,8 +3,11 @@
   <head>
     <title>Home</title>
   </head>
-
-  <!-- find a match form -->
+  <body>
+    <p>
+      Welcome, {{user['username']}}!
+    </p>
+    <!-- find a match form -->
   <section>
     <form action="insert" method="POST">
 
@@ -14,27 +17,28 @@
 <!-- personal info and past dates-->
   <section>
     <form action="insert" method="POST">
-      
+      {% for each in user %}
+        {{ each }}: {{ user[each] }}<br>
+      {% endfor %}
     </form>
   </section>
 
-  <section>
+ <!--  <section>
     <form action="insert" method="POST"> 
       
     </form>
   </section>
+ -->
 
 
-  <body>
-    <p>
-      Welcome, {{user['user']}}!
-    </p>
+
+
     <p>
       Actions:
       <a href="/logout">Logout</a>
     </p>
   </body>
-  <footer>
+  <footer >
     <p>written by: Sara Fares and Connor Lu</p>
     <p>COSC-280</p>
     <a href="https://github.com/young-lu/DB_Project">code repository</a>
