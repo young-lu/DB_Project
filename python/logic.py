@@ -121,16 +121,29 @@ class Database(object):
 
         return CursorIterator(cur)
 
-    # def get_user_by_id(self, user_id):
-    #     # TODO: implement this in DB
-    #     if str(user_id) == '1':
-    #         return {'user_id': 1, 'username': 'sean'}
-    #     else:
-    #         return None
+    def get_user_by_name(self, username):
+        # TODO: implement this in DB
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
 
-    # def get_user_by_credentials(self, username, password):
-    #     # TODO: implement this in DB
-    #     if username == 'sean' and password == 'test':
-    #         return {'user_id': 1, 'username': 'sean'}
-    #     else:
-    #         return None
+        cur.execute('SELECT first_name,last_name FROM Customers WHERE (username = %s)', username)
+
+        return CursorIterator(cur)
+
+
+    def get_user_by_credentials(self, username, password,role):
+        # TODO: implement this in DB
+
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql1 = 'SELECT * FROM users WHERE (username = %s and password= %s and role= %s)'
+        cur.execute(sql1, (username, password, role))
+        result = cur.fetchall()
+        username = (result[0]['username'])
+        password = result[0]['password']
+        role = result[0]['role']
+        return {'user': username, 'password': password, 'role': role}
+            
+
+        # if username == 'sean' and password == 'test':
+        #     return {'user_id': 1, 'username': 'sean'}
+        # else:
+        #     return None

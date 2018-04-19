@@ -21,7 +21,7 @@ app.debug = config.APP_DEBUG
 def load_current_user():
     userId = request.cookies.get('userID')
     if not userId: return None
-    return db.get_user_by_id(userId)
+    return db.get_user_by_name(userId)
 
 @app.route('/', methods=['GET'])
 def index():
@@ -54,7 +54,6 @@ def insert():
     role = 'Customer'
     # TODO: handle interests
     # insert person
-
     if db.insert_new_user(username,password,role):
         if db.insert_new_customer(ssn, firstname, lastname, username, dob, seeking, phone, gender, 
                     children, married_prev):
@@ -73,32 +72,42 @@ def get_logout():
 # this triggers when you click the button in the html doc with action= login and method= GET
 @app.route('/login', methods=['GET'])
 def get_login():
-    if load_current_user():
+    user = load_current_user()
+    if user:
         # send user to home page if they are already logged in
         return redirect('/home')
-    return render_template('login.html')
+    people = db.get_people()
+    return render_template('login.html', users=people)
 
 
 @app.route('/login', methods=['POST']) 
 def post_login():
-    username = request.form['username']
-    password = request.form['password']
-    user = db.get_user_by_credentials(username, password)
-    if not user:
+    u = request.form['username']
+    p = request.form['password']
+    r = request.form['role']
+    user = db.get_user_by_credentials(u, p, r)
+    password=user['password']
+    username=user['user']
+    role=user['role']
+    if (role != r) or (p != password) or (username != u):
         # incorrect user id / password
-        return redirect('/login')
+        print("wrong login!")
+        return redirect('/home')    
     else:
         # Send the user to the home page and set a cookie to keep their session active
         # SECURITY NOTE: THIS IS NOT A GOOD WAY TO HANDLE USER AUTHORIZATION IN PRACTICE.
         # DO NOT DO THIS FOR A PRODUCTION WEBSITE (but it's good enough for this course project)
-        resp = make_response(redirect('/home'))
-        resp.set_cookie('userID', str(user['user_id']))
-        return resp
+        # resp = app.make_response(redirect('/home'))
+        # resp.set_cookie('userID', username)
+        # return resp
+        print('right login!')
+        return render_template('home.html', user=user)
 
 
 @app.route('/home', methods=['GET'])
 def get_home():
     user = load_current_user()
+    print('GET HOME')
     if not user:
         # Not logged in
         return redirect('/login')
