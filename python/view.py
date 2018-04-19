@@ -73,11 +73,6 @@ def get_logout():
 # this triggers when you click the button in the html doc with action= login and method= GET
 @app.route('/login', methods=['GET'])
 def get_login():
-    users= []
-    try:
-        users= db.get_people()
-    except:
-        users.append('blank')
     if load_current_user():
         # send user to home page if they are already logged in
         return redirect('/home')
