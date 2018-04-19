@@ -39,24 +39,28 @@ def insert():
     phone = request.form['phone']
     ssn = request.form['ssn']
     dob = request.form['dob']
-    yob = dob.split('-')[0]
-    now = datetime.datetime.now().year
-    age = now - yob
-    today = datetime.datetime.now().date()
     gender = request.form['gender']
     children = request.form['children']
     married_prev= request.form['married_prev']
     interests = request.form.getlist("interests")
     seeking = request.form['seeking']
+    if married_prev == 'true' :
+        married_prev = 'Y'
+    else:
+        married_prev = 'N'
     status = 'open'
-
+    username = request.form['username']
+    password = request.form['password']
+    role = 'Customer'
     # TODO: handle interests
     # insert person
 
-
-    if db.insert_new_customer(ssn, username, dob, seeking, phone, age, gender, 
-                                children, married_prev, today, status):
-        return redirect('/')
+    if db.insert_new_user(username,password,role):
+        if db.insert_new_customer(ssn, firstname, lastname, username, dob, seeking, phone, gender, 
+                    children, married_prev):
+            for each in interests:
+                db.insert_customer_interest(ssn, each)
+            return redirect('/')
     return "Error adding to list" # TODO: better error handling
 
 @app.route('/logout', methods=['GET'])
@@ -69,6 +73,11 @@ def get_logout():
 # this triggers when you click the button in the html doc with action= login and method= GET
 @app.route('/login', methods=['GET'])
 def get_login():
+    users= []
+    try:
+        users= db.get_people()
+    except:
+        users.append('blank')
     if load_current_user():
         # send user to home page if they are already logged in
         return redirect('/home')

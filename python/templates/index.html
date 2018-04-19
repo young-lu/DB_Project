@@ -6,7 +6,7 @@
   </head>
   <body>
     <h1 class="title">
-      <img src="IMG_0134.jpg" alt="DatingService.gu"/>
+      <img src="img/hills.jpg" alt="Dating Service">
     </h1>
      <section>
       <form action="insert" method="POST">
@@ -18,6 +18,12 @@
           <label for="LastName">Last Name:</label> <input type="text" name="lastname" id="LastName" />
         </p>
         <p>
+          <label for="Username">Username: </label><input type="text" name="username" id="Username">
+        </p>
+        <p>
+          <label for="Password">Password: </label><input type="text" name="password" id="Password">
+        </p>
+        <p>
           <label for="Phone">Phone Number:</label> <input type="text" name="phone" id="Phone" />
         </p>
         <p>
@@ -26,18 +32,15 @@
         <p>
           <label for="DOB">Date of Birth:</label> <input type="date" name="dob" id="DOB" value="1990-01-01" />
         </p>
-        <div ><p>Gender:</p><label for="M">Male</label><input type="radio" name="gender" id="M" value="Male" /><label for="F">Female</label><input type="radio" name="gender" id="F" value="Female" />
+        <div ><p>Gender:</p><label for="M">Male</label><input type="radio" name="gender" id="M" value="M" /><label for="F">Female</label><input type="radio" name="gender" id="F" value="F" />
         </div>
         <p>
           <label for="Children">Number of Children:</label><input type="number" name="children" id="Children" min="0"/>
         </p>
         <p>
-          <label for="Married_Prev">I was warried previously  </label><input type="checkbox" name="married_prev" id="Married_Prev" value="true">
+          <label for="Married_Prev">I was warried previously: </label><input type="checkbox" name="married_prev" id="Married_Prev" value="true">
         </p>
-       <!--  <p>
-          <p>Relationship Status: </p>
-          <input type="radio" name="status" id="Single"><label for="Single">Single</label>
-        <p> -->
+        <p>
           My hobbies include&hellip;
         </p>
         <p>
@@ -45,6 +48,7 @@
             <input type="checkbox" name="interests" id="{{interest}}" value="{{interest['interest']}}"><label for="{{interest}}">{{interest['interest']}}</label> 
           {% endfor %}
         </p>
+
         <h3>
           I'm seeking &hellip;
         </h3>
@@ -58,7 +62,7 @@
           <input type="radio" name="seeking" id="B" value="B"><label for="B">Both</label>
         </p>
         <p>
-          <input type="submit" value="Get in line!"/>
+          <input type="submit" value="[join dating service]"/>
         </p>
       </form>
     </section>
@@ -79,4 +83,9 @@
       </form>
     
   </body>
+  <footer>
+    <p>written by: Sara Fares and Connor Lu</p>
+    <p>COSC-280</p>
+    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+  </footer>
 </html>
