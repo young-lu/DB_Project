@@ -7,9 +7,40 @@
     <p>
       Welcome, {{user['username']}}!
     </p>
+    <!-- find a match form -->
+  <section>
+    <form action="insert" method="POST">
+
+    </form>
+  </section>
+
+<!-- personal info and past dates-->
+  <section>
+    <form action="insert" method="POST">
+      {% for each in user %}
+        {{ each }}: {{ user[each] }}<br>
+      {% endfor %}
+    </form>
+  </section>
+
+ <!--  <section>
+    <form action="insert" method="POST"> 
+      
+    </form>
+  </section>
+ -->
+
+
+
+
     <p>
       Actions:
       <a href="/logout">Logout</a>
     </p>
   </body>
+  <footer >
+    <p>written by: Sara Fares and Connor Lu</p>
+    <p>COSC-280</p>
+    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+  </footer>
 </html>

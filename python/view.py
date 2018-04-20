@@ -21,7 +21,7 @@ app.debug = config.APP_DEBUG
 def load_current_user():
     userId = request.cookies.get('userID')
     if not userId: return None
-    return db.get_user_by_id(userId)
+    return db.get_user_by_name(userId)
 
 @app.route('/', methods=['GET'])
 def index():
@@ -39,24 +39,27 @@ def insert():
     phone = request.form['phone']
     ssn = request.form['ssn']
     dob = request.form['dob']
-    yob = dob.split('-')[0]
-    now = datetime.datetime.now().year
-    age = now - yob
-    today = datetime.datetime.now().date()
     gender = request.form['gender']
     children = request.form['children']
     married_prev= request.form['married_prev']
     interests = request.form.getlist("interests")
     seeking = request.form['seeking']
+    if married_prev == 'true' :
+        married_prev = 'Y'
+    else:
+        married_prev = 'N'
     status = 'open'
-
+    username = request.form['username']
+    password = request.form['password']
+    role = 'Customer'
     # TODO: handle interests
     # insert person
-
-
-    if db.insert_new_customer(ssn, username, dob, seeking, phone, age, gender, 
-                                children, married_prev, today, status):
-        return redirect('/')
+    if db.insert_new_user(username,password,role):
+        if db.insert_new_customer(ssn, firstname, lastname, username, dob, seeking, phone, gender, 
+                    children, married_prev):
+            for each in interests:
+                db.insert_customer_interest(ssn, each)
+            return redirect('/')
     return "Error adding to list" # TODO: better error handling
 
 @app.route('/logout', methods=['GET'])
@@ -69,32 +72,43 @@ def get_logout():
 # this triggers when you click the button in the html doc with action= login and method= GET
 @app.route('/login', methods=['GET'])
 def get_login():
-    if load_current_user():
+    user = load_current_user()
+    if user:
         # send user to home page if they are already logged in
         return redirect('/home')
-    return render_template('login.html')
+    people = db.get_people()
+    return render_template('login.html', users=people)
 
 
 @app.route('/login', methods=['POST']) 
 def post_login():
     username = request.form['username']
     password = request.form['password']
-    user = db.get_user_by_credentials(username, password)
+    role = request.form['role']
+    user = db.get_user_by_credentials(username, password, role)
     if not user:
         # incorrect user id / password
-        return redirect('/login')
+        print("NO_USER")
+        return redirect('/login')   
     else:
         # Send the user to the home page and set a cookie to keep their session active
         # SECURITY NOTE: THIS IS NOT A GOOD WAY TO HANDLE USER AUTHORIZATION IN PRACTICE.
         # DO NOT DO THIS FOR A PRODUCTION WEBSITE (but it's good enough for this course project)
-        resp = make_response(redirect('/home'))
-        resp.set_cookie('userID', str(user['user_id']))
+        resp = app.make_response(redirect('/home'))
+        resp.set_cookie('userID', username)
         return resp
+        # if (role=="Customer"):
+        #     return render_template('home.html', username=username, password=password,role=role)
+        # elif (role=="Specialist"):
+        #     return render_template('special-home.html', username=username, password=password,role=role)
+        # elif (role=="Entry-level"):
+        #     return render_template('entry-home.html', username=username, password=password,role=role)
 
 
 @app.route('/home', methods=['GET'])
 def get_home():
     user = load_current_user()
+    print(user)
     if not user:
         # Not logged in
         return redirect('/login')

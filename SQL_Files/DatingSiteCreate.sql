@@ -35,14 +35,20 @@ CREATE TABLE Customers
 		age INT NOT NULL,
 		gender CHAR NOT NULL,
 		children_count INT NOT NULL,
+<<<<<<< HEAD
 		married_prev BOOLEAN NOT NULL,
 		criminal BOOLEAN NOT NULL,
+=======
+		married_prev CHAR(1) NOT NULL,
+>>>>>>> df99ba267b5b6a759564ee88ccd3f0275e90343b
 		account_opened DATE NOT NULL,
 		account_closed DATE NULL, # this is nullable (if it is open we dont have a val here)
-		status CHAR NOT NULL DEFAULT 'open',
+		status VARCHAR(16) NOT NULL DEFAULT 'Open',
 		FOREIGN KEY (username) REFERENCES Users (username) ON DELETE CASCADE,
 		PRIMARY KEY (ssn),
-		check (children_count>=0)
+		check (children_count>=0),
+		check (gender = "M" or 	gender = "F"),
+		check (married_prev = 'Y' or married_prev = 'N' )
 	);
 
 

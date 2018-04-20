@@ -1,7 +1,7 @@
 # original author: Luca Soldaini
 
 import pymysql
-
+import datetime
 
 
 class CursorIterator(object):
@@ -32,7 +32,7 @@ class Database(object):
         self.conn = pymysql.connect(self.opts.DB_HOST, self.opts.DB_USER,
                                     self.opts.DB_PASSWORD, self.opts.DB_NAME)
 
-    def insert_new_user(self, username, password, role ):
+    def insert_new_user(self, username, password, role):
         """Search for a venue in the database"""
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql = 'INSERT INTO Users (username, password, role) VALUES (%s, %s, %s)'
@@ -40,17 +40,48 @@ class Database(object):
         self.conn.commit()
         return result
 
-    def insert_new_customer(self, ssn, username, DOB, interested_in, phone, age, gender, 
-                                children_count, married_prev, account_opened, status): 
+    def insert_new_customer(self, ssn, first_name, last_name, username, DOB, interested_in, phone, gender, 
+                                children_count, married_prev): 
         """ account_closed must be added to the database later """
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql = 'INSERT INTO Customers (ssn, username, DOB, interested_in, phone, age, gender, \
-                children_count, married_prev, account_opened, account_closed, status) \
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,)'
-        result = cur.execute(sql, ( ssn, username, DOB, interested_in, phone, age, gender, 
-                                children_count, married_prev, account_opened, account_closed, status))
+
+        # ssn = self.ssn
+        # first_name= self.first_name
+        # last_name= self.last_name
+        # username= self.username
+        # dob= self.DOB
+        # interested_in= self.interested_in
+        # phone= self.phone
+        # gender= self.gender
+        # children_count= self.children_count
+        # married_prev= self.married_prev
+
+        today = datetime.datetime.now().date()
+        dob = str(DOB)
+        yob = dob.split('-')[0]
+        thisyear = datetime.datetime.now().year
+        age = int(thisyear) - int(yob)
+        age= str(age)
+        thisyear
+
+        sql = 'INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, \
+                children_count, married_prev, account_opened ) \
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+        result = cur.execute(sql, (ssn, first_name, last_name, username, 
+                        dob, interested_in, phone, age, gender, children_count, married_prev, today))
         self.conn.commit()
         return result
+
+    def insert_customer_interest(self, ssn, interest):
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'INSERT INTO Customer_Interests (ssn, interest) VALUES (%s, %s);'
+        result = cur.execute(sql, (ssn, interest))
+        self.conn.commit()
+        return result
+
+    def insert_customer_interests(self, ssn, interest_list):
+        for intrst in (interest_list):
+            self.insert_customer_interest(ssn, intrst)
 
     """ update functions --->  what page format should we use? this will affect how we write the function"""
         # def update_user(self, username, password, role): 
@@ -70,7 +101,8 @@ class Database(object):
         return CursorIterator(cur)
         
     # def update_customer():
-        # """don't know how to do this yet """
+        """ show ALL data of customer with option to edit"""
+        """ pass every piece of data in update_customer() """
 
 
     # def get_match(self):
@@ -89,16 +121,33 @@ class Database(object):
 
         return CursorIterator(cur)
 
-    # def get_user_by_id(self, user_id):
-    #     # TODO: implement this in DB
-    #     if str(user_id) == '1':
-    #         return {'user_id': 1, 'username': 'sean'}
-    #     else:
-    #         return None
+    def get_user_by_name(self, username):
+        # TODO: implement this in DB
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
 
-    # def get_user_by_credentials(self, username, password):
-    #     # TODO: implement this in DB
-    #     if username == 'sean' and password == 'test':
-    #         return {'user_id': 1, 'username': 'sean'}
-    #     else:
-    #         return None
+        cur.execute('SELECT * FROM Customers WHERE (username = %s)', username)
+        result=cur.fetchall()
+        return result[0]
+
+
+    def get_user_by_credentials(self, username, password,role):
+        # TODO: implement this in DB
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql1 = 'SELECT * FROM users WHERE (username = %s and password= %s and role= %s)'
+        cur.execute(sql1, (username, password, role))
+        result = cur.fetchall()
+
+        try:
+            username = (result[0]['username'])
+            password = result[0]['password']
+            role = result[0]['role']
+            return 1
+        except: 
+            return 0
+
+            
+
+        # if username == 'sean' and password == 'test':
+        #     return {'user_id': 1, 'username': 'sean'}
+        # else:
+        #     return None

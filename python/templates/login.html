@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <title>Login</title>
+    <link rel="stylesheet" href="main.css"/>
   </head>
   <body>
     <form action="login" method="POST">
@@ -12,7 +13,26 @@
         <label for="password">Password:</label><input id="password" name="password" type="password" />
       </p>
       <p>
-        <input type="submit" value="Log in" />
+        <label for="role">Role: </label>
+        <select id="role" name="role">
+          <option value="Customer">Customer looking for LOVE</option>
+          <option value="Specialist">Specialist Staff</option>
+          <option value="Entry-level">Entry-Level Staff</option>
+        </select>
       </p>
+      <p>
+        <input type="submit" value="Login" />
+      </p>
+      <h1>Users:</h1>
+      <p>{% for user in users %}
+          {{ user['username'] }}<br>
+        {% endfor %}</p>
     </form>
   </body>
+
+  <footer>
+    <p>written by: Sara Fares and Connor Lu</p>
+    <p>COSC-280</p>
+    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+  </footer>
+</html>
