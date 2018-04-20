@@ -105,13 +105,35 @@ class Database(object):
         """ pass every piece of data in update_customer() """
 
 
-    # def get_match(self):
-    #     # """Fetch a veuw from the database"""
-    #     # cur = self.conn.cursor(pymysql.cursors.DictCursor)
+    def find_matches(self,ssn, interested_in, married_prev,max_kids,min_age,max_age,interests):
+        """Fetch a veuw from the database"""
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        interests = ", ".join('"' + interest + '"' for interest in interests)
+        sql = 'SELECT DISTINCT(c.ssn) FROM Customers c, Customer_Interests ci WHERE '
+        print("MARRIED PREV".format(married_prev))
+        if not married_prev :
+            sql += " (c.married_prev = 'N' ) AND "
+        sql +=  "c.gender = %s AND "
+        sql += " (c.children_count <= %s) AND "
+        sql += " c.age >= %s AND c.age <= %s AND "
+        sql += " ci.interest IN (%s)"
 
-    #     # cur.execute('SELECT first_name, last_name FROM People ORDER BY time_added;')
+        cur.execute(sql,(interested_in ,max_kids, min_age,max_age, interests))
+        ssn_list = cur.fetchall()
+        if not ssn_list:
+            return 0
 
-    #     # return CursorIterator(cur)
+        sql = "SELECT * FROM Customers WHERE "
+
+        i=0
+        for ssn in ssn_list:
+            sql.append(" ssn= {0} ".format(ssn))
+            if(i<len(ssn_list - 1)):
+                sql.append(" OR ")
+            i+=1
+        cur.execute(sql)
+        result = cur.fetchall()
+        return result
 
     def get_interests(self):
         """Get comments for a venue"""
@@ -123,12 +145,13 @@ class Database(object):
 
     def get_user_by_name(self, username):
         # TODO: implement this in DB
-        cur = self.conn.cursor(pymysql.cursors.DictCursor)
-
-        cur.execute('SELECT * FROM Customers WHERE (username = %s)', username)
-        result=cur.fetchall()
-        return result[0]
-
+        try:
+            cur = self.conn.cursor(pymysql.cursors.DictCursor)
+            cur.execute('SELECT * FROM Customers WHERE (username = %s)', username)
+            result=cur.fetchall()
+            return result[0]
+        except:
+            return 0
 
     def get_user_by_credentials(self, username, password,role):
         # TODO: implement this in DB

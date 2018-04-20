@@ -35,22 +35,28 @@ def index():
 @app.route('/insert', methods=['POST'])
 def insert():
     """Add the person"""
-    firstname, lastname = request.form['firstname'], request.form['lastname']
-    phone = request.form['phone']
-    ssn = request.form['ssn']
-    dob = request.form['dob']
-    gender = request.form['gender']
-    children = request.form['children']
-    married_prev= request.form['married_prev']
-    interests = request.form.getlist("interests")
-    seeking = request.form['seeking']
-    if married_prev == 'true' :
-        married_prev = 'Y'
-    else:
+    try:
+        firstname, lastname = request.form['firstname'], request.form['lastname']
+        phone = request.form['phone']
+        ssn = request.form['ssn']
+        dob = request.form['dob']
+        gender = request.form['gender']
+        children = request.form['children']
+        seeking = request.form['seeking']
+        username = request.form['username']
+        password = request.form['password']
+    except:
+        return redirect('/')
+
+    try: 
+        married_prev= request.form['married_prev']
+        if married_prev:
+            married_prev = 'Y'
+    except:
         married_prev = 'N'
+
+    interests = request.form.getlist("interests")
     status = 'open'
-    username = request.form['username']
-    password = request.form['password']
     role = 'Customer'
     # TODO: handle interests
     # insert person
@@ -108,18 +114,31 @@ def post_login():
 @app.route('/home', methods=['GET'])
 def get_home():
     user = load_current_user()
-    print(user)
+    interests = db.get_interests()
+
     if not user:
-        # Not logged in
         return redirect('/login')
-    return render_template('home.html', user=user)
+    return render_template('home.html', user=user, interests=interests)
 
 
+@app.route('/find_match', methods=['POST'])
+def find_match():
+    user = load_current_user()
+    ssn = user['ssn']
+    interested_in = user['interested_in']
+    married = request.form.get('married')
+    max_kids = request.form['max_kids']
+    max_age = request.form['max_age']
+    min_age = request.form['min_age']
+    interests = request.form.getlist("interest")
+    matches = db.find_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests)
+    if not matches:
+        return render_template('home.html',interests=db.get_interests(), user=user,none_message="Sorry, you did not match with anyone!")
+    return render_template('match.html',matches=matches)
 
-
-@app.route('/resources/<path:path>')
-def send_resources(path):
-    return send_from_directory('resources', path)
+# @app.route('/resources/<path:path>')
+# def send_resources(path):
+#     return send_from_directory('resources', path)
 
 
 
