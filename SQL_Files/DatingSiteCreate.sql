@@ -36,6 +36,7 @@ CREATE TABLE Customers
 		gender CHAR NOT NULL,
 		children_count INT NOT NULL,
 		married_prev BOOLEAN NOT NULL,
+		criminal BOOLEAN NOT NULL,
 		account_opened DATE NOT NULL,
 		account_closed DATE NULL, # this is nullable (if it is open we dont have a val here)
 		status CHAR NOT NULL DEFAULT 'open',
@@ -66,10 +67,10 @@ CREATE TABLE Customer_Interests # primary key is the combination of ssn and inte
 
 
 DROP TABLE IF EXISTS `Matches`;
-CREATE TABLE Matches
+CREATE TABLE Matches # primary key is matchID
 	(
 		matchID CHAR(10) NOT NULL,
-		ssn1 VARCHAR(40) NOT NULL,
+		ssn1 VARCHAR(40) NOT NULL, # put the ssn's in in whatever order (does not matter! so long as we dont re add them in the opposite order)
 		ssn2 VARCHAR(40) NOT NULL,
 		FOREIGN KEY (ssn1) REFERENCES Customers (ssn) ON DELETE CASCADE,
 		FOREIGN KEY (ssn2) REFERENCES Customers (ssn) ON DELETE CASCADE,
@@ -78,10 +79,10 @@ CREATE TABLE Matches
 
 
 DROP TABLE IF EXISTS `Dates`;
-CREATE TABLE Dates # primary key is the combination of date_number and mathID
+CREATE TABLE Dates # primary key is the combination of date_number and matchID
 	(
 		date_number INT NOT NULL,
-		date_time TIME NOT NULL, # IS THIS RIGHT??
+		date_time TIME NOT NULL,
 		date_date DATE NOT NULL,
 		both_still_interested BOOLEAN NOT NULL,
 		happened BOOLEAN NOT NULL,
@@ -112,13 +113,26 @@ CREATE TABLE Customer_Crimes #primary key is ssn
 	);
 
 
-DROP TABLE IF EXISTS `Charges`;
-CREATE TABLE Charges(
+DROP TABLE IF EXISTS `Match_Fees`;
+CREATE TABLE Match_Fees( # the match fee occurs after user goes for a 3rd different date
 	amount DECIMAL(5,2) NOT NULL,
+	date_charged DATE NOT NULL,
+	date_paid DATE NULL, 
+	paid BOOLEAN NOT NULL DEFAULT FALSE,
 	ssn VARCHAR(40) NOT NULL,
-	charge_count INT NOT NULL,
 	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
-	PRIMARY KEY (ssn, charge_count)
+	PRIMARY KEY (ssn)
+);
+
+DROP TABLE IF EXISTS `Registration_Fees`;
+CREATE TABLE Registration_Fees( # the registratuon fee occurs after user goes for a 3rd different date
+	amount DECIMAL(5,2) NOT NULL,
+	date_charged DATE NOT NULL,
+	date_paid DATE NULL, 
+	paid BOOLEAN NOT NULL DEFAULT FALSE,
+	ssn VARCHAR(40) NOT NULL,
+	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
+	PRIMARY KEY (ssn)
 );
 
 DROP TABLE IF EXISTS `DateSuccess`;
@@ -133,25 +147,72 @@ CREATE TABLE DateSuccess(
 -- We need a trigger to charge people for certain dates… so maybe there should be another table for keeping track of each person’s number of dates with eachother/ individually?
 
 
--- triggers are written below. we have two:
-	-- one trigger works to add the charges when necessary
+-- triggers are written below. we have three:
+	-- one trigger works to add the charges when necessary if there are 3 dates
+	-- the other adds necessary triggers if there are 7 dates
 	-- the other automatically closes the profile of one who has a criminal record
 ----------- TRIGGERS -------------
 
+
+-- If a client's criminal status is criminal then 
+	-- we have to close the account 
+	-- but still keep it for our records
 DELIMITER //
 
 CREATE TRIGGER update_criminal_status
-AFTER INSERT ON Customers FOR EACH ROW
+AFTER INSERT ON Customer_Crimes FOR EACH ROW
 BEGIN
-	UPDATE Band
+	UPDATE Customer
+	SET account_closed= GETDATE ()
+	WHERE NEW.criminal= True
+	AND NEW.ssn= ssn;
+END; //
+
+DELIMITER ;
+
+-- If a client goes for a 3rd DIFFERENT!! date, 
+	-- then a message should be shown on the screen to show that the person 
+	-- has to be charged the match fee
+		-- also update the database to reflect the balance due for that person.
+
+DELIMITER //
+
+CREATE TRIGGER update_match_fee
+AFTER INSERT ON Dates FOR EACH ROW nnn...n .;nnBEGIN
+	UPDATE Match_Fees
+	SET date_charged= GETDATE()
+	SET ssn= NEW.matchID
+	SET amount= 100
+	WHERE NEW.ssn1 IN (SELECT ssn1 FROM Matches
+		)
+	OR NEW.ssn1 IN (SELECT ssn FROM Dates # select all of the ssn1's that appear 3 times in the dates section with a unique matchID
+		);
+			
+	UPDATE Match_Fees 
+	SET date_charged = GETDATE()
+	SET ssn= NEW.ssn2
+	SET amount= 100;
+	WHERE NEW.ssn2 = (SELECT ssn2 FROM );
+END; //
+DELIMITER ;
+
+
+-- If a client goes for a 7th DIFFERENT!! date, 
+	-- then a message shown on the screen to show 
+	-- that the person has to be charged the registration fee; 
+	-- also update the database to reflect the balance due for that person
+
+DELIMITER //
+
+CREATE TRIGGER update_registration_fee
+AFTER INSERT ON Matches FOR EACH ROW
+BEGIN
+	UPDATE Registration_Fees
 	SET activity_count= activity_count + 1
 	WHERE band_name= NEW.band_name;
 END; //
 
 DELIMITER ;
-
-
-
 
 
 

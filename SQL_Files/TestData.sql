@@ -24,3 +24,5 @@ INSERT INTO Roles (role) VALUES ('Customer');
 INSERT INTO Crimes (crime) VALUES ('Minor Offense');
 INSERT INTO Crimes (crime) VALUES ('Repeat Minor Offense');
 INSERT INTO Crimes (crime) VALUES ('Violent Offense');
+
+
