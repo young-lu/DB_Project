@@ -186,8 +186,7 @@ AFTER INSERT ON Dates FOR EACH ROW nnn...n .;nnBEGIN
 	WHERE NEW.ssn1 IN (SELECT ssn1 FROM Matches
 		)
 	OR NEW.ssn1 IN (SELECT ssn FROM Dates # select all of the ssn1's that appear 3 times in the dates section with a unique matchID
-		);
-			
+		);		
 	UPDATE Match_Fees 
 	SET date_charged = GETDATE()
 	SET ssn= NEW.ssn2
