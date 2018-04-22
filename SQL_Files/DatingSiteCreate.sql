@@ -35,7 +35,8 @@ CREATE TABLE Customers
 		age INT NOT NULL,
 		gender CHAR NOT NULL,
 		children_count INT NOT NULL,
-		married_prev CHAR(1) NOT NULL,
+		married_prev BOOLEAN NOT NULL,
+		criminal BOOLEAN NOT NULL,
 		account_opened DATE NOT NULL,
 		account_closed DATE NULL, # this is nullable (if it is open we dont have a val here)
 		status VARCHAR(16) NOT NULL DEFAULT 'Open',
@@ -43,9 +44,14 @@ CREATE TABLE Customers
 		PRIMARY KEY (ssn),
 		check (children_count>=0),
 		check (gender = "M" or 	gender = "F"),
-		check (married_prev = 'Y' or married_prev = 'N' )
 	);
-
+CREATE TABLE Customers_Children
+	(
+		ssn VARCHAR(40) NOT NULL,
+		which_child INT NOT NULL,
+		age INT NOT NULL,
+		PRIMARY KEY (ssn, which_child)
+	);
 
 DROP TABLE IF EXISTS `Interests`;
 CREATE TABLE Interests # primary key is interest
@@ -68,22 +74,20 @@ CREATE TABLE Customer_Interests # primary key is the combination of ssn and inte
 
 
 DROP TABLE IF EXISTS `Matches`;
-CREATE TABLE Matches
+CREATE TABLE Matches # primary key is matchID, ssn (each match has two tuples)
 	(
 		matchID CHAR(10) NOT NULL,
-		ssn1 VARCHAR(40) NOT NULL,
-		ssn2 VARCHAR(40) NOT NULL,
-		FOREIGN KEY (ssn1) REFERENCES Customers (ssn) ON DELETE CASCADE,
-		FOREIGN KEY (ssn2) REFERENCES Customers (ssn) ON DELETE CASCADE,
-		PRIMARY KEY (matchID)
+		ssn VARCHAR(40) NOT NULL, # put the ssn's in in whatever order (does not matter! so long as we dont re add them in the opposite order)
+		FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
+		PRIMARY KEY (matchID, ssn)
 	);
 
 
 DROP TABLE IF EXISTS `Dates`;
-CREATE TABLE Dates # primary key is the combination of date_number and mathID
+CREATE TABLE Dates # primary key is the combination of date_number and matchID
 	(
 		date_number INT NOT NULL,
-		date_time TIME NOT NULL, # IS THIS RIGHT??
+		date_time TIME NOT NULL,
 		date_date DATE NOT NULL,
 		both_still_interested BOOLEAN NOT NULL,
 		happened BOOLEAN NOT NULL,
@@ -114,13 +118,26 @@ CREATE TABLE Customer_Crimes #primary key is ssn
 	);
 
 
-DROP TABLE IF EXISTS `Charges`;
-CREATE TABLE Charges(
+DROP TABLE IF EXISTS `Match_Fees`;
+CREATE TABLE Match_Fees( # the match fee occurs after user goes for a 3rd different date
 	amount DECIMAL(5,2) NOT NULL,
+	date_charged DATE NOT NULL,
+	date_paid DATE NULL, 
+	paid BOOLEAN NOT NULL DEFAULT FALSE,
 	ssn VARCHAR(40) NOT NULL,
-	charge_count INT NOT NULL,
 	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
-	PRIMARY KEY (ssn, charge_count)
+	PRIMARY KEY (ssn)
+);
+
+DROP TABLE IF EXISTS `Registration_Fees`;
+CREATE TABLE Registration_Fees( # the registratuon fee occurs after user goes for a 3rd different date
+	amount DECIMAL(5,2) NOT NULL,
+	date_charged DATE NOT NULL,
+	date_paid DATE NULL, 
+	paid BOOLEAN NOT NULL DEFAULT FALSE,
+	ssn VARCHAR(40) NOT NULL,
+	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
+	PRIMARY KEY (ssn)
 );
 
 DROP TABLE IF EXISTS `DateSuccess`;
@@ -135,8 +152,121 @@ CREATE TABLE DateSuccess(
 -- We need a trigger to charge people for certain dates… so maybe there should be another table for keeping track of each person’s number of dates with eachother/ individually?
 
 
+-- triggers are written below. we have three:
+	-- one trigger works to add the charges when necessary if there are 3 dates
+	-- the other adds necessary triggers if there are 7 dates
+	-- the other automatically closes the profile of one who has a criminal record
+----------- TRIGGERS -------------
 
 
+-- If a client's criminal status is criminal then 
+	-- we have to close the account 
+	-- but still keep it for our records
+DELIMITER //
+
+CREATE TRIGGER update_criminal_status
+AFTER INSERT ON Customer_Crimes FOR EACH ROW
+BEGIN
+	UPDATE Customers
+	SET account_closed= GETDATE()
+	AND status = 'Closed'
+	WHERE NEW.criminal= True
+	AND NEW.ssn= ssn;
+END; //
+
+DELIMITER ;
 
 
+-- If a client goes for a 3rd DIFFERENT!! date, 
+	-- then a message should be shown on the screen to show that the person 
+	-- has to be charged the match fee
+		-- also update the database to reflect the balance due for that person.
 
+DELIMITER //
+
+CREATE TRIGGER update_match_fee
+AFTER INSERT ON Dates FOR EACH ROW
+BEGIN
+	ssn1= (SELECT ssn
+			FROM Matches
+			LIMIT=1);
+	ssn2= (SELECT ssn 
+			FROM Matches
+			WHERE matchID = NEW.matchID
+			AND ssn != ssn1);
+	IF ssn1 IN (SELECT m.ssn
+			FROM Matches m, Dates d 
+			WHERE d.matchID=m.matchID
+			AND d.ssn=m.ssn
+			GROUP BY m.ssn
+			HAVING count(DISTINCT(d.matchID))=3)
+	THEN 
+		INSERT INTO Match_Fees (100, GETDATE(), NULL, 'False', ssn1)
+	END IF;
+
+	IF ssn2 IN (SELECT d.ssn
+			FROM Matches m, Dates d 
+			WHERE d.matchID=m.matchID
+			AND d.ssn=m.ssn
+			GROUP BY m.ssn
+			HAVING count(DISTINCT(d.matchID))=3)
+	THEN
+		INSERT INTO Match_Fees (100, GETDATE(), NULL, 'False', ssn2)
+	END IF;
+END; //
+DELIMITER ;
+
+
+-- If a client goes for a 7th DIFFERENT!! date, 
+	-- then a message shown on the screen to show 
+	-- that the person has to be charged the registration fee; 
+	-- also update the database to reflect the balance due for that person
+
+DELIMITER //
+
+CREATE TRIGGER update_registration_fee
+AFTER INSERT ON Dates FOR EACH ROW
+BEGIN
+	ssn1= (SELECT ssn
+			FROM Matches
+			LIMIT=1);
+	ssn2= (SELECT ssn 
+			FROM Matches
+			WHERE matchID = NEW.matchID
+			AND ssn != ssn1);
+	IF ssn1 IN (SELECT m.ssn
+			FROM Matches m, Dates d 
+			WHERE d.matchID=m.matchID
+			AND d.ssn=m.ssn
+			GROUP BY m.ssn
+			HAVING count(DISTINCT(d.matchID))=3)
+	THEN 
+		INSERT INTO Registration_Fees (100, GETDATE(), NULL, 'False', ssn1)
+	END IF;
+
+	IF ssn2 IN (SELECT d.ssn
+			FROM Matches m, Dates d 
+			WHERE d.matchID=m.matchID
+			AND d.ssn=m.ssn
+			GROUP BY m.ssn
+			HAVING count(DISTINCT(d.matchID))=3)
+	THEN
+		INSERT INTO Registration_Fees (100, GETDATE(), NULL, 'False', ssn2)
+	END IF;
+END; //
+DELIMITER ;
+
+
+-- If a crime is inserted into Customer_Crimes, we need to add it to the list of crimes 
+	-- IF its not already there
+DELIMITER //
+
+CREATE TRIGGER addCrime
+AFTER INSERT ON Customer_Crimes FOR EACH ROW
+BEGIN
+	IF NEW.crime NOT IN (SELECT crime FROM Crimes) THEN
+		INSERT INTO Crimes (NEW.crime)
+	END IF;
+END; //
+
+DELIMITER;

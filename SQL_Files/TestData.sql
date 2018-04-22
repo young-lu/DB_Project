@@ -24,6 +24,11 @@ INSERT INTO Roles (role) VALUES ('Customer');
 INSERT INTO Crimes (crime) VALUES ('Minor Offense');
 INSERT INTO Crimes (crime) VALUES ('Repeat Minor Offense');
 INSERT INTO Crimes (crime) VALUES ('Violent Offense');
+<<<<<<< HEAD
+
+
+=======
 INSERT INTO Users (username, password, role) VALUES ('Customer1', '0123', 'Customer');
 INSERT INTO Users (username, password, role) VALUES ('Special1', '0123', 'Specialist');
 INSERT INTO Users (username, password, role) VALUES ('Entry1', '0123', 'Entry-level');
+>>>>>>> df99ba267b5b6a759564ee88ccd3f0275e90343b
