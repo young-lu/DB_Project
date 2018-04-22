@@ -35,12 +35,8 @@ CREATE TABLE Customers
 		age INT NOT NULL,
 		gender CHAR NOT NULL,
 		children_count INT NOT NULL,
-<<<<<<< HEAD
 		married_prev BOOLEAN NOT NULL,
 		criminal BOOLEAN NOT NULL,
-=======
-		married_prev CHAR(1) NOT NULL,
->>>>>>> df99ba267b5b6a759564ee88ccd3f0275e90343b
 		account_opened DATE NOT NULL,
 		account_closed DATE NULL, # this is nullable (if it is open we dont have a val here)
 		status VARCHAR(16) NOT NULL DEFAULT 'Open',
@@ -48,9 +44,14 @@ CREATE TABLE Customers
 		PRIMARY KEY (ssn),
 		check (children_count>=0),
 		check (gender = "M" or 	gender = "F"),
-		check (married_prev = 'Y' or married_prev = 'N' )
 	);
-
+CREATE TABLE Customers_Children
+	(
+		ssn VARCHAR(40) NOT NULL,
+		which_child INT NOT NULL,
+		age INT NOT NULL,
+		PRIMARY KEY (ssn, which_child)
+	);
 
 DROP TABLE IF EXISTS `Interests`;
 CREATE TABLE Interests # primary key is interest
@@ -73,14 +74,12 @@ CREATE TABLE Customer_Interests # primary key is the combination of ssn and inte
 
 
 DROP TABLE IF EXISTS `Matches`;
-CREATE TABLE Matches # primary key is matchID
+CREATE TABLE Matches # primary key is matchID, ssn (each match has two tuples)
 	(
 		matchID CHAR(10) NOT NULL,
-		ssn1 VARCHAR(40) NOT NULL, # put the ssn's in in whatever order (does not matter! so long as we dont re add them in the opposite order)
-		ssn2 VARCHAR(40) NOT NULL,
-		FOREIGN KEY (ssn1) REFERENCES Customers (ssn) ON DELETE CASCADE,
-		FOREIGN KEY (ssn2) REFERENCES Customers (ssn) ON DELETE CASCADE,
-		PRIMARY KEY (matchID)
+		ssn VARCHAR(40) NOT NULL, # put the ssn's in in whatever order (does not matter! so long as we dont re add them in the opposite order)
+		FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
+		PRIMARY KEY (matchID, ssn)
 	);
 
 
@@ -168,13 +167,15 @@ DELIMITER //
 CREATE TRIGGER update_criminal_status
 AFTER INSERT ON Customer_Crimes FOR EACH ROW
 BEGIN
-	UPDATE Customer
-	SET account_closed= GETDATE ()
+	UPDATE Customers
+	SET account_closed= GETDATE()
+	AND status = 'Closed'
 	WHERE NEW.criminal= True
 	AND NEW.ssn= ssn;
 END; //
 
 DELIMITER ;
+
 
 -- If a client goes for a 3rd DIFFERENT!! date, 
 	-- then a message should be shown on the screen to show that the person 
@@ -184,20 +185,34 @@ DELIMITER ;
 DELIMITER //
 
 CREATE TRIGGER update_match_fee
-AFTER INSERT ON Dates FOR EACH ROW nnn...n .;nnBEGIN
-	UPDATE Match_Fees
-	SET date_charged= GETDATE()
-	SET ssn= NEW.matchID
-	SET amount= 100
-	WHERE NEW.ssn1 IN (SELECT ssn1 FROM Matches
-		)
-	OR NEW.ssn1 IN (SELECT ssn FROM Dates # select all of the ssn1's that appear 3 times in the dates section with a unique matchID
-		);		
-	UPDATE Match_Fees 
-	SET date_charged = GETDATE()
-	SET ssn= NEW.ssn2
-	SET amount= 100;
-	WHERE NEW.ssn2 = (SELECT ssn2 FROM );
+AFTER INSERT ON Dates FOR EACH ROW
+BEGIN
+	ssn1= (SELECT ssn
+			FROM Matches
+			LIMIT=1);
+	ssn2= (SELECT ssn 
+			FROM Matches
+			WHERE matchID = NEW.matchID
+			AND ssn != ssn1);
+	IF ssn1 IN (SELECT m.ssn
+			FROM Matches m, Dates d 
+			WHERE d.matchID=m.matchID
+			AND d.ssn=m.ssn
+			GROUP BY m.ssn
+			HAVING count(DISTINCT(d.matchID))=3)
+	THEN 
+		INSERT INTO Match_Fees (100, GETDATE(), NULL, 'False', ssn1)
+	END IF;
+
+	IF ssn2 IN (SELECT d.ssn
+			FROM Matches m, Dates d 
+			WHERE d.matchID=m.matchID
+			AND d.ssn=m.ssn
+			GROUP BY m.ssn
+			HAVING count(DISTINCT(d.matchID))=3)
+	THEN
+		INSERT INTO Match_Fees (100, GETDATE(), NULL, 'False', ssn2)
+	END IF;
 END; //
 DELIMITER ;
 
@@ -210,14 +225,48 @@ DELIMITER ;
 DELIMITER //
 
 CREATE TRIGGER update_registration_fee
-AFTER INSERT ON Matches FOR EACH ROW
+AFTER INSERT ON Dates FOR EACH ROW
 BEGIN
-	UPDATE Registration_Fees
-	SET activity_count= activity_count + 1
-	WHERE band_name= NEW.band_name;
-END; //
+	ssn1= (SELECT ssn
+			FROM Matches
+			LIMIT=1);
+	ssn2= (SELECT ssn 
+			FROM Matches
+			WHERE matchID = NEW.matchID
+			AND ssn != ssn1);
+	IF ssn1 IN (SELECT m.ssn
+			FROM Matches m, Dates d 
+			WHERE d.matchID=m.matchID
+			AND d.ssn=m.ssn
+			GROUP BY m.ssn
+			HAVING count(DISTINCT(d.matchID))=3)
+	THEN 
+		INSERT INTO Registration_Fees (100, GETDATE(), NULL, 'False', ssn1)
+	END IF;
 
+	IF ssn2 IN (SELECT d.ssn
+			FROM Matches m, Dates d 
+			WHERE d.matchID=m.matchID
+			AND d.ssn=m.ssn
+			GROUP BY m.ssn
+			HAVING count(DISTINCT(d.matchID))=3)
+	THEN
+		INSERT INTO Registration_Fees (100, GETDATE(), NULL, 'False', ssn2)
+	END IF;
+END; //
 DELIMITER ;
 
 
+-- If a crime is inserted into Customer_Crimes, we need to add it to the list of crimes 
+	-- IF its not already there
+DELIMITER //
 
+CREATE TRIGGER addCrime
+AFTER INSERT ON Customer_Crimes FOR EACH ROW
+BEGIN
+	IF NEW.crime NOT IN (SELECT crime FROM Crimes) THEN
+		INSERT INTO Crimes (NEW.crime)
+	END IF;
+END; //
+
+DELIMITER;

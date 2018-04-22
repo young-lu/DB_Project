@@ -1,0 +1,47 @@
+<-- Who are those who had [at least, at most, exactly] X number of date events? -->
+<-- the user has to be able to select either "at least", "at most", or "exactly" -->
+	<-- also has to select a number of date events! --> 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Query the number of users with specific number of date events (at most, at least, exactly).</title>
+    <link rel="stylesheet" href="main.css"/>
+  </head>
+
+<-- insert a go button that shows the results -->
+<---  GO BUTTON --> 
+<-- and then display the results --> 
+
+<form action="query1" method="POST">
+      <p>
+      	<-- get option that the user chooses --> 
+        <label for="option_query1">Who are those who had:</label>
+        <select>
+			<-- get value of what the user wants to query from dropdown menu --> 
+ 			 <option value="at_least">at least</option>
+ 			 <option value="at_most">at most</option>
+ 			 <option value="exactly">exactly</option>
+		</select>
+      </p>
+      <p>
+      	<-- get number of dates --> 
+        <label for="number_dates">(input number of dates (>=0)):</label><input id="number_dates" name="number_dates" type="number" min="0" />
+      </p>
+      <p>
+      	  number of dates??
+      </p>
+      <p>
+        <input type="submit" value="submit_query" />
+      </p>
+</form>
+
+<------------------------------------------------------------------->
+<------------print result (if post has completed)------------------->
+%if strings_to_output:
+    <h2>These are the users with the desired stipulations on the date events:</h2>
+    <tr>
+    %for i in strings_to_output:
+        <td>$strings_to_output</td>
+    %endfor
+    </tr>
+%endif
