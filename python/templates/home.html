@@ -9,26 +9,58 @@
     </p>
     <!-- find a match form -->
   <section>
-    <form action="insert" method="POST">
+    <h1>Find a Match:</h1>
+    <form action="find_match" method="POST">
+      <p>
+        <input type="checkbox" name="married" id="Married" value="0">
+        <label for="Married">It's okay if my match has been married before.</label>
+      </p>
+      <p>
+        <label for="max_kids">How many children can your match have?</label>
+        <input type="number" name="max_kids" id="max_kids" min="0" value="0"/>
+      </p>
+      <p>
+        <label for="max_age">How OLD could your match be?</label>
+        <input type="number" name="max_age" id="max_age" min="0" value="80"/>
+      </p>
 
-    </form>
+      <p>
+        <label for="min_age">How YOUNG could your match be?</label>
+        <input type="number" name="min_age" id="min_age" min="18" value="20"/>
+      </p>
+
+      <p>
+        <h4>What interests should your match have?</h5>
+        {% for interest in interests %}
+          <label for="{{ interest['interest'] }}">{{ interest["interest"] }}</label>
+          <input type="checkbox" name="interest" id="{{ interest['interest'] }}" value="{{ interest['interest'] }}" /><br>
+        {% endfor %}
+      </p>
+      <p>
+        <h5>Should your match have ALL of your interests?</h5
+        <label for="exact">Yes</label>
+        <input type="checkbox" name="exact" id="exact"/>
+      </p>
+      <input type="submit" value="Match Me!"/> 
+    </form> 
+    {{ none_message }}
   </section>
 
-<!-- personal info and past dates-->
+<!-- personal info-->
   <section>
-    <form action="insert" method="POST">
+    <h1>Personal Info:</h1>
       {% for each in user %}
         {{ each }}: {{ user[each] }}<br>
       {% endfor %}
-    </form>
   </section>
 
- <!--  <section>
+<!--past  dates  -->
+  <!-- <section> 
     <form action="insert" method="POST"> 
       
     </form>
-  </section>
- -->
+  </section> -->
+
 
 
 

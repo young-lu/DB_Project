@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Matches and Dates </title>
+  </head>
+
+  <body>
+  	<!-- matches with the button to 'ask on a date' on certain date  -->
+  	<section>
+  		<form action="match" method="POST">
+  			<h4>Matches</h4>
+  			<p>
+  				{% for match in matches %}
+  					<input type="radio" name="match" value="{{ match['ssn] }}">{{match['last_name']}},{{match['first_name']}}<br>
+  				{% endfor %}
+  			</p>
+  		</form>
+  	</section>
+  </body>
+ </html>
