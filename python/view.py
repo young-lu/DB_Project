@@ -167,6 +167,20 @@ def find_match():
 
     return render_template('match.html',matches=matches)
 
+
+@app.route('/match', methods=['POST'])
+def make_match():
+    user = load_current_user()
+    myssn = user['ssn']
+    matchssn = request.form['match']
+    print('MAKE_MATCH() {0}'.format(request.form['date']))
+
+    ID = int(db.get_largest_matchID()) + 1
+    if (db.insert_new_match(myssn, matchssn, ID)) :
+        return render_template('home.html', interests=db.get_interests(), user=user,none_message="\n\n added to match!")
+    return render_template('home.html', interests=db.get_interests(), user=user)
+
+
 # @app.route('/resources/<path:path>')
 # def send_resources(path):
 #     return send_from_directory('resources', path)

@@ -57,7 +57,9 @@
 <!--past  dates  -->
   <!-- <section> 
     <form action="insert" method="POST"> 
-      
+      {% for each in user %}
+        {{ each }}: {{ user[each] }}<br>
+      {% endfor %}
     </form>
   </section> -->
 

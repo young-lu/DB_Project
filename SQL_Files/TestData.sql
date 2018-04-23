@@ -36,3 +36,50 @@ INSERT INTO Users (username, password, role) VALUES ('jd3', '123', 'Customer');
 INSERT INTO Users (username, password, role) VALUES ('jr1', '123', 'Customer');
 INSERT INTO Users (username, password, role) VALUES ('jr2', '123', 'Customer');
 INSERT INTO Users (username, password, role) VALUES ('jr3', '123', 'Customer');
+
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+						children_count, married_prev, account_opened ) 
+                	VALUES ('1','John','Doe', 'jd1', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+						children_count, married_prev, account_opened ) 
+                	VALUES ('2','John','Doe', 'jd2', '1997-01-31', 'F','1234567891', '21', 'M', '1', 'N', '2018-04-23');
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+						children_count, married_prev, account_opened ) 
+                	VALUES ('3','John','Doe', 'jd3', '1997-01-31', 'F','1234567891', '21', 'M', '2', 'N', '2018-04-23');
+
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+						children_count, married_prev, account_opened ) 
+                	VALUES ('4','Jane','Doe', 'jr1', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'N', '2018-04-23');
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+						children_count, married_prev, account_opened ) 
+                	VALUES ('5','Jane','Doe', 'jr2', '1997-01-31', 'M','1234567891', '21', 'F', '1', 'N', '2018-04-23');
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+						children_count, married_prev, account_opened ) 
+                	VALUES ('6','Jane','Doe', 'jr3', '1997-01-31', 'M','1234567891', '21', 'F', '2', 'N', '2018-04-23');
+
+INSERT INTO Customer_Interests VALUES ('1', 'Jazz');
+INSERT INTO Customer_Interests VALUES ('1', 'Pop');
+INSERT INTO Customer_Interests VALUES ('1', 'Hip Hop');
+
+INSERT INTO Customer_Interests VALUES ('2', 'Jazz');
+INSERT INTO Customer_Interests VALUES ('2', 'Pop');
+INSERT INTO Customer_Interests VALUES ('2', 'Basketball');
+INSERT INTO Customer_Interests VALUES ('2', 'Curling');
+
+INSERT INTO Customer_Interests VALUES ('3', 'Basketball');
+INSERT INTO Customer_Interests VALUES ('3', 'Curling');
+INSERT INTO Customer_Interests VALUES ('3', 'Biathlon');
+
+INSERT INTO Customer_Interests VALUES ('4', 'Jazz');
+INSERT INTO Customer_Interests VALUES ('4', 'Pop');
+INSERT INTO Customer_Interests VALUES ('4', 'Hip Hop');
+
+INSERT INTO Customer_Interests VALUES ('5', 'Jazz');
+INSERT INTO Customer_Interests VALUES ('5', 'Pop');
+INSERT INTO Customer_Interests VALUES ('5', 'Basketball');
+INSERT INTO Customer_Interests VALUES ('5', 'Curling');
+
+INSERT INTO Customer_Interests VALUES ('6', 'Basketball');
+INSERT INTO Customer_Interests VALUES ('6', 'Curling');
+INSERT INTO Customer_Interests VALUES ('6', 'Biathlon');
+

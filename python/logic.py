@@ -99,7 +99,7 @@ class Database(object):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         interests = ", ".join('"' + interest + '"' for interest in interests)
         # sql = 'SELECT DISTINCT(c.ssn) FROM Customers c, Customer_Interests ci WHERE '
-        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE '
+        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE ssn != "{0}" AND'.format(ssn)
         if not married_prev :
             sql += " (married_prev = 'N' ) AND "
         sql += " (gender = '{0}') AND ".format(interested_in)
@@ -112,13 +112,12 @@ class Database(object):
 
         if not ssn_list:
             return 0
-        print("MATCHES: {0}".format(ssn_list))
         return ssn_list
 
     def find_exact_matches(self, ssn, interested_in, married_prev,max_kids,min_age,max_age,interests) :
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         interest_string = ", ".join('"' + interest + '"' for interest in interests)
-        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE '
+        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE ssn != "{0}" AND'.format(ssn)
         if not married_prev :
             sql += " (married_prev = 'N' ) AND "
         sql +=  "(gender = '{0}') AND ".format(interested_in)
@@ -130,7 +129,7 @@ class Database(object):
         ssn_list = cur.fetchall()
         if not ssn_list:
             return 0
-        print("EXACT MATCHES: {0}".format(sql))
+        # print("EXACT MATCHES: {0}".format(sql))
         return ssn_list
 
 
@@ -176,12 +175,30 @@ class Database(object):
         except: 
             return 0
 
+    def get_largest_matchID(self) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'SELECT MAX(matchID) FROM Matches'
+        try:
+            cur.execute(sql)
+            result = cur.fetchall()
+            # print('result = {0}'.format(result[0]))
+            return result[0]['matchID']
+        except:
+            return 0
             
 
-        # if username == 'sean' and password == 'test':
-        #     return {'user_id': 1, 'username': 'sean'}
-        # else:
-        #     return None
+    def insert_new_match(self, ssn1, ssn2, matchID) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql1 = 'INSERT INTO Matches VALUES ("{0}","{1}")'.format(matchID,ssn1)
+        sql2 = 'INSERT INTO Matches VALUES ("{0}","{1}")'.format(matchID,ssn2)
+
+        try :
+            result = cur.execute(sql1)
+            result += cur.execute(sql2)
+            self.conn.commit()
+            return result
+        except:
+            return 0
 
     def getquery1(self, num, what_option):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
