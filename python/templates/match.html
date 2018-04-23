@@ -11,10 +11,11 @@
   			<h4>Matches</h4>
   			<p>
   				{% for match in matches %}
-  					<input type="radio" name="match" value="{{ match['ssn] }}">{{match['last_name']}},{{match['first_name']}}<br>
+  					<input type="radio" name="match" value="{{ match['ssn'] }}"> {{ match['last_name'] }} , {{ match['first_name'] }} [{{ match['username'] }} ]<br>
   				{% endfor %}
   			</p>
   		</form>
   	</section>
+    <a href= "/home">Go back.</a>
   </body>
  </html>

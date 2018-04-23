@@ -1,4 +1,3 @@
-
 DROP DATABASE IF EXISTS `dating_site_project`;
 CREATE DATABASE dating_site_project;
 USE dating_site_project;
@@ -21,10 +20,9 @@ CREATE TABLE Users # primary key is username
 		PRIMARY KEY (username)
 	);
 
-
 DROP TABLE IF EXISTS `Customers`;
-CREATE TABLE Customers 
-	(
+CREATE TABLE Customers
+	(	
 		ssn VARCHAR(40) NOT NULL,
 		username VARCHAR(40) NOT NULL,
 		first_name VARCHAR(40) NOT NULL,
@@ -35,8 +33,8 @@ CREATE TABLE Customers
 		age INT NOT NULL,
 		gender CHAR NOT NULL,
 		children_count INT NOT NULL,
-		married_prev BOOLEAN NOT NULL,
-		criminal BOOLEAN NOT NULL,
+		married_prev CHAR NOT NULL DEFAULT 'N',
+		criminal INT(1),
 		account_opened DATE NOT NULL,
 		account_closed DATE NULL, # this is nullable (if it is open we dont have a val here)
 		status VARCHAR(16) NOT NULL DEFAULT 'Open',
@@ -44,7 +42,10 @@ CREATE TABLE Customers
 		PRIMARY KEY (ssn),
 		check (children_count>=0),
 		check (gender = "M" or 	gender = "F"),
+		check (criminal = 0 or criminal = 1),
+		check (married_prev = 'Y' OR married_prev = 'N')
 	);
+
 CREATE TABLE Customers_Children
 	(
 		ssn VARCHAR(40) NOT NULL,
@@ -147,34 +148,27 @@ CREATE TABLE DateSuccess(
 	review VARCHAR(40) NOT NULL,
 	PRIMARY KEY (matchID,ssn),
 	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
-	FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE
+	FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE 
 );
--- We need a trigger to charge people for certain dates… so maybe there should be another table for keeping track of each person’s number of dates with eachother/ individually?
 
-
--- triggers are written below. we have three:
-	-- one trigger works to add the charges when necessary if there are 3 dates
-	-- the other adds necessary triggers if there are 7 dates
-	-- the other automatically closes the profile of one who has a criminal record
------------ TRIGGERS -------------
-
-
--- If a client's criminal status is criminal then 
-	-- we have to close the account 
-	-- but still keep it for our records
 DELIMITER //
 
-CREATE TRIGGER update_criminal_status
-AFTER INSERT ON Customer_Crimes FOR EACH ROW
+CREATE TRIGGER update_criminal_status AFTER INSERT ON Customer_Crimes FOR EACH ROW
 BEGIN
 	UPDATE Customers
-	SET account_closed= GETDATE()
-	AND status = 'Closed'
-	WHERE NEW.criminal= True
-	AND NEW.ssn= ssn;
+	SET account_closed= NOW() AND status = 'Criminal_losed'
+	WHERE ssn= new.ssn;
 END; //
 
 DELIMITER ;
+
+
+
+
+
+
+
+
 
 
 -- If a client goes for a 3rd DIFFERENT!! date, 
@@ -182,39 +176,47 @@ DELIMITER ;
 	-- has to be charged the match fee
 		-- also update the database to reflect the balance due for that person.
 
-DELIMITER //
+-- DELIMITER //
 
-CREATE TRIGGER update_match_fee
-AFTER INSERT ON Dates FOR EACH ROW
-BEGIN
-	ssn1= (SELECT ssn
-			FROM Matches
-			LIMIT=1);
-	ssn2= (SELECT ssn 
-			FROM Matches
-			WHERE matchID = NEW.matchID
-			AND ssn != ssn1);
-	IF ssn1 IN (SELECT m.ssn
-			FROM Matches m, Dates d 
-			WHERE d.matchID=m.matchID
-			AND d.ssn=m.ssn
-			GROUP BY m.ssn
-			HAVING count(DISTINCT(d.matchID))=3)
-	THEN 
-		INSERT INTO Match_Fees (100, GETDATE(), NULL, 'False', ssn1)
-	END IF;
+-- CREATE TRIGGER update_match_fee
+-- AFTER INSERT ON Dates FOR EACH ROW
+-- BEGIN
+-- 	ssn1= ( SELECT ssn
+-- 			FROM Matches
+-- 			LIMIT=1);
+-- 	ssn2= (SELECT ssn 
+-- 			FROM Matches
+-- 			WHERE matchID = NEW.matchID
+-- 			AND ssn != ssn1);
+-- 	IF ssn1 IN (SELECT m.ssn
+-- 			FROM Matches m, Dates d 
+-- 			WHERE d.matchID=m.matchID
+-- 			AND d.ssn=m.ssn
+-- 			GROUP BY m.ssn
+-- 			HAVING count(DISTINCT(d.matchID))=3)
+-- 	THEN 
+-- 		INSERT INTO Match_Fees (100, GETDATE(), NULL, 'False', ssn1)
+-- 	END IF;
 
-	IF ssn2 IN (SELECT d.ssn
-			FROM Matches m, Dates d 
-			WHERE d.matchID=m.matchID
-			AND d.ssn=m.ssn
-			GROUP BY m.ssn
-			HAVING count(DISTINCT(d.matchID))=3)
-	THEN
-		INSERT INTO Match_Fees (100, GETDATE(), NULL, 'False', ssn2)
-	END IF;
-END; //
-DELIMITER ;
+-- 	IF ssn2 IN (SELECT d.ssn
+-- 			FROM Matches m, Dates d 
+-- 			WHERE d.matchID=m.matchID
+-- 			AND d.ssn=m.ssn
+-- 			GROUP BY m.ssn
+-- 			HAVING count(DISTINCT(d.matchID))=3)
+-- 	THEN
+-- 		INSERT INTO Match_Fees (100, GETDATE(), NULL, 'False', ssn2)
+-- 	END IF;
+-- END; //
+-- DELIMITER ;
+
+
+
+
+
+
+
+
 
 
 -- If a client goes for a 7th DIFFERENT!! date, 
@@ -222,39 +224,48 @@ DELIMITER ;
 	-- that the person has to be charged the registration fee; 
 	-- also update the database to reflect the balance due for that person
 
-DELIMITER //
+-- DELIMITER //
 
-CREATE TRIGGER update_registration_fee
-AFTER INSERT ON Dates FOR EACH ROW
-BEGIN
-	ssn1= (SELECT ssn
-			FROM Matches
-			LIMIT=1);
-	ssn2= (SELECT ssn 
-			FROM Matches
-			WHERE matchID = NEW.matchID
-			AND ssn != ssn1);
-	IF ssn1 IN (SELECT m.ssn
-			FROM Matches m, Dates d 
-			WHERE d.matchID=m.matchID
-			AND d.ssn=m.ssn
-			GROUP BY m.ssn
-			HAVING count(DISTINCT(d.matchID))=3)
-	THEN 
-		INSERT INTO Registration_Fees (100, GETDATE(), NULL, 'False', ssn1)
-	END IF;
+-- CREATE TRIGGER update_registration_fee
+-- AFTER INSERT ON Dates FOR EACH ROW
+-- BEGIN
+-- 	ssn1= (SELECT ssn
+-- 			FROM Matches
+-- 			LIMIT=1);
+-- 	ssn2= (SELECT ssn 
+-- 			FROM Matches
+-- 			WHERE matchID = NEW.matchID
+-- 			AND ssn != ssn1);
+-- 	IF ssn1 IN (SELECT m.ssn
+-- 			FROM Matches m, Dates d 
+-- 			WHERE d.matchID=m.matchID
+-- 			AND d.ssn=m.ssn
+-- 			GROUP BY m.ssn
+-- 			HAVING count(DISTINCT(d.matchID))=3)
+-- 	THEN 
+-- 		INSERT INTO Registration_Fees (100, GETDATE(), NULL, 'False', ssn1) ;
+-- 	END IF;
 
-	IF ssn2 IN (SELECT d.ssn
-			FROM Matches m, Dates d 
-			WHERE d.matchID=m.matchID
-			AND d.ssn=m.ssn
-			GROUP BY m.ssn
-			HAVING count(DISTINCT(d.matchID))=3)
-	THEN
-		INSERT INTO Registration_Fees (100, GETDATE(), NULL, 'False', ssn2)
-	END IF;
-END; //
-DELIMITER ;
+-- 	IF ssn2 IN (SELECT d.ssn
+-- 			FROM Matches m, Dates d 
+-- 			WHERE d.matchID=m.matchID
+-- 			AND d.ssn=m.ssn
+-- 			GROUP BY m.ssn
+-- 			HAVING count(DISTINCT(d.matchID))=3)
+-- 	THEN
+-- 		INSERT INTO Registration_Fees (100, GETDATE(), NULL, 'False', ssn2) ;
+-- 	END IF ;
+-- END; //
+-- DELIMITER ;
+
+
+
+
+
+
+
+
+
 
 
 -- If a crime is inserted into Customer_Crimes, we need to add it to the list of crimes 
@@ -265,8 +276,9 @@ CREATE TRIGGER addCrime
 AFTER INSERT ON Customer_Crimes FOR EACH ROW
 BEGIN
 	IF NEW.crime NOT IN (SELECT crime FROM Crimes) THEN
-		INSERT INTO Crimes (NEW.crime)
+		INSERT INTO Crimes (crime) VALUES (NEW.crime) ;
 	END IF;
+
 END; //
 
-DELIMITER;
+DELIMITER ;

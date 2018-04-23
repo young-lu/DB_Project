@@ -147,9 +147,19 @@ def find_match():
     max_age = request.form['max_age']
     min_age = request.form['min_age']
     interests = request.form.getlist("interest")
-    matches = db.find_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests)
-    if not matches:
-        return render_template('home.html',interests=db.get_interests(), user=user,none_message="Sorry, you did not match with anyone!")
+    exact = request.form['exact']
+    if not exact:
+        ssn_list = db.find_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests)
+    elif exact:
+        ssn_list = db.find_exact_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests)
+
+    if not ssn_list:
+        return render_template('home.html',interests=db.get_interests(), user=user,none_message="\nSorry, you did not match with anyone!\n")
+
+    matches = []
+    for ssn in ssn_list:
+        matches.append(db.get_customer_by_ssn(ssn['ssn']))
+
     return render_template('match.html',matches=matches)
 
 # @app.route('/resources/<path:path>')
