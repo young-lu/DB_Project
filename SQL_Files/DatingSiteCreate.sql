@@ -90,12 +90,13 @@ CREATE TABLE Dates # primary key is the combination of date_number and matchID
 		date_number INT NOT NULL,
 		date_time TIME NOT NULL,
 		date_date DATE NOT NULL,
-		both_still_interested BOOLEAN NOT NULL,
-		happened BOOLEAN NOT NULL,
+		-- both_still_interested BOOLEAN NOT NULL,
+		happened CHAR(1) NOT NULL DEFAULT 'N',
 		location VARCHAR(40) NOT NULL,
 		matchID CHAR(10) NOT NULL,
 		FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE,
-		PRIMARY KEY (date_number, matchID)
+		PRIMARY KEY (date_number, matchID),
+		check (happened = 'Y' or happened = 'N')
 	);
 
 

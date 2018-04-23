@@ -37,6 +37,10 @@ INSERT INTO Users (username, password, role) VALUES ('jr1', '123', 'Customer');
 INSERT INTO Users (username, password, role) VALUES ('jr2', '123', 'Customer');
 INSERT INTO Users (username, password, role) VALUES ('jr3', '123', 'Customer');
 
+-- INSERT INTO Users (username, password, role) VALUES ('aharp420', '420', 'Customer')
+-- INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, children_count, married_prev, account_opened ) 
+--                 	VALUES ('69','Alex','Harp', 'aharp420', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
+
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
                 	VALUES ('1','John','Doe', 'jd1', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');

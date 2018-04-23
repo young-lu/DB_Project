@@ -131,6 +131,22 @@ def post_query1():
 def get_home():
     user = load_current_user()
     interests = db.get_interests()
+    myssn = user['ssn']
+    my_matchIDs = []
+    my_matches = []
+
+    for each in (db.get_matches_by_ssn(myssn)):
+        my_matchIDs.append(each['matchID'])
+
+    for each in my_matchIDs :
+        match_list = db.get_customers_by_id(each)
+        for each in match_list:
+            my_matches.append(each['ssn'])
+
+
+    # for each in (db.get_matches_by_ssn(myssn)):
+    #     db.get_customers_by_id(each['matchID'])
+
 
     if not user:
         return redirect('/login')
@@ -173,12 +189,29 @@ def make_match():
     user = load_current_user()
     myssn = user['ssn']
     matchssn = request.form['match']
-    print('MAKE_MATCH() {0}'.format(request.form['date']))
-
+    # print('MAKE_MATCH() {0}'.format(request.form['date']))
+    # print('MAKE_MATCH() {0}'.format(request.form['time']))
+    date = request.form['date']
+    time = request.form['time']
+    location = request.form['location']
     ID = int(db.get_largest_matchID()) + 1
-    if (db.insert_new_match(myssn, matchssn, ID)) :
-        return render_template('home.html', interests=db.get_interests(), user=user,none_message="\n\n added to match!")
-    return render_template('home.html', interests=db.get_interests(), user=user)
+    my_matchIDs = []
+    my_matches = []
+
+    for each in (db.get_matches_by_ssn(myssn)):
+        my_matchIDs.append(each['matchID'])
+
+    for each in my_matchIDs :
+        match_list = db.get_customers_by_match_id(each)
+        for each in match_list:
+            my_matches.append(each['ssn'])
+
+    if matchssn in my_matches :
+        return render_template('home.html', interests=db.get_interests(), user=user, none_message="you are already matched with that user!\n\n")
+    elif (db.insert_new_match(myssn, matchssn, ID)) :
+        if db.insert_new_date(time, date, location, ID) :
+            return render_template('home.html', interests=db.get_interests(), user=user,none_message="match made with {0}!\n".format(db.get_customer_by_ssn(matchssn)['first_name']))
+    return render_template('home.html', interests=db.get_interests(), user=user, none_message="ERROR: problem adding match\n\n")
 
 
 # @app.route('/resources/<path:path>')
