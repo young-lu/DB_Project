@@ -99,7 +99,7 @@ class Database(object):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         interests = ", ".join('"' + interest + '"' for interest in interests)
         # sql = 'SELECT DISTINCT(c.ssn) FROM Customers c, Customer_Interests ci WHERE '
-        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE '
+        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE ssn != "{0}" AND'.format(ssn)
         if not married_prev :
             sql += " (married_prev = 'N' ) AND "
         sql += " (gender = '{0}') AND ".format(interested_in)
@@ -112,13 +112,12 @@ class Database(object):
 
         if not ssn_list:
             return 0
-        print("MATCHES: {0}".format(ssn_list))
         return ssn_list
 
     def find_exact_matches(self, ssn, interested_in, married_prev,max_kids,min_age,max_age,interests) :
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         interest_string = ", ".join('"' + interest + '"' for interest in interests)
-        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE '
+        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE ssn != "{0}" AND'.format(ssn)
         if not married_prev :
             sql += " (married_prev = 'N' ) AND "
         sql +=  "(gender = '{0}') AND ".format(interested_in)
@@ -130,7 +129,7 @@ class Database(object):
         ssn_list = cur.fetchall()
         if not ssn_list:
             return 0
-        print("EXACT MATCHES: {0}".format(sql))
+        # print("EXACT MATCHES: {0}".format(sql))
         return ssn_list
 
 
@@ -150,6 +149,41 @@ class Database(object):
             return result[0]
         except:
             return 0
+
+    def get_matches_by_ssn(self, ssn) :
+        """ return ssn's of matches of ssn """
+        try :
+            cur = self.conn.cursor(pymysql.cursors.DictCursor)
+            sql = 'SELECT distinct(matchID) FROM Matches WHERE ssn= "{0}"'.format(ssn)
+            cur.execute(sql)
+            result = cur.fetchall()
+            return result
+
+        except:
+            print('ERROR: get_matches_by_ssn()')
+            return 0
+
+    def get_customers_by_match_id(self, matchID) :
+        
+        try :
+            cur = self.conn.cursor(pymysql.cursors.DictCursor)
+            sql = 'SELECT DISTINCT(ssn) FROM Matches WHERE matchID= "{0}"'.format(matchID)
+            cur.execute(sql)
+            result = cur.fetchall()
+            return result
+        except :
+            print('ERROR get_customers_by_id()')
+            return 0
+
+
+    def get_match_id(self, ssn1, ssn2) :
+        """ return match_ID for match between ssn1 and ssn2 """
+
+
+# CAN YOU MATCH WITH THE SAME PERSON TWICE?
+    # def is_match(self, ssn1, ssn2) :
+    #     cur = self.conn.cursor(pymysql.cursors.DictCursor)
+    #     cur.execute('SELECT count(*) FROM Matches WHERE ssn = "{0}"  ssn= "{1}" ')
 
     def get_user_by_name(self, username):
         # TODO: implement this in DB
@@ -176,12 +210,55 @@ class Database(object):
         except: 
             return 0
 
-            
+    def get_largest_matchID(self) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'SELECT MAX(matchID) FROM Matches'
+        try:
+            cur.execute(sql)
+            result = cur.fetchall()
+            result = result[0]['MAX(matchID)']
+        except:
+            print('error getting largest matchID')
+            result = 0
 
-        # if username == 'sean' and password == 'test':
-        #     return {'user_id': 1, 'username': 'sean'}
-        # else:
-        #     return None
+        if not result :
+            return 0
+        else:
+            return result
+
+    def insert_new_match(self, ssn1, ssn2, matchID) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql1 = 'INSERT INTO Matches (matchID, ssn) VALUES ("{0}","{1}")'.format(matchID,ssn1)
+        sql2 = 'INSERT INTO Matches (matchID, ssn) VALUES ("{0}","{1}")'.format(matchID,ssn2)
+        # print('INSERT MATCH SQL1: {0}'.format(sql1))
+        # print('INSERT MATCH SQL2: {0}'.format(sql2))
+
+        try :
+            result = cur.execute(sql1)
+            result += cur.execute(sql2)
+            self.conn.commit()
+            return result
+        except:
+            print('ERROR INSERTING MATCH')
+            return 0
+
+    def insert_new_date(self, date_time, date_date, location, matchID) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+
+        sql = 'SELECT MAX(date_number) FROM Dates WHERE matchID = "{0}"'.format(matchID)
+        cur.execute(sql)
+        # print(cur.fetchall()[0]['MAX(date_number)'])
+        try :
+            date_num = int(cur.fetchall()[0]['MAX(date_number)']) + 1
+        except:
+            date_num = 1
+
+        sql = 'INSERT INTO Dates (date_number, date_time, date_date, location, matchID) \
+                VALUES ("{0}", "{1}", "{2}", "{3}", "{4}")'.format(date_num,date_time,date_date,location, matchID)
+        # print(sql)
+        result = cur.execute(sql)
+        self.conn.commit()
+        return result
 
     def getquery1(self, num, what_option):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
