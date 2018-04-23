@@ -147,8 +147,13 @@ def find_match():
     max_age = request.form['max_age']
     min_age = request.form['min_age']
     interests = request.form.getlist("interest")
-    exact = request.form['exact']
+    try:
+        exact = request.form['exact']
+    except:
+        exact = 0
+
     if not exact:
+        print('not exact')
         ssn_list = db.find_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests)
     elif exact:
         ssn_list = db.find_exact_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests)

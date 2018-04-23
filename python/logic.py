@@ -101,9 +101,8 @@ class Database(object):
         # sql = 'SELECT DISTINCT(c.ssn) FROM Customers c, Customer_Interests ci WHERE '
         sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE '
         if not married_prev :
-            print("MARRIED PREV: {0}".format(married_prev))
             sql += " (married_prev = 'N' ) AND "
-        sql +=  "(gender = '{0}'') AND ".format(interested_in)
+        sql += " (gender = '{0}') AND ".format(interested_in)
         sql += " (children_count <= {0}) AND ".format(max_kids)
         sql += " (age >= {0} AND age <= {1}) AND ".format(min_age,max_age)
         sql += " (interest IN ({0}))".format(interests)
@@ -131,7 +130,7 @@ class Database(object):
         ssn_list = cur.fetchall()
         if not ssn_list:
             return 0
-        print(sql)
+        print("EXACT MATCHES: {0}".format(sql))
         return ssn_list
 
 
