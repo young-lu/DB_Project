@@ -156,18 +156,15 @@ def get_home():
     my_matchIDs = []
     my_matches = []
     my_dates = db.get_dates(myssn)
-    # print(my_dates)
 
     for each in (db.get_matches_by_ssn(myssn)) : #finish this
         my_matchIDs.append(each['ssn'])
 
-    print(my_matchIDs)
+    # print(my_matchIDs)
     # for each in my_matchIDs :
     #     match_list = db.get_customers_by_match_id(each)
     #     for each in match_list:
     #         my_matches.append(each['ssn'])
-
-    # for each in my_matchIDs :
 
     if not user:
         return redirect('/login')
@@ -185,7 +182,6 @@ def find_match():
     min_age = request.form['min_age']
     interests = request.form.getlist("interest")
     my_dates = db.get_dates(ssn)
-
 
     try:
         exact = request.form['exact']
@@ -212,8 +208,6 @@ def make_match():
     user = load_current_user()
     myssn = user['ssn']
     matchssn = request.form['match']
-    # print('MAKE_MATCH() {0}'.format(request.form['date']))
-    # print('MAKE_MATCH() {0}'.format(request.form['time']))
     date = request.form['date']
     time = request.form['time']
     location = request.form['location']
@@ -221,17 +215,13 @@ def make_match():
     my_dates = db.get_dates(myssn)
     my_matches=[]
 
-    for each in (db.get_matches_by_ssn(myssn)):
-        printe(each['ssn'])
-
-    # print(db.get_match_id(myssn,matchssn))
-
     if matchssn in my_matches :
         return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user, none_message="you are already matched with that user!\n\n")
-        # if db.insert_new_date(time, date, location, db.get
+        # if db.insert_new_date(time, date, location, db.get/
     elif (db.insert_new_match(myssn, matchssn, ID)) :
         if db.insert_new_date(time, date, location, ID) :
-            return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user,none_message="match made with {0}!\n".format(db.get_customer_by_ssn(matchssn)['first_name']))
+            # return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user,none_message="match made with {0}!\n".format(db.get_customer_by_ssn(matchssn)['first_name']))
+            return redirect('/home')
     return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user, none_message="ERROR: problem adding match\n\n")
 
 @app.route('/dates', methods=['POST'])
@@ -239,7 +229,33 @@ def manage_dates() :
     user = load_current_user()
     my_dates = db.get_dates(user['ssn'])
 
+
     return render_template('dates.html', dates=db.get_dates(user['ssn']), user= user )
+
+@app.route('/dates', methods=['GET'])
+def get_dates_page() :
+    user = load_current_user()
+
+    if not user:
+        return redirect('/home')
+    return render_template('dates.html', dates=db.get_dates(user['ssn']), user= user )
+
+
+@app.route('/add_date', methods=['POST'])
+def add_date() :
+    user = load_current_user()
+
+    rematch = request.form['radio_date'].split(',')
+    rematchID  = rematch[0]
+    rematch_ssn = rematch[1]
+    date = request.form['date']
+    time = request.form['time']
+    location = request.form['location']
+
+    if db.insert_new_date(time, date, location, rematchID) :
+        return redirect('/dates')
+
+    return render_template('dates.html', dates=db.get_dates(user['ssn']), user= user, none_message='ERROR adding date' )
 
 @app.route('/review_date', methods=['POST'])
 def review_date():

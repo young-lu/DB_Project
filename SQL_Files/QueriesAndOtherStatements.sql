@@ -3,13 +3,6 @@
 -- use as our statements in other pages (this is just a place to store them)
 
 
-
--- insert statement for creating a new user (new user name + pswrd)
--- insert statement for creating a new customer
--- insert statement for creating a new interest + / category
-INSERT INTO Customer ()
-
-
 -- query for "Who are those who had [at least, at most, exactly] X number of date events?"
 SELECT c.*
 FROM Customers c, Dates d, Matches m

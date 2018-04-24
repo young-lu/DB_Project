@@ -60,7 +60,7 @@ class Database(object):
                         dob, interested_in, phone, age, gender, children_count, married_prev, today))
         self.conn.commit()
         return result
-
+        
     def insert_customer_interest(self, ssn, interest):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql = 'INSERT INTO Customer_Interests (ssn, interest) VALUES (%s, %s);'
@@ -159,7 +159,6 @@ class Database(object):
             cur.execute(sql)
             result = cur.fetchall()
             return result
-
         except:
             print('ERROR: get_matches_by_ssn()')
             return 0
@@ -247,6 +246,9 @@ class Database(object):
             cur.execute(sql)
             self.conn.commit()
 
+            print ('datesuccess_worked')
+            print('ID AND DATE NUM: {0} #{1}'.format(matchid, date_num))
+
             sql = 'UPDATE Dates SET happened="Y" WHERE matchID= "{0}" AND date_number= "{1}"'.format(matchid,date_num)
             result = cur.execute(sql)
             self.conn.commit()
@@ -259,8 +261,8 @@ class Database(object):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql1 = 'INSERT INTO Matches (matchID, ssn) VALUES ("{0}","{1}")'.format(matchID,ssn1)
         sql2 = 'INSERT INTO Matches (matchID, ssn) VALUES ("{0}","{1}")'.format(matchID,ssn2)
-        # print('INSERT MATCH SQL1: {0}'.format(sql1))
-        # print('INSERT MATCH SQL2: {0}'.format(sql2))
+        print('INSERT MATCH SQL1: {0}'.format(sql1))
+        print('INSERT MATCH SQL2: {0}'.format(sql2))
 
         try :
             result = cur.execute(sql1)
@@ -334,7 +336,6 @@ class Database(object):
                 gender_str= "females"
             result_str[counter]= "For " +gender + ", there are an average of "+ average +" date events. "
             counter+=1
-
         return result_str
         # for each gender, av number of dates
 
@@ -346,8 +347,8 @@ class Database(object):
         
 
     def getquery6(self):
-        # TO DO!!!!: CONNOR HELP HERE PLZ
-        return 0
+        hello=1
+        return hello
 
     def getquery7(self):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
@@ -374,3 +375,4 @@ class Database(object):
                     'GROUP BY married_prev ORDER BY count(*) DESC LIMIT 1')
         result=cur.fetchall()
         return result[0]
+

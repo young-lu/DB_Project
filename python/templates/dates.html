@@ -7,15 +7,16 @@
     {{ none_message }}
     <!-- find a match form -->
   <section>
+    <h4>Review Dates</h4>
     <form action="review_date" method="POST">
     {% for radio_date in dates %}
     {% if radio_date['happened'] == 'N' %}
     <p>
       <input type='radio' name="radio_date" id="{{ radio_date['matchID'] }}" value="{{ radio_date['matchID']}},{{ radio_date['date_number'] }}">
-      <label for="{{ radio_date['matchID'] }}">{{ radio_date['first_name'] }} {{ radio_date['last_name']}}, {{ radio_date['date_date'] }} @ {{ radio_date['date_time'] }}  // {{ radio_date['location'] }}</label><br>
+      <label for="{{ radio_date['matchID'] }}">{{ radio_date['first_name'] }} {{ radio_date['last_name']}}, {{ radio_date['date_date'] }} @ {{ radio_date['date_time'] }}  // {{ radio_date['location'] }}</label><br> </p>
       {% endif %}
       {% endfor %}
-      </p>
+
       <p>
         was the date a success?
         <select name= "review">
@@ -29,10 +30,30 @@
     </form>
   </section>
 
+  <section>
+    <h4>Reconnect!</h4>
+    <form action='add_date' method="POST">
+      {% for radio_date in dates %}
+        {% if radio_date['happened'] == 'Y' %}
+        <p>
+          <input type='radio' name="radio_date" id="{{ radio_date['matchID'] }}" value="{{ radio_date['matchID']}},{{ radio_date['date_number'] }}">
+          <label for="{{ radio_date['matchID'] }}">{{ radio_date['first_name'] }} {{ radio_date['last_name']}}, {{ radio_date['date_date'] }} @ {{ radio_date['date_time'] }}  // {{ radio_date['location'] }} </label><br>
+        </p>
+        {% endif %}
+      {% endfor %}
+      <p>
+          <input type="date" value="Schedule date" name="date"/> <br><!-- bug: date must be in the future-->
+          <input type="time" name="time"/><br> 
+          <input type="text" name="location" value="Location of date"/>
+          <input type="submit" value ="Ask on another date!"/>
+        </p>
+    </form>
+  </section>
+
 
     <p>
       Actions:
-      <a href="/logout">Logout</a>
+      <a href="/home">home.</a>
     </p>
   </body>
   <footer>
