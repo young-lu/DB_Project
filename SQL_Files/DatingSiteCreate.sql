@@ -12,7 +12,7 @@ CREATE TABLE Roles
 
 
 DROP TABLE IF EXISTS `Users`;
-CREATE TABLE Users # primary key is username
+CREATE TABLE Users -- primary key is username
 	(
 		username VARCHAR(40) NOT NULL,
 		password VARCHAR(40) NOT NULL,
@@ -30,21 +30,26 @@ CREATE TABLE Customers
 		first_name VARCHAR(40) NOT NULL,
 		last_name VARCHAR(40) NOT NULL,
 		DOB DATE NOT NULL,
-		interested_in CHAR(1) NOT NULL, # can be M or F
+		interested_in CHAR(1) NOT NULL, -- can be M or F
 		phone CHAR(10) NOT NULL, 
 		age INT NOT NULL,
-		gender CHAR NOT NULL,
+		gender CHAR(1) NOT NULL,
 		children_count INT NOT NULL,
-		married_prev BOOLEAN NOT NULL,
-		criminal BOOLEAN NOT NULL,
+		married_prev CHAR(1) NOT NULL,
+		criminal CHAR(1) NOT NULL DEFAULT 'N',
 		account_opened DATE NOT NULL,
-		account_closed DATE NULL, # this is nullable (if it is open we dont have a val here)
+		account_closed DATE NULL, -- this is nullable (if it is open we dont have a val here)
 		status VARCHAR(16) NOT NULL DEFAULT 'Open',
-		FOREIGN KEY (username) REFERENCES Users (username) ON DELETE CASCADE,
+		FOREIGN KEY (username) REFERENCES Users (username),
 		PRIMARY KEY (ssn),
 		check (children_count>=0),
-		check (gender = "M" or 	gender = "F"),
+		check (gender = 'M' OR 	gender = 'F'),
+		check (married_prev = 'N' OR married_prev = 'Y'),
+		check (criminal = 'N' OR criminal = 'Y')
+
 	);
+
+DROP TABLE IF EXISTS `Customers_Children`;	
 CREATE TABLE Customers_Children
 	(
 		ssn VARCHAR(40) NOT NULL,
@@ -68,7 +73,7 @@ CREATE TABLE Customer_Interests # primary key is the combination of ssn and inte
 		ssn VARCHAR(40) NOT NULL,
 		interest VARCHAR(40) NOT NULL,
 		FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
-		FOREIGN KEY (interest) REFERENCES Interests (interest) ON DELETE CASCADE,
+		FOREIGN KEY (interest) REFERENCES Interests (interest),
 		PRIMARY KEY (ssn, interest)
 	);
 
@@ -112,7 +117,7 @@ CREATE TABLE Customer_Crimes #primary key is ssn
 	(
 		ssn VARCHAR(40) NOT NULL,
 		crime VARCHAR(40) NOT NULL,
-		date_recoreded DATE NOT NULL,
+		date_recorded DATE NOT NULL,
 		FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
 		PRIMARY KEY (ssn)
 	);
@@ -157,8 +162,6 @@ CREATE TABLE DateSuccess(
 	-- the other adds necessary triggers if there are 7 dates
 	-- the other automatically closes the profile of one who has a criminal record
 ----------- TRIGGERS -------------
-
-
 -- If a client's criminal status is criminal then 
 	-- we have to close the account 
 	-- but still keep it for our records
@@ -168,105 +171,44 @@ CREATE TRIGGER update_criminal_status
 AFTER INSERT ON Customer_Crimes FOR EACH ROW
 BEGIN
 	UPDATE Customers
-	SET account_closed= GETDATE()
-	AND status = 'Closed'
-	WHERE NEW.criminal= True
-	AND NEW.ssn= ssn;
+		SET account_closed= CURRENT_DATE
+		AND status = 'Closed'
+		WHERE ssn= NEW.ssn;
 END; //
-
-DELIMITER ;
-
 
 -- If a client goes for a 3rd DIFFERENT!! date, 
 	-- then a message should be shown on the screen to show that the person 
 	-- has to be charged the match fee
 		-- also update the database to reflect the balance due for that person.
 
-DELIMITER //
-
 CREATE TRIGGER update_match_fee
-AFTER INSERT ON Dates FOR EACH ROW
+AFTER INSERT ON Matches FOR EACH ROW
 BEGIN
-	ssn1= (SELECT ssn
-			FROM Matches
-			LIMIT=1);
-	ssn2= (SELECT ssn 
-			FROM Matches
-			WHERE matchID = NEW.matchID
-			AND ssn != ssn1);
-	IF ssn1 IN (SELECT m.ssn
-			FROM Matches m, Dates d 
-			WHERE d.matchID=m.matchID
-			AND d.ssn=m.ssn
-			GROUP BY m.ssn
-			HAVING count(DISTINCT(d.matchID))=3)
+	IF NEW.ssn IN (SELECT ssn
+			FROM Matches 
+			GROUP BY ssn
+			HAVING count(DISTINCT(matchID))=3)
 	THEN 
-		INSERT INTO Match_Fees (100, GETDATE(), NULL, 'False', ssn1)
-	END IF;
-
-	IF ssn2 IN (SELECT d.ssn
-			FROM Matches m, Dates d 
-			WHERE d.matchID=m.matchID
-			AND d.ssn=m.ssn
-			GROUP BY m.ssn
-			HAVING count(DISTINCT(d.matchID))=3)
-	THEN
-		INSERT INTO Match_Fees (100, GETDATE(), NULL, 'False', ssn2)
+		INSERT INTO Registration_Fees VALUES (100, CURRENT_DATE, NULL, 'F', ssn1);
 	END IF;
 END; //
-DELIMITER ;
-
 
 -- If a client goes for a 7th DIFFERENT!! date, 
 	-- then a message shown on the screen to show 
 	-- that the person has to be charged the registration fee; 
 	-- also update the database to reflect the balance due for that person
 
-DELIMITER //
-
 CREATE TRIGGER update_registration_fee
-AFTER INSERT ON Dates FOR EACH ROW
+AFTER INSERT ON Matches FOR EACH ROW
 BEGIN
-	ssn1= (SELECT ssn
-			FROM Matches
-			LIMIT=1);
-	ssn2= (SELECT ssn 
-			FROM Matches
-			WHERE matchID = NEW.matchID
-			AND ssn != ssn1);
-	IF ssn1 IN (SELECT m.ssn
-			FROM Matches m, Dates d 
-			WHERE d.matchID=m.matchID
-			AND d.ssn=m.ssn
-			GROUP BY m.ssn
-			HAVING count(DISTINCT(d.matchID))=3)
+	IF NEW.ssn IN (SELECT ssn
+			FROM Matches 
+			GROUP BY ssn
+			HAVING count(DISTINCT(matchID))=3)
 	THEN 
-		INSERT INTO Registration_Fees (100, GETDATE(), NULL, 'False', ssn1)
-	END IF;
-
-	IF ssn2 IN (SELECT d.ssn
-			FROM Matches m, Dates d 
-			WHERE d.matchID=m.matchID
-			AND d.ssn=m.ssn
-			GROUP BY m.ssn
-			HAVING count(DISTINCT(d.matchID))=3)
-	THEN
-		INSERT INTO Registration_Fees (100, GETDATE(), NULL, 'False', ssn2)
+		INSERT INTO Registration_Fees VALUES (100, CURRENT_DATE, NULL, 'False', ssn1);
 	END IF;
 END; //
 DELIMITER ;
 
 
--- If a crime is inserted into Customer_Crimes, we need to add it to the list of crimes 
-	-- IF its not already there
-DELIMITER //
-
-CREATE TRIGGER addCrime
-AFTER INSERT ON Customer_Crimes FOR EACH ROW
-BEGIN
-	IF NEW.crime NOT IN (SELECT crime FROM Crimes) THEN
-		INSERT INTO Crimes (NEW.crime)
-	END IF;
-END; //
-
-DELIMITER;

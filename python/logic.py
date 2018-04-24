@@ -71,7 +71,7 @@ class Database(object):
                         dob, interested_in, phone, age, gender, children_count, married_prev, today))
         self.conn.commit()
         return result
-
+        
     def insert_customer_interest(self, ssn, interest):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql = 'INSERT INTO Customer_Interests (ssn, interest) VALUES (%s, %s);'
@@ -196,13 +196,13 @@ class Database(object):
         result=cur.fetchall()
 
         counter=0
-        for count(*), gender in result:
+        for count, gender in result:
             if(gender== "M"):
                 gender_str= "males"
             else:
                 gender_str= "females"
-            result_str[counter]= "For " +gender + ", there are "+ count(*) +" people registered. "
-            counter++
+            result_str[counter]= "For " +gender + ", there are "+ count +" people registered. "
+            counter=counter+1
 
         return result_str
 
@@ -213,13 +213,13 @@ class Database(object):
         result=cur.fetchall()
 
         counter=0
-        for avg(*), gender in result:
+        for avg, gender in result:
             if(gender== "M"):
                 gender_str= "males"
             else:
                 gender_str= "females"
-            result_str[counter]= "For " +gender + ", there are an average of "+ avg(*) +" date events. "
-            counter++
+            result_str[counter]= "For " +gender + ", there are an average of "+ avg +" date events. "
+            counter=counter+1
 
         return result_str
         # for each gender, av number of dates
@@ -231,7 +231,8 @@ class Database(object):
         return result[0]
         
     def getquery6(self):
-        # TO DO!!!!: CONNOR HELP HERE PLZ
+        hello=1
+        return hello
 
     def getquery7(self):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
@@ -258,3 +259,4 @@ class Database(object):
                     'GROUP BY married_prev ORDER BY count(*) DESC LIMIT 1')
         result=cur.fetchall()
         return result[0]
+
