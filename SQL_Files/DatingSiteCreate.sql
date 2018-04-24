@@ -36,7 +36,7 @@ CREATE TABLE Customers
 		married_prev CHAR(1) NOT NULL,
 		criminal CHAR(1) NOT NULL DEFAULT 'N',
 		account_opened DATE NOT NULL,
-		account_closed DATE NULL, -- this is nullable (if it is open we don't have a val here)
+		account_closed DATE NULL, 
 		status VARCHAR(16) NOT NULL DEFAULT 'Open',
 		FOREIGN KEY (username) REFERENCES Users (username),
 		PRIMARY KEY (ssn),
@@ -129,10 +129,11 @@ CREATE TABLE Match_Fees( # the match fee occurs after user goes for a 3rd differ
 	amount DECIMAL(5,2) NOT NULL,
 	date_charged DATE NOT NULL,
 	date_paid DATE NULL, 
-	paid BOOLEAN NOT NULL DEFAULT FALSE,
+	paid CHAR(1) NOT NULL DEFAULT FALSE,
 	ssn VARCHAR(40) NOT NULL,
-	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
-	PRIMARY KEY (ssn)
+	FOREIGN KEY (ssn) REFERENCES Matches (ssn) ON DELETE CASCADE,
+	PRIMARY KEY (ssn),
+	check (paid = 'F' or paid = 'Y')
 );
 
 DROP TABLE IF EXISTS `Registration_Fees`;
@@ -140,10 +141,11 @@ CREATE TABLE Registration_Fees( # the registratuon fee occurs after user goes fo
 	amount DECIMAL(5,2) NOT NULL,
 	date_charged DATE NOT NULL,
 	date_paid DATE NULL, 
-	paid BOOLEAN NOT NULL DEFAULT FALSE,
+	paid CHAR(1) NOT NULL DEFAULT FALSE,
 	ssn VARCHAR(40) NOT NULL,
-	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
-	PRIMARY KEY (ssn)
+	FOREIGN KEY (ssn) REFERENCES Matches (ssn) ON DELETE CASCADE,
+	PRIMARY KEY (ssn),
+	check (paid = 'F' or paid = 'Y')
 );
 
 DROP TABLE IF EXISTS `DateSuccess`;
@@ -164,7 +166,7 @@ CREATE TABLE DateSuccess(
 	-- one trigger works to add the charges when necessary if there are 3 dates
 	-- the other adds necessary triggers if there are 7 dates
 	-- the other automatically closes the profile of one who has a criminal record
------------ TRIGGERS -------------
+-- --------- TRIGGERS -------------
 -- If a client's criminal status is criminal then 
 	-- we have to close the account 
 	-- but still keep it for our records
@@ -191,9 +193,9 @@ BEGIN
 			GROUP BY ssn
 			HAVING count(DISTINCT(matchID))=3)
 	THEN 
-		INSERT INTO Registration_Fees VALUES (100, CURRENT_DATE, NULL, 'F', ssn1);
+		INSERT INTO Match_Fees (amount,date_charged,date_paid,paid, ssn) VALUES (100, CURRENT_DATE, NULL, 'F', new.ssn);
 	END IF;
-END; //
+END; //	
 
 -- If a client goes for a 7th DIFFERENT!! date, 
 	-- then a message shown on the screen to show 
@@ -207,7 +209,7 @@ BEGIN
 			GROUP BY ssn
 			HAVING count(DISTINCT(matchID))=3)
 	THEN 
-		INSERT INTO Registration_Fees VALUES (100, CURRENT_DATE, NULL, 'False', ssn1);
+		INSERT INTO Registration_Fees VALUES (100, CURRENT_DATE, NULL, 'F', new.ssn);
 	END IF;
 END; //
 
