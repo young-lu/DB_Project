@@ -60,7 +60,7 @@ class Database(object):
                         dob, interested_in, phone, age, gender, children_count, married_prev, today))
         self.conn.commit()
         return result
-
+        
     def insert_customer_interest(self, ssn, interest):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql = 'INSERT INTO Customer_Interests (ssn, interest) VALUES (%s, %s);'
@@ -305,7 +305,6 @@ class Database(object):
                 gender_str= "females"
             result_str[counter]= "For " +gender + ", there are an average of "+ average +" date events. "
             counter+=1
-
         return result_str
         # for each gender, av number of dates
 
@@ -317,8 +316,8 @@ class Database(object):
         
 
     def getquery6(self):
-        # TO DO!!!!: CONNOR HELP HERE PLZ
-        return 0
+        hello=1
+        return hello
 
     def getquery7(self):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
@@ -345,3 +344,4 @@ class Database(object):
                     'GROUP BY married_prev ORDER BY count(*) DESC LIMIT 1')
         result=cur.fetchall()
         return result[0]
+
