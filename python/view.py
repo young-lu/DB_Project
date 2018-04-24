@@ -227,8 +227,8 @@ def make_match():
     # print(db.get_match_id(myssn,matchssn))
 
     if matchssn in my_matches :
-        # return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user, none_message="you are already matched with that user!\n\n")
-        if db.insert_new_date(time, date, location, db.get)
+        return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user, none_message="you are already matched with that user!\n\n")
+        # if db.insert_new_date(time, date, location, db.get
     elif (db.insert_new_match(myssn, matchssn, ID)) :
         if db.insert_new_date(time, date, location, ID) :
             return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user,none_message="match made with {0}!\n".format(db.get_customer_by_ssn(matchssn)['first_name']))
