@@ -11,10 +11,17 @@
   			<h4>Matches</h4>
   			<p>
   				{% for match in matches %}
-  					<input type="radio" name="match" value="{{ match['ssn] }}">{{match['last_name']}},{{match['first_name']}}<br>
+  					<input type="radio" name="match" value="{{ match['ssn'] }}"> {{ match['last_name'] }}, {{ match['first_name'] }} [{{ match['username'] }} ]<br>
   				{% endfor %}
   			</p>
+        <p>
+          <input type="date" value="Schedule date" name="date"/> <br><!-- bug: date must be in the future-->
+          <input type="time" name="time"/><br> 
+          <input type="text" name="location" value="Location of date"/>
+          <input type="submit" value ="Ask on a date!"/>
+        </p>
   		</form>
   	</section>
+    <a href= "/home">Go back.</a>
   </body>
  </html>

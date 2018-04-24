@@ -45,17 +45,6 @@ class Database(object):
         """ account_closed must be added to the database later """
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
 
-        # ssn = self.ssn
-        # first_name= self.first_name
-        # last_name= self.last_name
-        # username= self.username
-        # dob= self.DOB
-        # interested_in= self.interested_in
-        # phone= self.phone
-        # gender= self.gender
-        # children_count= self.children_count
-        # married_prev= self.married_prev
-
         today = datetime.datetime.now().date()
         dob = str(DOB)
         yob = dob.split('-')[0]
@@ -106,34 +95,43 @@ class Database(object):
 
 
     def find_matches(self,ssn, interested_in, married_prev,max_kids,min_age,max_age,interests):
-        """Fetch a veuw from the database"""
+        """Fetch a view from the database"""
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         interests = ", ".join('"' + interest + '"' for interest in interests)
-        sql = 'SELECT DISTINCT(c.ssn) FROM Customers c, Customer_Interests ci WHERE '
-        print("MARRIED PREV".format(married_prev))
+        # sql = 'SELECT DISTINCT(c.ssn) FROM Customers c, Customer_Interests ci WHERE '
+        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE ssn != "{0}" AND'.format(ssn)
         if not married_prev :
-            sql += " (c.married_prev = 'N' ) AND "
-        sql +=  "c.gender = %s AND "
-        sql += " (c.children_count <= %s) AND "
-        sql += " c.age >= %s AND c.age <= %s AND "
-        sql += " ci.interest IN (%s)"
+            sql += " (married_prev = 'N' ) AND "
+        sql += " (gender = '{0}') AND ".format(interested_in)
+        sql += " (children_count <= {0}) AND ".format(max_kids)
+        sql += " (age >= {0} AND age <= {1}) AND ".format(min_age,max_age)
+        sql += " (interest IN ({0}))".format(interests)
 
-        cur.execute(sql,(interested_in ,max_kids, min_age,max_age, interests))
+        cur.execute(sql)
+        ssn_list = cur.fetchall()
+
+        if not ssn_list:
+            return 0
+        return ssn_list
+
+    def find_exact_matches(self, ssn, interested_in, married_prev,max_kids,min_age,max_age,interests) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        interest_string = ", ".join('"' + interest + '"' for interest in interests)
+        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE ssn != "{0}" AND'.format(ssn)
+        if not married_prev :
+            sql += " (married_prev = 'N' ) AND "
+        sql +=  "(gender = '{0}') AND ".format(interested_in)
+        sql += " (children_count <= {0}) AND ".format(max_kids)
+        sql += " (age >= {0} AND age <= {1}) AND".format(min_age,max_age)
+        sql += " (interest IN ({0})) GROUP BY ssn HAVING COUNT(*) = {1}".format(interest_string,len(interests))
+        # print(sql)
+        cur.execute(sql)
         ssn_list = cur.fetchall()
         if not ssn_list:
             return 0
+        # print("EXACT MATCHES: {0}".format(sql))
+        return ssn_list
 
-        sql = "SELECT * FROM Customers WHERE "
-
-        i=0
-        for ssn in ssn_list:
-            sql.append(" ssn= {0} ".format(ssn))
-            if(i<len(ssn_list - 1)):
-                sql.append(" OR ")
-            i+=1
-        cur.execute(sql)
-        result = cur.fetchall()
-        return result
 
     def get_interests(self):
         """Get comments for a venue"""
@@ -142,6 +140,50 @@ class Database(object):
         cur.execute('SELECT interest, category FROM Interests ORDER BY category;')
 
         return CursorIterator(cur)
+
+    def get_customer_by_ssn(self, ssn) :
+        try:
+            cur = self.conn.cursor(pymysql.cursors.DictCursor)
+            cur.execute('SELECT * FROM Customers WHERE (ssn = "{0}")'.format(ssn))
+            result=cur.fetchall()
+            return result[0]
+        except:
+            return 0
+
+    def get_matches_by_ssn(self, ssn) :
+        """ return ssn's of matches of ssn """
+        try :
+            cur = self.conn.cursor(pymysql.cursors.DictCursor)
+            sql = 'SELECT distinct(matchID) FROM Matches WHERE ssn= "{0}"'.format(ssn)
+            cur.execute(sql)
+            result = cur.fetchall()
+            return result
+
+        except:
+            print('ERROR: get_matches_by_ssn()')
+            return 0
+
+    def get_customers_by_match_id(self, matchID) :
+        
+        try :
+            cur = self.conn.cursor(pymysql.cursors.DictCursor)
+            sql = 'SELECT DISTINCT(ssn) FROM Matches WHERE matchID= "{0}"'.format(matchID)
+            cur.execute(sql)
+            result = cur.fetchall()
+            return result
+        except :
+            print('ERROR get_customers_by_id()')
+            return 0
+
+
+    def get_match_id(self, ssn1, ssn2) :
+        """ return match_ID for match between ssn1 and ssn2 """
+
+
+# CAN YOU MATCH WITH THE SAME PERSON TWICE?
+    # def is_match(self, ssn1, ssn2) :
+    #     cur = self.conn.cursor(pymysql.cursors.DictCursor)
+    #     cur.execute('SELECT count(*) FROM Matches WHERE ssn = "{0}"  ssn= "{1}" ')
 
     def get_user_by_name(self, username):
         # TODO: implement this in DB
@@ -168,12 +210,55 @@ class Database(object):
         except: 
             return 0
 
-            
+    def get_largest_matchID(self) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'SELECT MAX(matchID) FROM Matches'
+        try:
+            cur.execute(sql)
+            result = cur.fetchall()
+            result = result[0]['MAX(matchID)']
+        except:
+            print('error getting largest matchID')
+            result = 0
 
-        # if username == 'sean' and password == 'test':
-        #     return {'user_id': 1, 'username': 'sean'}
-        # else:
-        #     return None
+        if not result :
+            return 0
+        else:
+            return result
+
+    def insert_new_match(self, ssn1, ssn2, matchID) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql1 = 'INSERT INTO Matches (matchID, ssn) VALUES ("{0}","{1}")'.format(matchID,ssn1)
+        sql2 = 'INSERT INTO Matches (matchID, ssn) VALUES ("{0}","{1}")'.format(matchID,ssn2)
+        # print('INSERT MATCH SQL1: {0}'.format(sql1))
+        # print('INSERT MATCH SQL2: {0}'.format(sql2))
+
+        try :
+            result = cur.execute(sql1)
+            result += cur.execute(sql2)
+            self.conn.commit()
+            return result
+        except:
+            print('ERROR INSERTING MATCH')
+            return 0
+
+    def insert_new_date(self, date_time, date_date, location, matchID) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+
+        sql = 'SELECT MAX(date_number) FROM Dates WHERE matchID = "{0}"'.format(matchID)
+        cur.execute(sql)
+        # print(cur.fetchall()[0]['MAX(date_number)'])
+        try :
+            date_num = int(cur.fetchall()[0]['MAX(date_number)']) + 1
+        except:
+            date_num = 1
+
+        sql = 'INSERT INTO Dates (date_number, date_time, date_date, location, matchID) \
+                VALUES ("{0}", "{1}", "{2}", "{3}", "{4}")'.format(date_num,date_time,date_date,location, matchID)
+        # print(sql)
+        result = cur.execute(sql)
+        self.conn.commit()
+        return result
 
     def getquery1(self, num, what_option):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
@@ -192,7 +277,7 @@ class Database(object):
 
     def getquery3(self):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        cur.execute('SELECT count(*), gender FROM Customers GROUP BY gender')
+        cur.execute('SELECT count(*) AS "count", gender FROM Customers GROUP BY gender')
         result=cur.fetchall()
 
         counter=0
@@ -202,25 +287,24 @@ class Database(object):
             else:
                 gender_str= "females"
             result_str[counter]= "For " +gender + ", there are "+ count +" people registered. "
-            counter=counter+1
+            counter+=1
 
         return result_str
 
     def getquery4(self):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        cur.execute('SELECT avg(*), gender FROM Customers c, Dates d, Matches m ' +
+        cur.execute('SELECT avg(*) AS "average" , gender FROM Customers c, Dates d, Matches m ' +
                     'WHERE d.matchID = m.matchID AND m.ssn= c.ssn GROUP BY c.gender')
         result=cur.fetchall()
 
         counter=0
-        for avg, gender in result:
+        for average, gender in result:
             if(gender== "M"):
                 gender_str= "males"
             else:
                 gender_str= "females"
-            result_str[counter]= "For " +gender + ", there are an average of "+ avg +" date events. "
-            counter=counter+1
-
+            result_str[counter]= "For " +gender + ", there are an average of "+ average +" date events. "
+            counter+=1
         return result_str
         # for each gender, av number of dates
 
@@ -230,6 +314,7 @@ class Database(object):
         result=cur.fetchall()
         return result[0]
         
+
     def getquery6(self):
         hello=1
         return hello

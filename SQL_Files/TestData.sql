@@ -64,8 +64,8 @@ INSERT INTO Crimes (crime) VALUES ('Repeat Minor Offense');
 INSERT INTO Crimes (crime) VALUES ('Violent Offense');
 INSERT INTO Crimes (crime) VALUES ('Sexual Assault');
 INSERT INTO Crimes (crime) VALUES ('Murder');
-INSERT INTO Crimes (crime) VALUES ('Violent Offense');
 INSERT INTO Crimes (crime) VALUES ('Other Offense (Not Listed Here)');
+
 
 
 INSERT INTO Users (username, password, role) VALUES ('Special1', '0123', 'Specialist');
@@ -92,6 +92,10 @@ INSERT INTO Users (username, password, role) VALUES ('crim2', '123', 'Customer')
 
 
 -- CUSTOMERS W/ OUT KIDS ----
+-- INSERT INTO Users (username, password, role) VALUES ('aharp420', '420', 'Customer')
+-- INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, children_count, married_prev, account_opened ) 
+--                 	VALUES ('69','Alex','Harp', 'aharp420', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
+
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
                 	VALUES ('1','John','Doe', 'jd1', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
@@ -205,5 +209,3 @@ INSERT INTO Customer_Interests VALUES ('14', 'Biathlon');
 --- INSERT CRIMES IN FOR THE CRIMINALS ---
 INSERT INTO Customer_Crimes (ssn, crime, date_recorded) VALUES ('13', 'Minor Offense', '2018-04-23');
 INSERT INTO Customer_Crimes (ssn, crime, date_recorded) VALUES ('14', 'Minor Offense', '2018-04-23');
-
-

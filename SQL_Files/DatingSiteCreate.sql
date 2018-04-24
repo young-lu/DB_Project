@@ -1,4 +1,3 @@
-
 DROP DATABASE IF EXISTS `dating_site_project`;
 CREATE DATABASE dating_site_project;
 USE dating_site_project;
@@ -21,10 +20,9 @@ CREATE TABLE Users -- primary key is username
 		PRIMARY KEY (username)
 	);
 
-
 DROP TABLE IF EXISTS `Customers`;
-CREATE TABLE Customers 
-	(
+CREATE TABLE Customers
+	(	
 		ssn VARCHAR(40) NOT NULL,
 		username VARCHAR(40) NOT NULL,
 		first_name VARCHAR(40) NOT NULL,
@@ -38,7 +36,7 @@ CREATE TABLE Customers
 		married_prev CHAR(1) NOT NULL,
 		criminal CHAR(1) NOT NULL DEFAULT 'N',
 		account_opened DATE NOT NULL,
-		account_closed DATE NULL, -- this is nullable (if it is open we dont have a val here)
+		account_closed DATE NULL, -- this is nullable (if it is open we don't have a val here)
 		status VARCHAR(16) NOT NULL DEFAULT 'Open',
 		FOREIGN KEY (username) REFERENCES Users (username),
 		PRIMARY KEY (ssn),
@@ -48,14 +46,16 @@ CREATE TABLE Customers
 		check (criminal = 'N' OR criminal = 'Y')
 
 	);
+ 
 
 DROP TABLE IF EXISTS `Customers_Children`;	
 CREATE TABLE Customers_Children
 	(
 		ssn VARCHAR(40) NOT NULL,
-		which_child INT NOT NULL,
+		childID INT NOT NULL,
 		age INT NOT NULL,
-		PRIMARY KEY (ssn, which_child)
+		lives_with_them CHAR(1) NOT NULL,
+		PRIMARY KEY (ssn, childID)
 	);
 
 DROP TABLE IF EXISTS `Interests`;
@@ -94,12 +94,13 @@ CREATE TABLE Dates # primary key is the combination of date_number and matchID
 		date_number INT NOT NULL,
 		date_time TIME NOT NULL,
 		date_date DATE NOT NULL,
-		both_still_interested BOOLEAN NOT NULL,
-		happened BOOLEAN NOT NULL,
+		-- both_still_interested BOOLEAN NOT NULL,
+		happened CHAR(1) NOT NULL DEFAULT 'N',
 		location VARCHAR(40) NOT NULL,
 		matchID CHAR(10) NOT NULL,
 		FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE,
-		PRIMARY KEY (date_number, matchID)
+		PRIMARY KEY (date_number, matchID),
+		check (happened = 'Y' or happened = 'N')
 	);
 
 
@@ -152,8 +153,10 @@ CREATE TABLE DateSuccess(
 	review VARCHAR(40) NOT NULL,
 	PRIMARY KEY (matchID,ssn),
 	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
-	FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE
+	FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE 
 );
+
+    
 -- We need a trigger to charge people for certain dates… so maybe there should be another table for keeping track of each person’s number of dates with eachother/ individually?
 
 
@@ -167,7 +170,7 @@ CREATE TABLE DateSuccess(
 	-- but still keep it for our records
 DELIMITER //
 
-CREATE TRIGGER update_criminal_status
+CREATE TRIGGER update_criminal_status 
 AFTER INSERT ON Customer_Crimes FOR EACH ROW
 BEGIN
 	UPDATE Customers
@@ -175,7 +178,6 @@ BEGIN
 		AND status = 'Closed'
 		WHERE ssn= NEW.ssn;
 END; //
-
 -- If a client goes for a 3rd DIFFERENT!! date, 
 	-- then a message should be shown on the screen to show that the person 
 	-- has to be charged the match fee
@@ -197,7 +199,6 @@ END; //
 	-- then a message shown on the screen to show 
 	-- that the person has to be charged the registration fee; 
 	-- also update the database to reflect the balance due for that person
-
 CREATE TRIGGER update_registration_fee
 AFTER INSERT ON Matches FOR EACH ROW
 BEGIN
@@ -209,6 +210,15 @@ BEGIN
 		INSERT INTO Registration_Fees VALUES (100, CURRENT_DATE, NULL, 'False', ssn1);
 	END IF;
 END; //
+
+-- If a crime is inserted into Customer_Crimes, we need to add it to the list of crimes 
+	-- IF its not already there
+CREATE TRIGGER addCrime
+AFTER INSERT ON Customer_Crimes FOR EACH ROW
+BEGIN
+	IF NEW.crime NOT IN (SELECT crime FROM Crimes) THEN
+		INSERT INTO Crimes (crime) VALUES (NEW.crime) ;
+	END IF;
+
+END; //
 DELIMITER ;
-
-
