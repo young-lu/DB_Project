@@ -223,6 +223,19 @@ class Database(object):
         except: 
             return 0
 
+    def get_user_role(self, username):
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql1 = 'SELECT role FROM Users WHERE (username = %s)'
+        cur.execute(sql1, (username))
+        result = cur.fetchall()
+        invalid="This username was not in the DB."
+
+        try:
+            role = result[0]['role']
+            return role
+        except: 
+            return invalid
+
     def get_largest_matchID(self) :
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql = 'SELECT MAX(matchID) FROM Matches'
@@ -291,22 +304,39 @@ class Database(object):
         self.conn.commit()
         return result
 
-    def getquery1(self, num, what_option):
+    def getquery1(self, username, num, what_option):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         cur.execute('SELECT c.* FROM Customers c, Dates d, Matches m WHERE m.matchID= d.matchID'+
                         ' AND c.ssn= m.ssn'+
                         ' GROUP BY m.ssn'+
                         ' HAVING count(*) %s %n', what_option, num)
+        result= cur.fetchall()
+        counter=0
+        if get_user_role(username) == 'Entry-level':
+            counter=0
+            for ssn, username, first_name, last_name, DOB, interested_in, phone, age, gender, 
+            children_count, married_prev, criminal in result:
+                result_str[counter] = first_name +" " +last_name + " whose birthday is " + DOB + " is interested in " +interested_in+
+                ", is " + age + " years old " + ", and is of gender " + gender +"."
+            counter+= 1
+        else:
+            counter=0
+            for ssn, username, first_name, last_name, DOB, interested_in, phone, age, gender, 
+            children_count, married_prev, criminal in result:
+                result_str[counter] = first_name +" " +last_name + " whose birthday is " + DOB + " is interested in " +interested_in+
+                ", is " + age + " years old " + ", and is of gender " + gender +". Their ssn is " +ssn + " and their phone # is " + phone
+                counter+= 1
+        
         result=cur.fetchall()
-        return result[0]
+        return result_str
 
-    def getquery2(self):
+    def getquery2(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         cur.execute('SELECT count(*) FROM Customers WHERE married_prev = True')
         result=cur.fetchall()
         return result[0]
 
-    def getquery3(self):
+    def getquery3(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         cur.execute('SELECT count(*) AS "count", gender FROM Customers GROUP BY gender')
         result=cur.fetchall()
@@ -322,7 +352,7 @@ class Database(object):
 
         return result_str
 
-    def getquery4(self):
+    def getquery4(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         cur.execute('SELECT avg(*) AS "average" , gender FROM Customers c, Dates d, Matches m ' +
                     'WHERE d.matchID = m.matchID AND m.ssn= c.ssn GROUP BY c.gender')
@@ -339,40 +369,66 @@ class Database(object):
         return result_str
         # for each gender, av number of dates
 
-    def getquery5(self):
+    def getquery5(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         cur.execute('SELECT crime FROM Crimes')
         result=cur.fetchall()
-        return result[0]
-        
+        for crime in result:
+            if result_str=="":
+                result_str= crime
+            else:
+                result_str+= ", " + crime
+        result_return = "These are the crimes in the DB: "+ result_str
+        return result_return
 
-    def getquery6(self):
+    def getquery6(self, username):
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
         hello=1
         return hello
 
-    def getquery7(self):
+    def getquery7(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         cur.execute('SELECT avg(age) FROM Customers_Children')
         result=cur.fetchall()
-        return result[0]
+        result_str= "The average age of the customers' children in the DB is "+ result[0]
+        return result_str
 
-    def getquery8a(self):
+    def getquery8a(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         cur.execute('SELECT avg(count(m.matchID)) FROM Matches m, Customers c WHERE m.ssn= c.ssn '+
                     'AND c.children_count >0 GROUP BY m.ssn')
         result=cur.fetchall()
-        return result[0]
+        result_str= "There are on average " +result[0] + " match(es) for users who have one or more children."
+        return result_str
     
-    def getquery8b(self):
+    def getquery8b(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         cur.execute('SELECT count(*) FROM Dates')
         result=cur.fetchall()
-        return result[0]
+        result_str= "There have been "+result[0]+ " total dates for this dating site."
+        return result_str
 
-    def getquery8c(self):
+    def getquery8c(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
+
         cur.execute('SELECT married_prev FROM Customers WHERE gender="M" '+
                     'GROUP BY married_prev ORDER BY count(*) DESC LIMIT 1')
+
         result=cur.fetchall()
-        return result[0]
+        if(result[0]== "Y"):
+            mar_status= " previously married."
+        else:
+            mar_status= " not previously married."
+        result_str = "The most common marital status amongst men is " +mar_status
+
+        return result_str
+
+     # def getquery9(self, username):
+     #    cur = self.conn.cursor(pymysql.cursors.DictCursor)
+     #    cur.execute('SELECT count(*) FROM Dates')
+     #    result=cur.fetchall()
+     #    result_str= "There have been "+result[0]+ " total dates for this dating site."
+     #    return result_str
+
+
 
