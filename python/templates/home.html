@@ -55,13 +55,16 @@
   </section>
 
 <!--past  dates  -->
-  <!-- <section> 
-    <form action="insert" method="POST"> 
-      {% for each in user %}
-        {{ each }}: {{ user[each] }}<br>
+  <section> 
+    <form action="dates" method="POST"> 
+      {% for date in dates %}
+        {% if date['happened'] == 'N' %}
+        <br>{{ date['username'] }}    {{ date['last_name'] }}, {{ date['first_name'] }}:       {{ date['date_date'] }}<br>
+        {% endif %}
       {% endfor %}
+      <input type= "submit" value= "Date manager">
     </form>
-  </section> -->
+  </section>
 
 
 

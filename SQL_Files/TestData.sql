@@ -43,23 +43,23 @@ INSERT INTO Users (username, password, role) VALUES ('jr3', '123', 'Customer');
 
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
-                	VALUES ('1','John','Doe', 'jd1', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
+                	VALUES ('1','John1','Doe', 'jd1', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
-                	VALUES ('2','John','Doe', 'jd2', '1997-01-31', 'F','1234567891', '21', 'M', '1', 'N', '2018-04-23');
+                	VALUES ('2','John2','Doe', 'jd2', '1997-01-31', 'F','1234567891', '21', 'M', '1', 'N', '2018-04-23');
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
-                	VALUES ('3','John','Doe', 'jd3', '1997-01-31', 'F','1234567891', '21', 'M', '2', 'N', '2018-04-23');
+                	VALUES ('3','John3','Doe', 'jd3', '1997-01-31', 'F','1234567891', '21', 'M', '2', 'N', '2018-04-23');
 
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
-                	VALUES ('4','Jane','Doe', 'jr1', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'N', '2018-04-23');
+                	VALUES ('4','Jane1','Doe', 'jr1', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'N', '2018-04-23');
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
-                	VALUES ('5','Jane','Doe', 'jr2', '1997-01-31', 'M','1234567891', '21', 'F', '1', 'N', '2018-04-23');
+                	VALUES ('5','Jane2','Doe', 'jr2', '1997-01-31', 'M','1234567891', '21', 'F', '1', 'N', '2018-04-23');
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
-                	VALUES ('6','Jane','Doe', 'jr3', '1997-01-31', 'M','1234567891', '21', 'F', '2', 'N', '2018-04-23');
+                	VALUES ('6','Jane3','Doe', 'jr3', '1997-01-31', 'M','1234567891', '21', 'F', '2', 'N', '2018-04-23');
 
 INSERT INTO Customer_Interests VALUES ('1', 'Jazz');
 INSERT INTO Customer_Interests VALUES ('1', 'Pop');

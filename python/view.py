@@ -23,6 +23,27 @@ def load_current_user():
     if not userId: return None
     return db.get_user_by_name(userId)
 
+# def get_customer_dates(ssn) :
+#     userId = request.cookies.get('userID')
+#     if not userId: return None
+#     my_matchIDs = []
+#     my_dates = []
+
+#     for each in (db.get_matches_by_ssn(ssn)):
+#         my_matchIDs.append(each['matchID'])
+
+#     date_list = (db.get_dates(ssn, my_matchIDs))
+#     return date_list
+
+def get_date_names(dates) :
+    try:
+        names = []
+        for each in dates:
+            names.append((db.get_customer_by_ssn(each['ssn']))['first_name'])
+        return names
+    except: 
+        return 0
+
 @app.route('/', methods=['GET'])
 def index():
     """Get the main page"""
@@ -134,23 +155,23 @@ def get_home():
     myssn = user['ssn']
     my_matchIDs = []
     my_matches = []
+    my_dates = db.get_dates(myssn)
+    # print(my_dates)
 
-    for each in (db.get_matches_by_ssn(myssn)):
-        my_matchIDs.append(each['matchID'])
+    for each in (db.get_matches_by_ssn(myssn)) : #finish this
+        my_matchIDs.append(each['ssn'])
 
-    for each in my_matchIDs :
-        match_list = db.get_customers_by_id(each)
-        for each in match_list:
-            my_matches.append(each['ssn'])
+    print(my_matchIDs)
+    # for each in my_matchIDs :
+    #     match_list = db.get_customers_by_match_id(each)
+    #     for each in match_list:
+    #         my_matches.append(each['ssn'])
 
-
-    # for each in (db.get_matches_by_ssn(myssn)):
-    #     db.get_customers_by_id(each['matchID'])
-
+    # for each in my_matchIDs :
 
     if not user:
         return redirect('/login')
-    return render_template('home.html', user=user, interests=interests)
+    return render_template('home.html', user=user, interests=interests, dates=my_dates)
 
 
 @app.route('/find_match', methods=['POST'])
@@ -163,19 +184,21 @@ def find_match():
     max_age = request.form['max_age']
     min_age = request.form['min_age']
     interests = request.form.getlist("interest")
+    my_dates = db.get_dates(ssn)
+
+
     try:
         exact = request.form['exact']
     except:
         exact = 0
 
     if not exact:
-        print('not exact')
         ssn_list = db.find_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests)
     elif exact:
         ssn_list = db.find_exact_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests)
 
     if not ssn_list:
-        return render_template('home.html',interests=db.get_interests(), user=user,none_message="\nSorry, you did not match with anyone!\n")
+        return render_template('home.html',interests=db.get_interests(),dates=my_dates, user=user,none_message="\nSorry, you did not match with anyone!\n")
 
     matches = []
     for ssn in ssn_list:
@@ -195,24 +218,42 @@ def make_match():
     time = request.form['time']
     location = request.form['location']
     ID = int(db.get_largest_matchID()) + 1
-    my_matchIDs = []
-    my_matches = []
+    my_dates = db.get_dates(myssn)
+    my_matches=[]
 
     for each in (db.get_matches_by_ssn(myssn)):
-        my_matchIDs.append(each['matchID'])
+        printe(each['ssn'])
 
-    for each in my_matchIDs :
-        match_list = db.get_customers_by_match_id(each)
-        for each in match_list:
-            my_matches.append(each['ssn'])
+    # print(db.get_match_id(myssn,matchssn))
 
     if matchssn in my_matches :
-        return render_template('home.html', interests=db.get_interests(), user=user, none_message="you are already matched with that user!\n\n")
+        # return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user, none_message="you are already matched with that user!\n\n")
+        if db.insert_new_date(time, date, location, db.get)
     elif (db.insert_new_match(myssn, matchssn, ID)) :
         if db.insert_new_date(time, date, location, ID) :
-            return render_template('home.html', interests=db.get_interests(), user=user,none_message="match made with {0}!\n".format(db.get_customer_by_ssn(matchssn)['first_name']))
-    return render_template('home.html', interests=db.get_interests(), user=user, none_message="ERROR: problem adding match\n\n")
+            return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user,none_message="match made with {0}!\n".format(db.get_customer_by_ssn(matchssn)['first_name']))
+    return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user, none_message="ERROR: problem adding match\n\n")
 
+@app.route('/dates', methods=['POST'])
+def manage_dates() :
+    user = load_current_user()
+    my_dates = db.get_dates(user['ssn'])
+
+    return render_template('dates.html', dates=db.get_dates(user['ssn']), user= user )
+
+@app.route('/review_date', methods=['POST'])
+def review_date():
+    user = load_current_user()
+    review = request.form['review']
+
+    date = request.form['radio_date']
+    matchID = date.split(',')[0]
+    date_num = date.split(',')[1]
+
+    if db.submit_date(user['ssn'], review, matchID, date_num):
+        return render_template('home.html', interests=db.get_interests(), dates=db.get_dates(user['ssn']), user=user,none_message='Date review submitted')
+
+    return render_template('dates.html', dates=db.get_dates(user['ssn']), user= user, none_message='ERROR submitting date review' )
 
 # @app.route('/resources/<path:path>')
 # def send_resources(path):
