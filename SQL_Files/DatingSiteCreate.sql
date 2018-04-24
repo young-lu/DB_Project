@@ -36,7 +36,7 @@ CREATE TABLE Customers
 		married_prev CHAR(1) NOT NULL,
 		criminal CHAR(1) NOT NULL DEFAULT 'N',
 		account_opened DATE NOT NULL,
-		account_closed DATE NULL, -- this is nullable (if it is open we don't have a val here)
+		account_closed DATE NULL, 
 		status VARCHAR(16) NOT NULL DEFAULT 'Open',
 		FOREIGN KEY (username) REFERENCES Users (username),
 		PRIMARY KEY (ssn),
