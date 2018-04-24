@@ -23,6 +23,11 @@ def load_current_user():
     if not userId: return None
     return db.get_user_by_name(userId)
 
+def load_user_ID():
+    userId = request.cookies.get('userID')
+    if not userId: return None
+    return userId
+
 @app.route('/', methods=['GET'])
 def index():
     """Get the main page"""
@@ -123,8 +128,70 @@ def post_query1():
     option_str = request.form['option_query1']
     number = request.form['number_dates']    
     # perform the query
-    str_return= db.get_query1(number, option)
-    return render_template('query1.html', strings_to_output=str_return)
+    results= db.getquery1(username, number, option)
+    return render_template('query1.html', results)
+
+# this is what happens when the user clicks on page for query 2
+@app.route('/query2', methods=['GET'])
+def get_query2()
+    username=load_user_ID()
+    results= db.getquery2(username)
+    return render_template('query2.html', results)
+
+# this is what happens when the user clicks on page for query 3
+@app.route('/query3', methods=['GET'])
+def get_query3()
+    username=load_user_ID()
+    results= db.getquery3(username)
+    return render_template('query3.html', results)
+
+# this is what happens when the user clicks on page for query 4
+@app.route('/query4', methods=['GET'])
+def get_query4()
+    username=load_user_ID()
+    results= db.getquery4(username)
+    return render_template('query4.html', results)
+
+# this is what happens when the user clicks on page for query 5
+@app.route('/query5', methods=['GET'])
+def get_query5()
+    username=load_user_ID()
+    results= db.getquery5(username)
+    return render_template('query5.html', results)
+
+################################################################
+################            TO DO:             #################
+################ INSERT QUERY 6 HERE!!!!!!!!!! #################
+################                               #################
+################################################################
+
+# this is what happens when the user clicks on page for query 7
+@app.route('/query7', methods=['GET'])
+def get_query7()
+    username=load_user_ID()
+    results= db.getquery7(username)
+    return render_template('query7.html', results)
+
+# this is what happens when the user clicks on page for query 8a
+@app.route('/query8a', methods=['GET'])
+def get_query8a()
+    username=load_user_ID()
+    results= db.getquery8a(username)
+    return render_template('query8a.html', results)
+
+# this is what happens when the user clicks on page for query 8b
+@app.route('/query8b', methods=['GET'])
+def get_query8b()
+    username=load_user_ID()
+    results= db.getquery8b(username)
+    return render_template('query8b.html', results)
+
+# this is what happens when the user clicks on page for query 8c
+@app.route('/query8c', methods=['GET'])
+def get_query8c()
+    username=load_user_ID()
+    results= db.getquery8c(username)
+    return render_template('query8c.html', results)
 
 
 @app.route('/home', methods=['GET'])

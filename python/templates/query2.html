@@ -1,1 +1,24 @@
  <-- How many people who were earlier married are the clients? -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>How many people who were earlier married are clients? </title>
+  </head>
+ <--  PRINT OUT THE RESULT OF THE QUERY!!! -->
+<section>
+    <h1>Answer:</h1>
+      {% for each in results %}
+        {{ each }} <br>
+      {% endfor %}
+</section>
+    <p>
+      Actions:
+      <a href="/logout">Logout</a>
+    </p>
+  </body>
+  <footer >
+    <p>written by: Sara Fares and Connor Lu</p>
+    <p>COSC-280</p>
+    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+  </footer>
+</html>

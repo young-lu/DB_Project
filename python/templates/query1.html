@@ -18,9 +18,9 @@
         <label for="option_query1">Who are those who had:</label>
         <select>
 			<-- get value of what the user wants to query from dropdown menu --> 
- 			 <option value="at_least">at least</option>
- 			 <option value="at_most">at most</option>
- 			 <option value="exactly">exactly</option>
+ 			 <option value=">=">at least</option>
+ 			 <option value="<=">at most</option>
+ 			 <option value="=">exactly</option>
 		</select>
       </p>
       <p>
@@ -37,11 +37,9 @@
 
 <------------------------------------------------------------------->
 <------------print result (if post has completed)------------------->
-%if strings_to_output:
-    <h2>These are the users with the desired stipulations on the date events:</h2>
-    <tr>
-    %for i in strings_to_output:
-        <td>$strings_to_output</td>
-    %endfor
-    </tr>
-%endif
+    <section>
+    <h1>These are the users with the desired stipulations on the date events:</h1>
+      {% for each in results %}
+        {{ each }} <br>
+      {% endfor %}
+    </section>
