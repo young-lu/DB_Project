@@ -72,14 +72,125 @@ class Database(object):
         for intrst in (interest_list):
             self.insert_customer_interest(ssn, intrst)
 
-    """ update functions --->  what page format should we use? this will affect how we write the function"""
-        # def update_user(self, username, password, role): 
-        #      cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        #     sql = 'UPDATE Users (username, password, role) \
-        #             SET (%s, %s, %s, NOW())'
-        #     result = cur.execute(sql, (username, password, role))
-        #     self.conn.commit()
-        #     return result
+
+    def insert_new_user(self, username, password, role):
+        """Search for a venue in the database"""
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'INSERT INTO Users (username, password, role) VALUES (%s, %s, %s)'
+        result = cur.execute(sql, (username, password, role))
+        self.conn.commit()
+        return result
+
+    def insert_new_customer(self, ssn, first_name, last_name, username, DOB, interested_in, phone, gender, 
+                                children_count, married_prev): 
+        """ account_closed must be added to the database later """
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+
+        today = datetime.datetime.now().date()
+        dob = str(DOB)
+        yob = dob.split('-')[0]
+        thisyear = datetime.datetime.now().year
+        age = int(thisyear) - int(yob)
+        age= str(age)
+        thisyear
+
+        sql = 'INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, \
+                children_count, married_prev, account_opened ) \
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+        result = cur.execute(sql, (ssn, first_name, last_name, username, 
+                        dob, interested_in, phone, age, gender, children_count, married_prev, today))
+        self.conn.commit()
+        return result
+        
+    def insert_customer_interest(self, ssn, interest):
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'INSERT INTO Customer_Interests (ssn, interest) VALUES (%s, %s);'
+        cur.execute(sql, (ssn, interest))
+        self.conn.commit()
+        return result
+
+    def insert_customer_interests(self, ssn, interest_list):
+        for intrst in (interest_list):
+            self.insert_customer_interest(ssn, intrst)
+
+    # BEGIN THE STATEMENTS FOR DELETION
+    def delete_user(self, username, password, role): # delete a user
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'DELETE FROM Customers WHERE username = %s)'
+        cur.execute(sql, (username))
+        self.conn.commit()
+        return 1
+
+    def delete_customer(self, ssn):  # delete a customer 
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'DELETE FROM Customers WHERE ssn = %s)'
+        cur.execute(sql, (ssn))
+        self.conn.commit()
+        return 1
+        
+    def delete_customer_interest(self, ssn, interest): # delete a customer interest
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'DELETE FROM Customer_Interests WHERE ssn=%s AND interest= %s'
+        cur.execute(sql, (ssn, interest))
+        self.conn.commit()
+        return 1
+
+    def delete_customer_crime(self, ssn): # delete a customer crime
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'DELETE FROM Customer_Crimes WHERE ssn=%s'
+        cur.execute(sql, (ssn))
+        self.conn.commit()
+        # RE OPEN THE CLIENTS ACCOUNT!!
+        status='open'
+        criminal= 'N'
+        sql = 'UPDATE Customers WHERE ssn=%s SET account_closed=NULL AND status = %s AND criminal=%s'
+        cur.execute(sql, (ssn, status, criminal))
+        self.conn.commit()
+        return 1
+
+    def delete_interest(self, interest): # delete an interest
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'DELETE FROM Interests WHERE interest= %s'
+        cur.execute(sql, (interest))
+        self.conn.commit()
+        return 1
+
+    def delete_match(self, matchID): # delete a match
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'DELETE FROM Matches WHERE matchID= %s'
+        result = cur.execute(sql, (matchID))
+        self.conn.commit()
+        return 1
+    
+    def delete_date(self, matchID, date_number): # delete a date
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'DELETE FROM Dates WHERE date_number= %d AND matchID= %s'
+        cur.execute(sql, (date_number, matchID))
+        self.conn.commit()
+        return 1
+
+     def delete_customer_child(self, ssn, child_num): # delete a customer's child-- this will also delete all children that come after that one (aka with childID>= child_num)
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'DELETE FROM Customers_Children WHERE ssn= %s AND childID>= %d'
+        cur.execute(sql, (ssn, child_num))
+        self.conn.commit()
+        return 1
+    
+    def delete_match_fee(self, ssn, fee_num): # delete a match fee
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'DELETE FROM Match_Fees WHERE ssn = %s AND fee_number=%d'
+        cur.execute(sql, (ssn, fee_num))
+        self.conn.commit()
+        return 1
+
+    def delete_registration_fee(self, ssn): # delete a registration fee
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'DELETE FROM Registration_Fees WHERE ssn = %s'
+        cur.execute(sql, (ssn))
+        self.conn.commit()
+        return 1
+    # END THE STATEMENTS FOR DELETION
+
 
     def get_people(self):
         """fetch all people from the database"""
@@ -92,7 +203,6 @@ class Database(object):
     # def update_customer():
         """ show ALL data of customer with option to edit"""
         """ pass every piece of data in update_customer() """
-
 
     def find_matches(self,ssn, interested_in, married_prev,max_kids,min_age,max_age,interests):
         """Fetch a view from the database"""
@@ -273,6 +383,19 @@ class Database(object):
         self.conn.commit()
         return result
 
+
+
+
+
+
+
+
+
+
+
+
+
+
     def getquery1(self, username, num, what_option):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         cur.execute('SELECT c.* FROM Customers c, Dates d, Matches m WHERE m.matchID= d.matchID'+
@@ -283,19 +406,19 @@ class Database(object):
         counter=0
         if get_user_role(username) == 'Entry-level':
             counter=0
-            for ssn, username, first_name, last_name, DOB, interested_in, phone, age, gender, 
-            children_count, married_prev, criminal in result:
-                result_str[counter] = first_name +" " +last_name + " whose birthday is " + DOB + " is interested in " +interested_in+
-                ", is " + age + " years old " + ", and is of gender " + gender +"."
+            for (ssn, username, first_name, last_name, DOB, interested_in, phone, age, gender, 
+            children_count, married_prev, criminal) in result:
+                result_str[counter] = (first_name +" " +last_name + " whose birthday is " + DOB + " is interested in " +interested_in+
+                ", is " + age + " years old " + ", and is of gender " + gender +".")
             counter+= 1
         else:
             counter=0
-            for ssn, username, first_name, last_name, DOB, interested_in, phone, age, gender, 
-            children_count, married_prev, criminal in result:
-                result_str[counter] = first_name +" " +last_name + " whose birthday is " + DOB + " is interested in " +interested_in+
-                ", is " + age + " years old " + ", and is of gender " + gender +". Their ssn is " +ssn + " and their phone # is " + phone
+            for (ssn, username, first_name, last_name, DOB, interested_in, phone, age, gender, 
+            children_count, married_prev, criminal) in result:
+                result_str[counter] = (first_name +" " +last_name + " whose birthday is " + DOB + " is interested in " +interested_in+
+                ", is " + age + " years old " + ", and is of gender " + gender +". Their ssn is " +ssn + " and their phone # is " + phone)
                 counter+= 1
-        
+
         result=cur.fetchall()
         return result_str
 
@@ -323,30 +446,31 @@ class Database(object):
 
     def getquery4(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        cur.execute('SELECT avg(*) AS "average" , gender FROM Customers c, Dates d, Matches m ' +
-                    'WHERE d.matchID = m.matchID AND m.ssn= c.ssn GROUP BY c.gender')
+        cur.execute('SELECT avg(temp.counter) AS average, temp.gender AS gender FROM (SELECT COUNT(*) AS counter, c.gender AS gender FROM Customers c, Dates d, Matches m WHERE d.matchID = m.matchID AND m.ssn= c.ssn GROUP BY c.gender)  as temp GROUP BY temp.gender')
         result=cur.fetchall()
 
         counter=0
+        result_str=""
         for average, gender in result:
             if(gender== "M"):
                 gender_str= "males"
             else:
                 gender_str= "females"
-            result_str[counter]= "For " +gender + ", there are an average of "+ average +" date events. "
+            result_str[counter]= "For " +str(gender) + ", there are an average of "+ str(average) +" date events. "
             counter+=1
         return result_str
-        # for each gender, av number of dates
+        # for each gender, avg number of dates
 
     def getquery5(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         cur.execute('SELECT crime FROM Crimes')
         result=cur.fetchall()
+        result_str=""
         for crime in result:
             if result_str=="":
-                result_str= crime
+                result_str= str(crime)
             else:
-                result_str+= ", " + crime
+                result_str+= ", " + str(crime)
         result_return = "These are the crimes in the DB: "+ result_str
         return result_return
 
@@ -392,12 +516,25 @@ class Database(object):
 
         return result_str
 
-     # def getquery9(self, username):
-     #    cur = self.conn.cursor(pymysql.cursors.DictCursor)
-     #    cur.execute('SELECT count(*) FROM Dates')
-     #    result=cur.fetchall()
-     #    result_str= "There have been "+result[0]+ " total dates for this dating site."
-     #    return result_str
+    def update_customer(self, statement):
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        cur.execute(statement)
+        self.conn.commit()
+    """ update functions --->  what page format should we use? this will affect how we write the function"""
+        # def update_user(self, username, password, role): 
+        #      cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        #     sql = 'UPDATE Users (username, password, role) \
+        #             SET (%s, %s, %s, NOW())'
+        #     result = cur.execute(sql, (username, password, role))
+        #     self.conn.commit()
+        #     return result
+
+    # def getquery9(self, username):
+    #    cur = self.conn.cursor(pymysql.cursors.DictCursor)
+    #    cur.execute('SELECT count(*) FROM Dates')
+    #    result=cur.fetchall()
+    #    result_str= "There have been "+result[0]+ " total dates for this dating site."
+    #    return result_str
 
 
 

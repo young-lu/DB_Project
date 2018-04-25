@@ -136,7 +136,7 @@ CREATE TABLE Match_Fees( # the match fee occurs after user goes for a 3rd differ
 );
 
 DROP TABLE IF EXISTS `Registration_Fees`;
-CREATE TABLE Registration_Fees( # the registratuon fee occurs after user goes for a 3rd different date
+CREATE TABLE Registration_Fees( # the registration fee occurs after user goes for a 3rd different date
 	amount DECIMAL(5,2) NOT NULL,
 	date_charged DATE NOT NULL,
 	date_paid DATE NULL, 
@@ -267,14 +267,3 @@ BEGIN
 	END IF;
 END; //
 
--- If a crime is inserted into Customer_Crimes, we need to add it to the list of crimes 
-	-- IF its not already there
-CREATE TRIGGER addCrime
-AFTER INSERT ON Customer_Crimes FOR EACH ROW
-BEGIN
-	IF NEW.crime NOT IN (SELECT crime FROM Crimes) THEN
-		INSERT INTO Crimes (crime) VALUES (NEW.crime) ;
-	END IF;
-
-END; //
-DELIMITER ;
