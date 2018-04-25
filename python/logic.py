@@ -197,6 +197,27 @@ class Database(object):
             self.conn.commit()
         return 1
 
+    def add_child(self, ssn, age, at_home, childid) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'UPDATE Customers SET children_count = "{1}" WHERE ssn = "{0}"'.format(ssn, childid)
+        cur.execute(sql)
+        self.conn.commit()
+        print('id:')
+        print(childid)
+
+        sql = 'INSERT INTO Customers_Children (ssn, childID, age, lives_with_them) VALUES ("{0}", "{1}", "{2}", "{3}")'.format(ssn, childid, age, at_home)
+        result = cur.execute(sql)
+        self.conn.commit()
+        return result
+
+    def get_children_count(self, ssn):
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        cur.execute('SELECT count(*) from Customers_Children where ssn="{0}"'.format(ssn))
+        result =cur.fetchall()[0]['count(*)']
+        print(result)
+        return result
+
+
     def update_customer(self, ssn, **kwargs):  # update a customer 
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql_base = 'UPDATE Customers WHERE ssn = %s '

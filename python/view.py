@@ -69,11 +69,15 @@ def insert():
         dob = request.form['dob']
         gender = request.form['gender']
         children = request.form['children']
+        c = []
+        for i in range(int(children)):
+            c.append(' ')
         seeking = request.form['seeking']
         username = request.form['username']
         password = request.form['password']
         ec = request.form['eye_color']
         hc = request.form['hair_color']
+        print('CHILDREN: {0}:'.format(children))
 
     except:
         print('ERROR inserting customer')
@@ -93,11 +97,28 @@ def insert():
     # insert person
     if db.insert_user(username,password,role):
         if db.insert_customer(ssn, firstname, lastname, username, dob,
-                            seeking, phone, gender, ec, hc, children, married_prev):
+                            seeking, phone, gender, ec, hc, 0, married_prev):
             for each in interests:
                 db.insert_customer_interest(ssn, each)
+
+            # if int(children) > 0 :
+            #     return render_template('customers-children.html')
             return redirect('/')
     return "Error adding to list" # TODO: better error handling
+
+@app.route('/add_child', methods=['POST'])
+def add_child() :
+    user = load_current_user()
+    ssn = user['ssn']
+    age = request.form['age']
+    at_home = request.form['at_home']
+    count = db.get_children_count(ssn)
+    print('count:')
+    print(count )
+
+    db.add_child(ssn,age,at_home, count + 1)
+
+    return redirect('/home')
 
 @app.route('/logout', methods=['GET'])
 def get_logout():

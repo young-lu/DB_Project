@@ -82,6 +82,19 @@
       {% endfor %}
       <input type= "submit" value= "Date manager">
     </form>
+  </section><br><br>
+
+  <section id='add_child'>
+    <h4>Add your child's information</h4>
+    <form action='add_child' method="POST">
+      <input type='number' name='age' min='1' id='age' value='1'/>
+      <label for='age'>age</label><br>
+      <select name='at_home'>
+        <option value="Y">living at home</option>
+        <option value="N">moved out</option>
+      </select>
+      <input type='submit' value="enter info"/>
+    </form>
   </section>
 
     <p>
