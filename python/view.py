@@ -163,6 +163,13 @@ def post_login():
         #     return render_template('entry-home.html', username=username, password=password,role=role)
 
 
+
+# this is what happens when the user pushes the link to query1
+@app.route('/query_dropdown', methods=['GET'])
+def get_query_menu():
+    return render_template('queries_drop_down.html')
+
+
 # this is what happens when the user pushes the link to query1
 @app.route('/query1', methods=['GET'])
 def get_query1():
@@ -259,6 +266,40 @@ def get_query8e():
 def get_query8f():
     results= db.getquery8f()
     return render_template('query8f.html', results=results)
+
+
+
+
+################################################################
+#############      begin views for insertion       #############
+################################################################
+
+# this is what happens when the user pushes the link to query1
+# @app.route('/insert_interest', methods=['GET'])
+# def insert_interest():
+#     results= ""
+#     return render_template('insert_interest.html', results=results)
+
+# # this is what happens when the user pushes enter on the query1 page.. actually perfom + display the query
+# @app.route('/insert_interest', methods=['POST']) 
+# def post_query1():
+#     # check what the user wants to insert -- need to have a category and an interest
+
+#     # *******ADD HERE TO DO********
+
+#     # perform the insertion
+#     # takes args interest and category
+#     db.insert_interest(interest, category)
+#     return render_template('insert_interest.html', results=results)
+
+
+################################################################
+#############       end views for insertion        #############
+################################################################
+
+
+
+
 
 
 
@@ -561,26 +602,183 @@ def review_date():
 #     results= db.delete_sql(statement)
 #     return render_template('delete-customer-interests.html', results=results)
 
-# # view for delete-customer-children page
-# @app.route('/delete-customer-children', methods=['POST'])
-# def delete_customer_children_post():
-    
-#     results= db.delete_sql(statement)
-#     return render_template('delete-customer-children.html', results=results)
 
-# # view for delete-interests page
-# @app.route('/delete-interests', methods=['POST'])
-# def delete_interests_post():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-interests.html', results=results)
+# # views for delete_interest page
+@app.route('/delete_interest', methods=['GET'])
+def delete_interest_get():
+    results= db.return_tuples('Interests')
+    return render_template('delete_interest.html', to_delete= results)
 
-# # view for delete-crime page
-# @app.route('/delete-crime', methods=['POST'])
-# def delete_crime_post():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-crime.html', results=results)
+@app.route('/delete_interest', methods=['POST'])
+def delete_interest_post():
+    results= db.return_tuples('Interests')
+    interest = request.form['interest']
+    db.delete_interest(interest)
+    message= "Deletion of interest "+interest+ " has been performed."
+    print(message)
+    results= db.return_tuples('Interests')
+    return render_template('delete_interest.html', msg= message)
+
+# # views for delete_customer page
+@app.route('/delete_customer', methods=['GET'])
+def delete_customer_get():
+    results= db.return_tuples('Customers')
+    return render_template('delete_customer.html', to_delete= results)
+
+@app.route('/delete_customer', methods=['POST'])
+def delete_customer_post():
+    ssn = request.form['customer']
+    db.delete_customer(ssn)
+    message= "Deletion of person with ssn "+ssn+ " has been performed."
+    print(message)
+    results= db.return_tuples('Customers')
+    return render_template('delete_customer.html', to_delete=results, msg= message)
+
+#     def delete_customer_interest(self, ssn, interest): # delete a customer interest
+
+# # views for delete_customer_interest page
+@app.route('/delete_customer_interest', methods=['GET'])
+def delete_customer_interest_get():
+    results= db.return_tuples('Customer_Interests')
+    return render_template('delete_customer_interest.html', to_delete= results)
+
+@app.route('/delete_customer_interest', methods=['POST'])
+def delete_customer_interest_post():
+    ssn_interest = request.form['customer']
+    new_dict= ssn_interest.split('|')
+    ssn= new_dict[0]
+    interest= new_dict[1]
+    db.delete_customer_interest(ssn, interest)
+    message= "Deletion tuple of person with ssn "+ssn+ " and interest "+interest + " has been performed."
+    print(message)
+    results= db.return_tuples('Customer_Interests')
+    return render_template('delete_customer_interest.html', to_delete=results, msg= message)
+
+# # # views for delete_customer_child page
+@app.route('/delete_customer_child', methods=['GET'])
+def delete_customer_child_get():
+    results= db.return_tuples('Customers_Children')
+    return render_template('delete_customer_child.html', to_delete= results)
+
+@app.route('/delete_customer_child', methods=['POST'])
+def delete_customer_child_post():
+    full_str = request.form['child']
+    new_dict= full_str.split('|')
+    ssn= new_dict[0]
+    child_num= new_dict[1]
+    db.delete_customer_child(ssn, child_num)
+    message= "Deletion tuple of child with parent's ssn: "+ssn+ ", and child number>= "+child_num + " has been performed."
+    print(message)
+    results= db.return_tuples('Customers_Children')
+    return render_template('delete_customer_child.html', to_delete=results, msg= message)
+
+
+# # views for delete_customer_crime page
+@app.route('/delete_customer_crime', methods=['GET'])
+def delete_customer_crime_get():
+    results= db.return_tuples('Customer_Crimes')
+    return render_template('delete_customer_crime.html', to_delete= results)
+
+@app.route('/delete_customer_crime', methods=['POST'])
+def delete_customer_crime_post():
+    ssn = request.form['crime']
+    db.delete_customer_crime(ssn)
+    message= "Deletion of crime for person with ssn "+ssn+  " has been performed."
+    print(message)
+    results= db.return_tuples('Customer_Crimes')
+    return render_template('delete_customer_crime.html', to_delete=results, msg= message)
+
+# # views for delete_user page
+@app.route('/delete_user', methods=['GET'])
+def delete_user_get():
+    results= db.return_tuples('Users')
+    return render_template('delete_user.html', to_delete= results)
+
+@app.route('/delete_user', methods=['POST'])
+def delete_user_post():
+    username = request.form['user']
+    db.delete_user(username)
+    message= "Deletion of user with username "+username+  " has been performed."
+    print(message)
+    results= db.return_tuples('Users')
+    return render_template('delete_user.html', to_delete=results, msg= message)
+
+# # views for delete_customer_child page
+@app.route('/delete_registration_fee', methods=['GET'])
+def delete_registration_fee_get():
+    results= db.return_tuples('Registration_Fees')
+    return render_template('delete_registration_fee.html', to_delete= results)
+
+@app.route('/delete_registration_fee', methods=['POST'])
+def delete_registration_fee_post():
+    ssn = request.form['reg']
+    db.delete_registration_fee(ssn)
+    message= "Deletion of registration fee for person with ssn "+ssn+  " has been performed."
+    print(message)
+    results= db.return_tuples('Registration_Fees')
+    return render_template('delete_registration_fee.html', to_delete=results, msg= message)
+
+
+# def delete_match_fee(self, ssn, fee_num): # delete a match fee
+# def delete_registration_fee(self, ssn): # delete a registration fee
+
+
+
+# # views for delete_customer_child page
+@app.route('/delete_match_fee', methods=['GET'])
+def delete_match_fee_get():
+    results= db.return_tuples('Match_Fees')
+    return render_template('delete_match_fee.html', to_delete= results)
+
+@app.route('/delete_match_fee', methods=['POST'])
+def delete_match_fee_post():
+    full_str = request.form['match_fee']
+    print(full_str)
+    split_str = full_str.split('|')
+    ssn = split_str[0]
+    fee_num = split_str[1] 
+    db.delete_match_fee(ssn, fee_num)
+    message= "Deletion of match fee for person with ssn "+ssn+ " and for fee number "+ fee_num+ " has been performed."
+    print(message)
+    results= db.return_tuples('Match_Fees')
+    return render_template('delete_match_fee.html', to_delete=results, msg= message)
+
+# # views for delete_match page
+@app.route('/delete_match', methods=['GET'])
+def delete_match_get():
+    results= db.return_tuples('Matches')
+    return render_template('delete_match.html', to_delete= results)
+
+@app.route('/delete_match', methods=['POST'])
+def delete_match_post():
+    matchID = request.form['match']
+    db.delete_match(matchID)
+    message= "Deletion of match for matchID "+matchID+  " has been performed."
+    print(message)
+    results= db.return_tuples('Matches')
+    return render_template('delete_match.html', to_delete=results, msg= message)
+
+
+# # views for delete_date page
+@app.route('/delete_date', methods=['GET'])
+def delete_date_get():
+    results= db.return_tuples('Dates')
+    counter=0
+    return render_template('delete_date.html', to_delete= results)
+
+@app.route('/delete_date', methods=['POST'])
+def delete_date_post():
+    full_str = request.form['date']
+    split_str = full_str.split('|')
+    matchID = split_str[0]
+    date_num = int(split_str[1])
+    db.delete_date(matchID,date_num)
+    message= "Deletion of date for matchID "+matchID+" and date number " +str(date_num)+ " has been performed."
+    print(message)
+    results= db.return_tuples('Dates')
+    return render_template('delete_date.html', to_delete=results, msg= message)
+
+
 
 # @app.route('/resources/<path:path>')
 # def send_resources(path):
@@ -589,9 +787,6 @@ def review_date():
 
 if __name__ == '__main__':
     app.run()
-
-
-
 
 
 
