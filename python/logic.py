@@ -35,7 +35,7 @@ class Database(object):
     def insert_new_user(self, username, password, role):
         """Search for a venue in the database"""
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql = 'INSERT INTO Users (username, password, role) VALUES (%s, %s, %s)'
+        sql = 'INSERT INTO Users (username, password, role) VALUES (%s, %s, %s)' 
         result = cur.execute(sql, (username, password, role))
         self.conn.commit()
         return result
@@ -73,46 +73,6 @@ class Database(object):
             self.insert_customer_interest(ssn, intrst)
 
 
-    def insert_new_user(self, username, password, role):
-        """Search for a venue in the database"""
-        cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql = 'INSERT INTO Users (username, password, role) VALUES (%s, %s, %s)'
-        result = cur.execute(sql, (username, password, role))
-        self.conn.commit()
-        return result
-
-    def insert_new_customer(self, ssn, first_name, last_name, username, DOB, interested_in, phone, gender, 
-                                children_count, married_prev): 
-        """ account_closed must be added to the database later """
-        cur = self.conn.cursor(pymysql.cursors.DictCursor)
-
-        today = datetime.datetime.now().date()
-        dob = str(DOB)
-        yob = dob.split('-')[0]
-        thisyear = datetime.datetime.now().year
-        age = int(thisyear) - int(yob)
-        age= str(age)
-        thisyear
-
-        sql = 'INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, \
-                children_count, married_prev, account_opened ) \
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-        result = cur.execute(sql, (ssn, first_name, last_name, username, 
-                        dob, interested_in, phone, age, gender, children_count, married_prev, today))
-        self.conn.commit()
-        return result
-        
-    def insert_customer_interest(self, ssn, interest):
-        cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql = 'INSERT INTO Customer_Interests (ssn, interest) VALUES (%s, %s);'
-        cur.execute(sql, (ssn, interest))
-        self.conn.commit()
-        return result
-
-    def insert_customer_interests(self, ssn, interest_list):
-        for intrst in (interest_list):
-            self.insert_customer_interest(ssn, intrst)
-
     # BEGIN THE STATEMENTS FOR DELETION
     def delete_user(self, username, password, role): # delete a user
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
@@ -123,7 +83,7 @@ class Database(object):
 
     def delete_customer(self, ssn):  # delete a customer 
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql = 'DELETE FROM Customers WHERE ssn = %s)'
+        sql = 'DELETE FROM Customers WHERE ssn = %s'
         cur.execute(sql, (ssn))
         self.conn.commit()
         return 1
@@ -190,6 +150,41 @@ class Database(object):
         self.conn.commit()
         return 1
     # END THE STATEMENTS FOR DELETION
+
+    # BEGIN THE STATEMENTS FOR INSERTION
+    # already have some for inserting: user, customer, customer-interest, match, date + DONT NEED ONE FOR : registration + match fees b/c they're already triggered
+    def insert_customer_crime(self, ssn, crime ): # insert a customer crime-- ssn, crime, 
+                                                    #date_recorded--> defaults to current_date( no need to add it in!)
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'INSERT INTO Customer_Crimes(ssn, crime) VALUES (%s, %s)'
+        cur.execute(sql, (ssn, crime))
+        self.conn.commit()
+        # RE OPEN THE CLIENTS ACCOUNT!!
+        status='open'
+        criminal= 'N'
+        sql = 'UPDATE Customers WHERE ssn=%s SET account_closed=NULL AND status = %s AND criminal=%s'
+        cur.execute(sql, (ssn, status, criminal))
+        self.conn.commit()
+        return 1
+
+    def insert_interest(self, interest, category): # insert an interest
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'INSERT INTO Interests (interest, category) VALUES (%s, %s)'
+        cur.execute(sql, (interest, category))
+        self.conn.commit()
+        return 1
+
+     def insert_customer_child(self, ssn, child_num): # delete a customer's child-- this will also delete all children that come after that one (aka with childID>= child_num)
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'DELETE FROM Customers_Children WHERE ssn= %s AND childID>= %d'
+        cur.execute(sql, (ssn, child_num))
+        self.conn.commit()
+        return 1
+    # END THE STATEMENTS FOR INSERTION
+
+
+
+
 
 
     def get_people(self):
