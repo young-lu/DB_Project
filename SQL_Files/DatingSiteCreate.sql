@@ -35,7 +35,7 @@ CREATE TABLE Customers
 		children_count INT NOT NULL,
 		married_prev CHAR(1) NOT NULL,
 		criminal CHAR(1) NOT NULL DEFAULT 'N',
-		account_opened DATE NOT NULL DEFAULT CURRENT_DATE,
+		account_opened DATE NOT NULL,
 		eye_color VARCHAR(40) NOT NULL,
 		hair_color VARCHAR(40) NOT NULL,
 		account_closed DATE NULL, 
@@ -120,7 +120,7 @@ CREATE TABLE Customer_Crimes #primary key is ssn
 	(
 		ssn VARCHAR(40) NOT NULL,
 		crime VARCHAR(40) NOT NULL,
-		date_recorded DATE NOT NULL DEFAULT CURRENT_DATE,
+		date_recorded DATE NOT NULL,
 		FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
 		PRIMARY KEY (ssn)
 	);
@@ -134,8 +134,8 @@ CREATE TABLE Match_Fees( # the match fee occurs after user goes for a 3rd differ
 	ssn VARCHAR(40) NOT NULL,
 	fee_number INT NOT NULL,
 	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
-	PRIMARY KEY (ssn)
-	check (paid = 'N' OR paid = 'Y')
+	PRIMARY KEY (ssn),
+	check (paid= 'N' OR paid= 'Y')
 );
 
 DROP TABLE IF EXISTS `Registration_Fees`;
@@ -143,19 +143,18 @@ CREATE TABLE Registration_Fees( # the registration fee occurs after user goes fo
 	amount DECIMAL(5,2) NOT NULL,
 	date_charged DATE NOT NULL,
 	date_paid DATE NULL, 
-	paid CHAR(1) NOT NULL DEFAULT FALSE,
+	paid CHAR(1) NOT NULL DEFAULT 'N',
 	ssn VARCHAR(40) NOT NULL,
 	FOREIGN KEY (ssn) REFERENCES Matches (ssn) ON DELETE CASCADE,
 	PRIMARY KEY (ssn),
-	check (paid = 'F' or paid = 'Y')
+	check (paid = 'Y' or paid = 'NULL')
 );
 
 DROP TABLE IF EXISTS `DateSuccess`;
 CREATE TABLE DateSuccess(
 	matchID char(10) NOT NULL,
 	ssn VARCHAR(40) NOT NULL,
-	review VARCHAR(40) NOT NULL,
-	interested CHAR(1) NOT NULL DEFAULT 'Y',
+	success CHAR(1) NOT NULL DEFAULT 'Y',
 	PRIMARY KEY (matchID,ssn),
 	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
 	FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE 
@@ -169,7 +168,7 @@ CREATE TABLE DateSuccess(
 	-- one trigger works to add the charges when necessary if there are 3 dates
 	-- the other adds necessary triggers if there are 7 dates
 	-- the other automatically closes the profile of one who has a criminal record
------------ TRIGGERS 
+-- --------- TRIGGERS 
 
 -- If a client's criminal status is criminal then 
 	-- we have to close the account 

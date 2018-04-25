@@ -24,7 +24,7 @@ def load_current_user():
     return db.get_user_by_name(userId)
 
 
-  def load_user_ID():
+def load_user_ID():
     userId = request.cookies.get('userID')
     if not userId: return None
     return userId
@@ -75,6 +75,9 @@ def insert():
         ec = request.form['eye_color']
         hc = request.form['hair_color']
 
+        print(ec)
+        print(hc)
+
     except:
         print('ERROR inserting customer')
         return redirect('/')
@@ -91,9 +94,9 @@ def insert():
     role = 'Customer'
     # TODO: handle interests
     # insert person
-    if db.insert_new_user(username,password,role):
-        if db.insert_new_customer(ssn, firstname, lastname, username, dob, seeking, phone, gender, 
-                    children, married_prev):
+    if db.insert_user(username,password,role):
+        if db.insert_customer(ssn, firstname, lastname, username, dob,
+                            seeking, phone, gender, ec, hc, children, married_prev):
             for each in interests:
                 db.insert_customer_interest(ssn, each)
             return redirect('/')
