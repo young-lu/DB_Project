@@ -36,7 +36,7 @@ CREATE TABLE Customers
 		married_prev CHAR(1) NOT NULL,
 		criminal CHAR(1) NOT NULL DEFAULT 'N',
 		account_opened DATE NOT NULL,
-		account_closed DATE NULL, -- this is nullable (if it is open we don't have a val here)
+		account_closed DATE NULL, 
 		status VARCHAR(16) NOT NULL DEFAULT 'Open',
 		FOREIGN KEY (username) REFERENCES Users (username),
 		PRIMARY KEY (ssn),
@@ -133,6 +133,7 @@ CREATE TABLE Match_Fees( # the match fee occurs after user goes for a 3rd differ
 	fee_number INT NOT NULL,
 	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
 	PRIMARY KEY (ssn)
+	check (paid = 'N' OR paid = 'Y')
 );
 
 DROP TABLE IF EXISTS `Registration_Fees`;
@@ -140,10 +141,11 @@ CREATE TABLE Registration_Fees( # the registratuon fee occurs after user goes fo
 	amount DECIMAL(5,2) NOT NULL,
 	date_charged DATE NOT NULL,
 	date_paid DATE NULL, 
-	paid BOOLEAN NOT NULL DEFAULT FALSE,
+	paid CHAR(1) NOT NULL DEFAULT FALSE,
 	ssn VARCHAR(40) NOT NULL,
-	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
-	PRIMARY KEY (ssn)
+	FOREIGN KEY (ssn) REFERENCES Matches (ssn) ON DELETE CASCADE,
+	PRIMARY KEY (ssn),
+	check (paid = 'F' or paid = 'Y')
 );
 
 DROP TABLE IF EXISTS `DateSuccess`;
@@ -166,6 +168,7 @@ CREATE TABLE DateSuccess(
 	-- the other adds necessary triggers if there are 7 dates
 	-- the other automatically closes the profile of one who has a criminal record
 ----------- TRIGGERS 
+
 -- If a client's criminal status is criminal then 
 	-- we have to close the account 
 	-- but still keep it for our records
@@ -247,7 +250,7 @@ BEGIN
 	THEN 
 		INSERT INTO Match_Fees VALUES (100, CURRENT_DATE, NULL, 'F', NEW.ssn, 5);
 	END IF;
-END; //
+END; //	
 
 -- If a client goes for a 7th DIFFERENT!! date, 
 	-- then a message shown on the screen to show 
@@ -266,15 +269,3 @@ BEGIN
 		INSERT INTO Registration_Fees VALUES (100, CURRENT_DATE, NULL, 'False', NEW.ssn);
 	END IF;
 END; //
-
--- If a crime is inserted into Customer_Crimes, we need to add it to the list of crimes 
-	-- IF its not already there
-CREATE TRIGGER addCrime
-AFTER INSERT ON Customer_Crimes FOR EACH ROW
-BEGIN
-	IF NEW.crime NOT IN (SELECT crime FROM Crimes) THEN
-		INSERT INTO Crimes (crime) VALUES (NEW.crime) ;
-	END IF;
-
-END; //
-DELIMITER ;

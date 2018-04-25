@@ -98,24 +98,30 @@ INSERT INTO Users (username, password, role) VALUES ('crim2', '123', 'Customer')
 
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
-                	VALUES ('1','John','Doe', 'jd1', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
+                	VALUES ('1','John1','Doe', 'jd1', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
+
                 	VALUES ('2','James','Doe', 'jd2', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
                 	VALUES ('3','Jonathan','Doe', 'jd3', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
+
+
+
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
-                	VALUES ('4','Jane','Doe', 'jr1', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'N', '2018-04-23');
+                	VALUES ('4','Jane1','Doe', 'jr1', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'N', '2018-04-23');
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
+
                 	VALUES ('5','Jackie','Doe', 'jr2', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'N', '2018-04-23');
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
                 	VALUES ('6','Janie','Doe', 'jr3', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'N', '2018-04-23');
 
 ---- CUSTOMERS WITH KIDS!!!!
+
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened ) 
                 	VALUES ('7','Sam','Fares', 'sf1', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
@@ -139,6 +145,7 @@ INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in,
                 	VALUES ('12','Monnica','Divorce', 'md2', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'Y', '2018-04-23');
 
 --- CUSTOMERS THAT ARE CRIMINALS!!! (YIKES!) 
+
 INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
 						children_count, married_prev, account_opened, criminal) 
                 	VALUES ('13','Mark','Divorce', 'crim1', '1997-01-31', 'M','1234567891', '21', 'M', '0', 'Y', '2018-04-23', 'Y');
@@ -152,6 +159,7 @@ INSERT INTO Customer_Crimes (ssn, crime, date_recorded) VALUES ('13', 'Minor Off
 INSERT INTO Customer_Crimes (ssn, crime, date_recorded) VALUES ('14', 'Minor Offense', '2018-04-23');
 
 
+---- CUSTOMER INTERESTS
 INSERT INTO Customer_Interests VALUES ('1', 'Jazz');
 INSERT INTO Customer_Interests VALUES ('1', 'Pop');
 INSERT INTO Customer_Interests VALUES ('1', 'Hip Hop');
@@ -207,5 +215,3 @@ INSERT INTO Customer_Interests VALUES ('13', 'Curling');
 INSERT INTO Customer_Interests VALUES ('14', 'George Clooney');
 INSERT INTO Customer_Interests VALUES ('14', 'Curling');
 INSERT INTO Customer_Interests VALUES ('14', 'Biathlon');
-
-
