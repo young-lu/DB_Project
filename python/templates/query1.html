@@ -1,6 +1,6 @@
-<-- Who are those who had [at least, at most, exactly] X number of date events? -->
-<-- the user has to be able to select either "at least", "at most", or "exactly" -->
-	<-- also has to select a number of date events! --> 
+<!-- Who are those who had [at least, at most, exactly] X number of date events? -->
+<!-- the user has to be able to select either "at least", "at most", or "exactly" -->
+	<!-- also has to select a number of date events! --> 
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,23 +8,23 @@
     <link rel="stylesheet" href="main.css"/>
   </head>
 
-<-- insert a go button that shows the results -->
-<---  GO BUTTON --> 
-<-- and then display the results --> 
+<!-- insert a go button that shows the results -->
+<!--  GO BUTTON --> 
+<!-- and then display the results --> 
 
 <form action="query1" method="POST">
       <p>
-      	<-- get option that the user chooses --> 
+      	<!-- get option that the user chooses --> 
         <label for="option_query1">Who are those who had:</label>
         <select>
-			<-- get value of what the user wants to query from dropdown menu --> 
+			<!-- get value of what the user wants to query from dropdown menu --> 
  			 <option value=">=">at least</option>
  			 <option value="<=">at most</option>
  			 <option value="=">exactly</option>
 		</select>
       </p>
       <p>
-      	<-- get number of dates --> 
+      	<!-- get number of dates --> 
         <label for="number_dates">(input number of dates (>=0)):</label><input id="number_dates" name="number_dates" type="number" min="0" />
       </p>
       <p>
@@ -35,8 +35,8 @@
       </p>
 </form>
 
-<------------------------------------------------------------------->
-<------------print result (if post has completed)------------------->
+
+<!--         print result (if post has completed)             -->
     <section>
     <h1>These are the users with the desired stipulations on the date events:</h1>
       {% for each in results %}

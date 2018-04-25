@@ -137,7 +137,7 @@ CREATE TABLE Match_Fees( # the match fee occurs after user goes for a 3rd differ
 );
 
 DROP TABLE IF EXISTS `Registration_Fees`;
-CREATE TABLE Registration_Fees( # the registratuon fee occurs after user goes for a 3rd different date
+CREATE TABLE Registration_Fees( # the registration fee occurs after user goes for a 3rd different date
 	amount DECIMAL(5,2) NOT NULL,
 	date_charged DATE NOT NULL,
 	date_paid DATE NULL, 
@@ -269,3 +269,4 @@ BEGIN
 		INSERT INTO Registration_Fees VALUES (100, CURRENT_DATE, NULL, 'False', NEW.ssn);
 	END IF;
 END; //
+DELIMITER ;
