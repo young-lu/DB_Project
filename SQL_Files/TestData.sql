@@ -79,13 +79,13 @@ INSERT INTO Users (username, password, role) VALUES ('jr1', '123', 'Customer');
 INSERT INTO Users (username, password, role) VALUES ('jr2', '123', 'Customer');
 INSERT INTO Users (username, password, role) VALUES ('jr3', '123', 'Customer');
 
-INSERT INTO Users (username, password, role) VALUES ('sf1', '123', 'Customer');
-INSERT INTO Users (username, password, role) VALUES ('sf2', '123', 'Customer');
-INSERT INTO Users (username, password, role) VALUES ('sf3', '123', 'Customer');
-INSERT INTO Users (username, password, role) VALUES ('sf4', '123', 'Customer');
+-- INSERT INTO Users (username, password, role) VALUES ('sf1', '123', 'Customer');
+-- INSERT INTO Users (username, password, role) VALUES ('sf2', '123', 'Customer');
+-- INSERT INTO Users (username, password, role) VALUES ('sf3', '123', 'Customer');
+-- INSERT INTO Users (username, password, role) VALUES ('sf4', '123', 'Customer');
 
-INSERT INTO Users (username, password, role) VALUES ('md1', '123', 'Customer');
-INSERT INTO Users (username, password, role) VALUES ('md2', '123', 'Customer');
+-- INSERT INTO Users (username, password, role) VALUES ('md1', '123', 'Customer');
+-- INSERT INTO Users (username, password, role) VALUES ('md2', '123', 'Customer');
 
 INSERT INTO Users (username, password, role) VALUES ('crim1', '123', 'Customer');
 INSERT INTO Users (username, password, role) VALUES ('crim2', '123', 'Customer');
@@ -96,70 +96,73 @@ INSERT INTO Users (username, password, role) VALUES ('crim2', '123', 'Customer')
 -- INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, children_count, married_prev, account_opened ) 
 --                 	VALUES ('69','Alex','Harp', 'aharp420', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
 
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, eye_color, hair_color, 
 						children_count, married_prev, account_opened ) 
-                	VALUES ('1','John1','Doe', 'jd1', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+                	VALUES ('1','John1','Doe', 'jd1', '1997-01-31', 'F','1234567891', '21', 'M','brown', 'brown', '0', 'N', '2018-04-23');
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, eye_color, hair_color,
 						children_count, married_prev, account_opened ) 
-
-                	VALUES ('2','James','Doe', 'jd2', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+                	VALUES ('2','James','Doe', 'jd2', '1997-01-31', 'F','1234567891', '21', 'M', 'blue', 'blonde','0', 'N', '2018-04-23');
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, eye_color, hair_color, 
 						children_count, married_prev, account_opened ) 
-                	VALUES ('3','Jonathan','Doe', 'jd3', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
-
+                	VALUES ('3','Jonathan','Doe', 'jd3', '1997-01-31', 'F','1234567891', '21', 'M','blue', 'black', '0', 'N', '2018-04-23');
 
 
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, eye_color, hair_color,
 						children_count, married_prev, account_opened ) 
-                	VALUES ('4','Jane1','Doe', 'jr1', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'N', '2018-04-23');
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+                	VALUES ('4','Jane1','Doe', 'jr1', '1997-01-31', 'M','1234567891', '21', 'F','blue', 'brown', '0', 'N', '2018-04-23');
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, eye_color, hair_color,
 						children_count, married_prev, account_opened ) 
 
-                	VALUES ('5','Jackie','Doe', 'jr2', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'N', '2018-04-23');
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+                	VALUES ('5','Jackie','Doe', 'jr2', '1997-01-31', 'M','1234567891', '21', 'F','blue', 'blonde', '0', 'N', '2018-04-23');
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, eye_color, hair_color,
 						children_count, married_prev, account_opened ) 
-                	VALUES ('6','Janie','Doe', 'jr3', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'N', '2018-04-23');
-
----- CUSTOMERS WITH KIDS!!!!
-
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
-						children_count, married_prev, account_opened ) 
-                	VALUES ('7','Sam','Fares', 'sf1', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
-						children_count, married_prev, account_opened ) 
-                	VALUES ('8','Stanley','Fares', 'sf2', '1997-01-31', 'F','1234567891', '21', 'M', '1', 'N', '2018-04-23');
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
-						children_count, married_prev, account_opened ) 
-                	VALUES ('9','Sara','Fares', 'sf3', '1997-01-31', 'M','1234567891', '21', 'F', '1', 'N', '2018-04-23');
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
-						children_count, married_prev, account_opened ) 
-                	VALUES ('10','Sonya','Fares', 'sf4', '1997-01-31', 'M','1234567891', '21', 'F', '2', 'N', '2018-04-23');
+                	VALUES ('6','Janie','Doe', 'jr3', '1997-01-31', 'M','1234567891','21', 'F','blue', 'red' ,'0', 'N', '2018-04-23');
 
 
---- CUSTOMERS THAT WERE PREV. MARRIED
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
-						children_count, married_prev, account_opened )
-                	VALUES ('11','Mark','Divorce', 'md1', '1997-01-31', 'M','1234567891', '21', 'M', '0', 'Y', '2018-04-23');
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
-						children_count, married_prev, account_opened ) 
-                	VALUES ('12','Monnica','Divorce', 'md2', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'Y', '2018-04-23');
 
---- CUSTOMERS THAT ARE CRIMINALS!!! (YIKES!) 
+-- ---- CUSTOMERS WITH KIDS!!!!
 
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+-- INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+-- 						children_count, married_prev, account_opened ) 
+--                 	VALUES ('7','Sam','Fares', 'sf1', '1997-01-31', 'F','1234567891', '21', 'M', '0', 'N', '2018-04-23');
+-- INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+-- 						children_count, married_prev, account_opened ) 
+--                 	VALUES ('8','Stanley','Fares', 'sf2', '1997-01-31', 'F','1234567891', '21', 'M', '1', 'N', '2018-04-23');
+-- INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+-- 						children_count, married_prev, account_opened ) 
+--                 	VALUES ('9','Sara','Fares', 'sf3', '1997-01-31', 'M','1234567891', '21', 'F', '1', 'N', '2018-04-23');
+-- INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+-- 						children_count, married_prev, account_opened ) 
+--                 	VALUES ('10','Sonya','Fares', 'sf4', '1997-01-31', 'M','1234567891', '21', 'F', '2', 'N', '2018-04-23');
+
+
+-- --- CUSTOMERS THAT WERE PREV. MARRIED
+-- INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+-- 						children_count, married_prev, account_opened )
+--                 	VALUES ('11','Mark','Divorce', 'md1', '1997-01-31', 'M','1234567891', '21', 'M', '0', 'Y', '2018-04-23');
+-- INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+-- 						children_count, married_prev, account_opened ) 
+--                 	VALUES ('12','Monnica','Divorce', 'md2', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'Y', '2018-04-23');
+
+-- --- CUSTOMERS THAT ARE CRIMINALS!!! (YIKES!) 
+
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, eye_color, hair_color,
 						children_count, married_prev, account_opened, criminal) 
-                	VALUES ('13','Mark','Divorce', 'crim1', '1997-01-31', 'M','1234567891', '21', 'M', '0', 'Y', '2018-04-23', 'Y');
-INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, 
+                	VALUES ('13','Mark','Divorce', 'crim1', '1997-01-31', 'M','1234567891', '21', 'M', 'brown', 'brown', '0', 'Y', '2018-04-23', 'Y');
+INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, eye_color, hair_color,
 						children_count, married_prev, account_opened, criminal) 
-                	VALUES ('14','Monnica','Divorce', 'crim2', '1997-01-31', 'M','1234567891', '21', 'F', '0', 'Y', '2018-04-23', 'Y');
+                	VALUES ('14','Monnica','Divorce', 'crim2', '1997-01-31', 'M','1234567891', '21', 'F', 'brown', 'brown','0', 'Y', '2018-04-23', 'Y');
 
+Select * from Customers;
 
---- INSERT CRIMES IN FOR THE CRIMINALS 
+-- - INSERT CRIMES IN FOR THE CRIMINALS 
 INSERT INTO Customer_Crimes (ssn, crime, date_recorded) VALUES ('13', 'Minor Offense', '2018-04-23');
 INSERT INTO Customer_Crimes (ssn, crime, date_recorded) VALUES ('14', 'Minor Offense', '2018-04-23');
 
 
----- CUSTOMER INTERESTS
+
+-- -- CUSTOMER INTERESTS
 INSERT INTO Customer_Interests VALUES ('1', 'Jazz');
 INSERT INTO Customer_Interests VALUES ('1', 'Pop');
 INSERT INTO Customer_Interests VALUES ('1', 'Hip Hop');
@@ -187,25 +190,25 @@ INSERT INTO Customer_Interests VALUES ('6', 'Curling');
 INSERT INTO Customer_Interests VALUES ('6', 'Biathlon');
 
 
-INSERT INTO Customer_Interests VALUES ('7', 'Jazz');
-INSERT INTO Customer_Interests VALUES ('7', 'Pop');
-INSERT INTO Customer_Interests VALUES ('7', 'Hip Hop');
+-- INSERT INTO Customer_Interests VALUES ('7', 'Jazz');
+-- INSERT INTO Customer_Interests VALUES ('7', 'Pop');
+-- INSERT INTO Customer_Interests VALUES ('7', 'Hip Hop');
 
-INSERT INTO Customer_Interests VALUES ('8', 'Jazz');
-INSERT INTO Customer_Interests VALUES ('8', 'Pop');
+-- INSERT INTO Customer_Interests VALUES ('8', 'Jazz');
+-- INSERT INTO Customer_Interests VALUES ('8', 'Pop');
 
-INSERT INTO Customer_Interests VALUES ('9', 'Basketball');
-INSERT INTO Customer_Interests VALUES ('9', 'Curling');
+-- INSERT INTO Customer_Interests VALUES ('9', 'Basketball');
+-- INSERT INTO Customer_Interests VALUES ('9', 'Curling');
 
-INSERT INTO Customer_Interests VALUES ('10', 'Basketball');
+-- INSERT INTO Customer_Interests VALUES ('10', 'Basketball');
 
-INSERT INTO Customer_Interests VALUES ('11', 'French Food');
-INSERT INTO Customer_Interests VALUES ('11', 'Biathlon');
+-- INSERT INTO Customer_Interests VALUES ('11', 'French Food');
+-- INSERT INTO Customer_Interests VALUES ('11', 'Biathlon');
 
 
-INSERT INTO Customer_Interests VALUES ('12', 'Jazz');
-INSERT INTO Customer_Interests VALUES ('12', 'Pop');
-INSERT INTO Customer_Interests VALUES ('12', 'Hip Hop');
+-- INSERT INTO Customer_Interests VALUES ('12', 'Jazz');
+-- INSERT INTO Customer_Interests VALUES ('12', 'Pop');
+-- INSERT INTO Customer_Interests VALUES ('12', 'Hip Hop');
 
 INSERT INTO Customer_Interests VALUES ('13', 'French Food');
 INSERT INTO Customer_Interests VALUES ('13', 'Pop');

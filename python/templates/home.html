@@ -31,12 +31,30 @@
       </p>
 
       <p>
-        <h4>What interests should your match have?</h5>
+        <h4>What interests should your match have?</h4>
         {% for interest in interests %}
           <label for="{{ interest['interest'] }}">{{ interest["interest"] }}</label>
           <input type="checkbox" name="interest" id="{{ interest['interest'] }}" value="{{ interest['interest'] }}" /><br>
         {% endfor %}
       </p>
+      <p>
+          <select name="eye_color" id="ec"> 
+            <option value="brown">brown</option>
+            <option value="green">green</option>
+            <option value="blue">blue</option>
+            <option value='any'>any</option>
+          </select><label for='ec'> Eye Color</label>
+        </p>
+
+        <p>
+          <select name="hair_color" id='hc'> 
+            <option value="brown">brown</option>
+            <option value="blonde">blonde</option>
+            <option value="black">black</option>
+            <option value="red">red</option>
+            <option value='any'>any</option>
+          </select><label for='hc'> Hair Color</label>
+        </p>
       <p>
         <h5>Should your match have ALL of your interests?</h5
         <label for="exact">Yes</label>

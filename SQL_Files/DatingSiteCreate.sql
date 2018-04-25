@@ -134,7 +134,7 @@ CREATE TABLE Match_Fees( # the match fee occurs after user goes for a 3rd differ
 	ssn VARCHAR(40) NOT NULL,
 	fee_number INT NOT NULL,
 	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
-	PRIMARY KEY (ssn),
+	PRIMARY KEY (ssn, fee_number),
 	check (paid= 'N' OR paid= 'Y')
 );
 
