@@ -72,7 +72,11 @@ def insert():
         seeking = request.form['seeking']
         username = request.form['username']
         password = request.form['password']
+        ec = request.form['eye_color']
+        hc = request.form['hair_color']
+
     except:
+        print('ERROR inserting customer')
         return redirect('/')
 
     try: 
@@ -284,6 +288,9 @@ def make_match():
     ID = int(db.get_largest_matchID()) + 1
     my_dates = db.get_dates(myssn)
     my_matches=[]
+    for each in (db.get_matches_by_ssn(myssn)) : #finish this
+        my_matches.append(each['ssn'])
+    print(ID)
 
     if matchssn in my_matches :
         return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user, none_message="you are already matched with that user!\n\n")

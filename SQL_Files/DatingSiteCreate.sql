@@ -36,6 +36,8 @@ CREATE TABLE Customers
 		married_prev CHAR(1) NOT NULL,
 		criminal CHAR(1) NOT NULL DEFAULT 'N',
 		account_opened DATE NOT NULL DEFAULT CURRENT_DATE,
+		eye_color VARCHAR(40) NOT NULL,
+		hair_color VARCHAR(40) NOT NULL,
 		account_closed DATE NULL, 
 		status VARCHAR(16) NOT NULL DEFAULT 'Open',
 		FOREIGN KEY (username) REFERENCES Users (username),
