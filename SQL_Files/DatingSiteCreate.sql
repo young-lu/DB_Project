@@ -94,7 +94,7 @@ CREATE TABLE Dates # primary key is the combination of date_number and matchID
 		date_number INT NOT NULL,
 		date_time TIME NOT NULL,
 		date_date DATE NOT NULL,
-		-- both_still_interested BOOLEAN NOT NULL,
+		both_still_interested CHAR(1) NOT NULL DEFAULT 'Y',
 		happened CHAR(1) NOT NULL DEFAULT 'N',
 		location VARCHAR(40) NOT NULL,
 		matchID CHAR(10) NOT NULL,
@@ -123,17 +123,17 @@ CREATE TABLE Customer_Crimes #primary key is ssn
 		PRIMARY KEY (ssn)
 	);
 
-
 DROP TABLE IF EXISTS `Match_Fees`;
 CREATE TABLE Match_Fees( # the match fee occurs after user goes for a 3rd different date
 	amount DECIMAL(5,2) NOT NULL,
 	date_charged DATE NOT NULL,
 	date_paid DATE NULL, 
-	paid CHAR(1) NOT NULL DEFAULT FALSE,
+	paid CHAR(1) NOT NULL DEFAULT 'N',
 	ssn VARCHAR(40) NOT NULL,
-	FOREIGN KEY (ssn) REFERENCES Matches (ssn) ON DELETE CASCADE,
-	PRIMARY KEY (ssn),
-	check (paid = 'F' or paid = 'Y')
+	fee_number INT NOT NULL,
+	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
+	PRIMARY KEY (ssn)
+	check (paid = 'N' OR paid = 'Y')
 );
 
 DROP TABLE IF EXISTS `Registration_Fees`;
@@ -153,6 +153,7 @@ CREATE TABLE DateSuccess(
 	matchID char(10) NOT NULL,
 	ssn VARCHAR(40) NOT NULL,
 	review VARCHAR(40) NOT NULL,
+	interested CHAR(1) NOT NULL DEFAULT 'Y',
 	PRIMARY KEY (matchID,ssn),
 	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
 	FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE 
@@ -166,34 +167,88 @@ CREATE TABLE DateSuccess(
 	-- one trigger works to add the charges when necessary if there are 3 dates
 	-- the other adds necessary triggers if there are 7 dates
 	-- the other automatically closes the profile of one who has a criminal record
--- --------- TRIGGERS -------------
+----------- TRIGGERS 
+
 -- If a client's criminal status is criminal then 
 	-- we have to close the account 
 	-- but still keep it for our records
 DELIMITER //
 
+-- TESTED: THIS WORKS!
 CREATE TRIGGER update_criminal_status 
 AFTER INSERT ON Customer_Crimes FOR EACH ROW
 BEGIN
 	UPDATE Customers
 		SET account_closed= CURRENT_DATE
-		AND status = 'Closed'
+		WHERE ssn= NEW.ssn;
+	UPDATE Customers
+		SET status = 'Closed'
 		WHERE ssn= NEW.ssn;
 END; //
+
 -- If a client goes for a 3rd DIFFERENT!! date, 
 	-- then a message should be shown on the screen to show that the person 
 	-- has to be charged the match fee
 		-- also update the database to reflect the balance due for that person.
 
-CREATE TRIGGER update_match_fee
+-- NOT TESTED
+CREATE TRIGGER update_match_fee1
 AFTER INSERT ON Matches FOR EACH ROW
 BEGIN
-	IF NEW.ssn IN (SELECT ssn
-			FROM Matches 
-			GROUP BY ssn
-			HAVING count(DISTINCT(matchID))=3)
+	IF NEW.ssn IN (SELECT m.ssn
+					FROM Matches m
+					GROUP BY m.ssn
+					HAVING count(matchID)=1)
 	THEN 
-		INSERT INTO Match_Fees (amount,date_charged,date_paid,paid, ssn) VALUES (100, CURRENT_DATE, NULL, 'F', new.ssn);
+		INSERT INTO Match_Fees VALUES (100, CURRENT_DATE, NULL, 'F', NEW.ssn, 1);
+	END IF;
+END; //
+
+CREATE TRIGGER update_match_fee2
+AFTER INSERT ON Matches FOR EACH ROW
+BEGIN
+	IF NEW.ssn IN (SELECT m.ssn
+					FROM Matches m
+					GROUP BY m.ssn
+					HAVING count(matchID)=2)
+	THEN 
+		INSERT INTO Match_Fees VALUES (100, CURRENT_DATE, NULL, 'F', NEW.ssn, 2);
+	END IF;
+END; //
+
+CREATE TRIGGER update_match_fee3
+AFTER INSERT ON Matches FOR EACH ROW
+BEGIN
+	IF NEW.ssn IN (SELECT m.ssn
+					FROM Matches m
+					GROUP BY m.ssn
+					HAVING count(matchID)=3)
+	THEN 
+		INSERT INTO Match_Fees VALUES (100, CURRENT_DATE, NULL, 'F', NEW.ssn, 3);
+	END IF;
+END; //
+
+CREATE TRIGGER update_match_fee4
+AFTER INSERT ON Matches FOR EACH ROW
+BEGIN
+	IF NEW.ssn IN (SELECT m.ssn
+					FROM Matches m
+					GROUP BY m.ssn
+					HAVING count(matchID)=4)
+	THEN 
+		INSERT INTO Match_Fees VALUES (100, CURRENT_DATE, NULL, 'F', NEW.ssn, 4);
+	END IF;
+END; //
+
+CREATE TRIGGER update_match_fee5
+AFTER INSERT ON Matches FOR EACH ROW
+BEGIN
+	IF NEW.ssn IN (SELECT m.ssn
+					FROM Matches m
+					GROUP BY m.ssn
+					HAVING count(matchID)=5)
+	THEN 
+		INSERT INTO Match_Fees VALUES (100, CURRENT_DATE, NULL, 'F', NEW.ssn, 5);
 	END IF;
 END; //	
 
@@ -201,26 +256,16 @@ END; //
 	-- then a message shown on the screen to show 
 	-- that the person has to be charged the registration fee; 
 	-- also update the database to reflect the balance due for that person
+
+-- NOT TESTED
 CREATE TRIGGER update_registration_fee
 AFTER INSERT ON Matches FOR EACH ROW
 BEGIN
-	IF NEW.ssn IN (SELECT ssn
-			FROM Matches 
-			GROUP BY ssn
-			HAVING count(DISTINCT(matchID))=3)
+	IF NEW.ssn IN (SELECT m.ssn
+					FROM Matches m
+					GROUP BY m.ssn
+					HAVING count(matchID)=7)
 	THEN 
-		INSERT INTO Registration_Fees VALUES (100, CURRENT_DATE, NULL, 'F', new.ssn);
+		INSERT INTO Registration_Fees VALUES (100, CURRENT_DATE, NULL, 'False', NEW.ssn);
 	END IF;
 END; //
-
--- If a crime is inserted into Customer_Crimes, we need to add it to the list of crimes 
-	-- IF its not already there
-CREATE TRIGGER addCrime
-AFTER INSERT ON Customer_Crimes FOR EACH ROW
-BEGIN
-	IF NEW.crime NOT IN (SELECT crime FROM Crimes) THEN
-		INSERT INTO Crimes (crime) VALUES (NEW.crime) ;
-	END IF;
-
-END; //
-DELIMITER ;
