@@ -264,14 +264,28 @@ class Database(object):
         """ return ssn's of matches of ssn """
         try :
             cur = self.conn.cursor(pymysql.cursors.DictCursor)
-            sql = 'SELECT distinct(matchID) FROM Matches WHERE ssn= "{0}"'.format(ssn)
+            # sql = 'SELECT distinct(matchID) FROM Matches WHERE ssn= "{0}"'.format(ssn)
+            sql = 'select * from matches m, customers c WHERE m.ssn = c.ssn and m.matchid in (Select matchID from matches where ssn = "{0}") and m.ssn != "{0}"'.format(ssn)
             cur.execute(sql)
             result = cur.fetchall()
             return result
-
         except:
             print('ERROR: get_matches_by_ssn()')
             return 0
+
+    def get_dates(self, ssn) :
+        try :
+            cur = self.conn.cursor(pymysql.cursors.DictCursor)
+            sql = 'SELECT * FROM  matches m, customers c, dates d WHERE m.matchid = d.matchid AND \
+                    m.matchid IN (SELECT matchid FROM Matches WHERE ssn = "{0}") AND c.ssn = m.ssn AND m.ssn != "{0}" ORDER BY d.date_date'.format( ssn)
+            cur.execute(sql)
+            result = cur.fetchall()
+            # print(result)
+            return result
+        except :
+            print('ERROR: get_dates_by_ssn()')
+            return 0
+
 
     def get_customers_by_match_id(self, matchID) :
         
@@ -288,12 +302,11 @@ class Database(object):
 
     def get_match_id(self, ssn1, ssn2) :
         """ return match_ID for match between ssn1 and ssn2 """
-
-
-# CAN YOU MATCH WITH THE SAME PERSON TWICE?
-    # def is_match(self, ssn1, ssn2) :
-    #     cur = self.conn.cursor(pymysql.cursors.DictCursor)
-    #     cur.execute('SELECT count(*) FROM Matches WHERE ssn = "{0}"  ssn= "{1}" ')
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'select m.ssn, n.ssn from matches m, matches n where m.ssn = "{0}" and n.ssn = "{1}" and m.matchid = n.matchid'.format(ssn1,ssn2)
+        cur.execute(sql)
+        result = cur.fetchall()[0]
+        return result
 
     def get_user_by_name(self, username):
         # TODO: implement this in DB
@@ -349,12 +362,30 @@ class Database(object):
         else:
             return result
 
+    def submit_date(self, ssn, success, matchid, date_num) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        try :
+            sql = 'INSERT INTO DateSuccess VALUES("{0}", "{1}", "{2}")'.format(matchid,ssn, success)
+            cur.execute(sql)
+            self.conn.commit()
+
+            print ('datesuccess_worked')
+            print('ID AND DATE NUM: {0} #{1}'.format(matchid, date_num))
+
+            sql = 'UPDATE Dates SET happened="Y" WHERE matchID= "{0}" AND date_number= "{1}"'.format(matchid,date_num)
+            result = cur.execute(sql)
+            self.conn.commit()
+            return result
+        except:
+            print('ERROR: submit_date()')
+            return 0
+
     def insert_new_match(self, ssn1, ssn2, matchID) :
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql1 = 'INSERT INTO Matches (matchID, ssn) VALUES ("{0}","{1}")'.format(matchID,ssn1)
         sql2 = 'INSERT INTO Matches (matchID, ssn) VALUES ("{0}","{1}")'.format(matchID,ssn2)
-        # print('INSERT MATCH SQL1: {0}'.format(sql1))
-        # print('INSERT MATCH SQL2: {0}'.format(sql2))
+        print('INSERT MATCH SQL1: {0}'.format(sql1))
+        print('INSERT MATCH SQL2: {0}'.format(sql2))
 
         try :
             result = cur.execute(sql1)
