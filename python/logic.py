@@ -32,7 +32,7 @@ class Database(object):
         self.conn = pymysql.connect(self.opts.DB_HOST, self.opts.DB_USER,
                                     self.opts.DB_PASSWORD, self.opts.DB_NAME)
 
-    def insert_new_user(self, username, password, role):
+    def insert_user(self, username, password, role):
         """Search for a venue in the database"""
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql = 'INSERT INTO Users (username, password, role) VALUES (%s, %s, %s)' 
@@ -40,8 +40,8 @@ class Database(object):
         self.conn.commit()
         return result
 
-    def insert_new_customer(self, ssn, first_name, last_name, username, DOB, interested_in, phone, gender, 
-                                children_count, married_prev): 
+    def insert_customer(self, ssn, first_name, last_name, username, DOB, interested_in, phone,
+                    gender, eye_color, hair_color, children_count, married_prev): 
         """ account_closed must be added to the database later """
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
 
@@ -54,10 +54,10 @@ class Database(object):
         thisyear
 
         sql = 'INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, \
-                children_count, married_prev, account_opened ) \
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                children_count, married_prev, account_opened, eye_color, hair_color ) \
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
         result = cur.execute(sql, (ssn, first_name, last_name, username, 
-                        dob, interested_in, phone, age, gender, children_count, married_prev, today))
+                        dob, interested_in, phone, age, gender, children_count, married_prev, today, eye_color, hair_color))
         self.conn.commit()
         return result
         
@@ -129,7 +129,7 @@ class Database(object):
         self.conn.commit()
         return 1
 
-     def delete_customer_child(self, ssn, child_num): # delete a customer's child-- this will also delete all children that come after that one (aka with childID>= child_num)
+    def delete_customer_child(self, ssn, child_num): # delete a customer's child-- this will also delete all children that come after that one (aka with childID>= child_num)
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql = 'DELETE FROM Customers_Children WHERE ssn= %s AND childID>= %d'
         cur.execute(sql, (ssn, child_num))
@@ -174,7 +174,7 @@ class Database(object):
         self.conn.commit()
         return 1
 
-     def insert_customer_child(self, ssn, child_num): # delete a customer's child-- this will also delete all children that come after that one (aka with childID>= child_num)
+    def insert_customer_child(self, ssn, child_num): # delete a customer's child-- this will also delete all children that come after that one (aka with childID>= child_num)
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql = 'DELETE FROM Customers_Children WHERE ssn= %s AND childID>= %d'
         cur.execute(sql, (ssn, child_num))
