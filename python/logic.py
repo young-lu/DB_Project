@@ -73,10 +73,10 @@ class Database(object):
             self.insert_customer_interest(ssn, intrst)
 
 
-    # BEGIN THE STATEMENTS FOR DELETION
-    def delete_user(self, username, password, role): # delete a user
+# BEGIN THE STATEMENTS FOR DELETION
+    def delete_user(self, username): # delete a user
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql = 'DELETE FROM Customers WHERE username = %s)'
+        sql = 'DELETE FROM Users WHERE username = %s'
         cur.execute(sql, (username))
         self.conn.commit()
         return 1
@@ -103,8 +103,15 @@ class Database(object):
         # RE OPEN THE CLIENTS ACCOUNT!!
         status='open'
         criminal= 'N'
-        sql = 'UPDATE Customers WHERE ssn=%s SET account_closed=NULL AND status = %s AND criminal=%s'
-        cur.execute(sql, (ssn, status, criminal))
+        null = 'NULL'
+        sql = 'UPDATE Customers SET account_closed= NULL WHERE ssn=%s'
+        cur.execute(sql, (ssn))
+        self.conn.commit()
+        sql='UPDATE Customers  SET status = %s WHERE ssn=%s'
+        cur.execute(sql, (ssn, status))
+        self.conn.commit()
+        sql='UPDATE Customers SET criminal=%s WHERE ssn=%s '
+        cur.execute(sql, (ssn, criminal))
         self.conn.commit()
         return 1
 
@@ -124,22 +131,23 @@ class Database(object):
     
     def delete_date(self, matchID, date_number): # delete a date
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql = 'DELETE FROM Dates WHERE date_number= %d AND matchID= %s'
-        cur.execute(sql, (date_number, matchID))
+        sql = 'DELETE FROM Dates WHERE date_number= ' + str(date_number)+ ' AND matchID= %s'
+        cur.execute(sql, matchID)
         self.conn.commit()
         return 1
 
     def delete_customer_child(self, ssn, child_num): # delete a customer's child-- this will also delete all children that come after that one (aka with childID>= child_num)
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql = 'DELETE FROM Customers_Children WHERE ssn= %s AND childID>= %d'
-        cur.execute(sql, (ssn, child_num))
+        sql = 'DELETE FROM Customers_Children WHERE ssn= %s AND childID>= ' + str(child_num)
+        print(sql)
+        cur.execute(sql, (ssn))
         self.conn.commit()
         return 1
     
     def delete_match_fee(self, ssn, fee_num): # delete a match fee
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql = 'DELETE FROM Match_Fees WHERE ssn = %s AND fee_number=%d'
-        cur.execute(sql, (ssn, fee_num))
+        sql = 'DELETE FROM Match_Fees WHERE ssn = %s AND fee_number= ' +str(fee_num)
+        cur.execute(sql, (ssn))
         self.conn.commit()
         return 1
 
@@ -180,7 +188,9 @@ class Database(object):
         cur.execute(sql, (ssn, child_num))
         self.conn.commit()
         return 1
-    # END THE STATEMENTS FOR INSERTION
+# END THE STATEMENTS FOR INSERTION
+
+
 # BEGIN THE STATEMENTS FOR UPDATE
     # basically these will be passed parameters by kwargs
     # example: update_user ( "snf34", username= "sara") would just update the username of the previous username "sara"
@@ -415,7 +425,6 @@ class Database(object):
 
 
 # END THE STATEMENTS FOR CHECKING DATA!!
-
 
 
     def get_people(self):
@@ -656,6 +665,15 @@ class Database(object):
         self.conn.commit()
         return result
 
+######### GET TUPLES FUNCTION ####### 
+# will take argument of table name
+    def return_tuples(self, table_name):
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql= 'SELECT * FROM '+ table_name
+        cur.execute(sql)
+        results = cur.fetchall()
+        return results
+
 
     def getquery1(self, username, num, what_option):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
@@ -848,7 +866,6 @@ class Database(object):
                 most_common_list+= str(result[counter]['interest'])
             counter+=1
         result_str = "The most common interest(s) amongst interests chosen by the users is: " +most_common_list +"."
- 
         return result_str
 
     def update_customer(self, statement):
