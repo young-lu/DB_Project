@@ -394,7 +394,7 @@ def get_special_insert() :
     try:
         table = request.form['insert_table'].lower()
         # print('table: {0}'.format(table))
-        dest = 'insert_{0}.html'.format(table)
+        dest = '/specialist-insert/insert_{0}.html'.format(table)
         print(dest)
         return render_template('{0}'.format(dest))
 
