@@ -221,6 +221,25 @@ def get_query8c():
     results= db.getquery8c(username)
     return render_template('query8c.html', results=results)
 
+# this is what happens when the user clicks on page for query 8d
+@app.route('/query8d', methods=['GET'])
+def get_query8d():
+    results= db.getquery8d()
+    return render_template('query8d.html', results=results)
+
+# this is what happens when the user clicks on page for query 8e
+@app.route('/query8e', methods=['GET'])
+def get_query8e():
+    results= db.getquery8e()
+    return render_template('query8e.html', results=results)
+
+# this is what happens when the user clicks on page for query 8f
+@app.route('/query8f', methods=['GET'])
+def get_query8f():
+    results= db.getquery8f()
+    return render_template('query8f.html', results=results)
+
+
 
 @app.route('/home', methods=['GET'])
 def get_home():
