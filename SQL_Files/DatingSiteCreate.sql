@@ -35,7 +35,7 @@ CREATE TABLE Customers
 		children_count INT NOT NULL,
 		married_prev CHAR(1) NOT NULL,
 		criminal CHAR(1) NOT NULL DEFAULT 'N',
-		account_opened DATE NOT NULL,
+		account_opened DATE NOT NULL DEFAULT CURRENT_DATE,
 		account_closed DATE NULL, 
 		status VARCHAR(16) NOT NULL DEFAULT 'Open',
 		FOREIGN KEY (username) REFERENCES Users (username),
@@ -118,7 +118,7 @@ CREATE TABLE Customer_Crimes #primary key is ssn
 	(
 		ssn VARCHAR(40) NOT NULL,
 		crime VARCHAR(40) NOT NULL,
-		date_recorded DATE NOT NULL,
+		date_recorded DATE NOT NULL DEFAULT CURRENT_DATE,
 		FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
 		PRIMARY KEY (ssn)
 	);
