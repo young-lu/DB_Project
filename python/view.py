@@ -119,7 +119,8 @@ def post_login():
 # this is what happens when the user pushes the link to query1
 @app.route('/query1', methods=['GET'])
 def get_query1():
-    return render_template('query1.html')
+    results= ""
+    return render_template('query1.html', results=results)
 
 # this is what happens when the user pushes enter on the query1 page.. actually perfom + display the query
 @app.route('/query1', methods=['POST']) 
@@ -128,36 +129,37 @@ def post_query1():
     option_str = request.form['option_query1']
     number = request.form['number_dates']    
     # perform the query
+    username=load_user_ID()
     results= db.getquery1(username, number, option)
-    return render_template('query1.html', results)
+    return render_template('query1.html', results=results)
 
 # this is what happens when the user clicks on page for query 2
 @app.route('/query2', methods=['GET'])
-def get_query2()
+def get_query2():
     username=load_user_ID()
     results= db.getquery2(username)
-    return render_template('query2.html', results)
+    return render_template('query2.html', results=results)
 
 # this is what happens when the user clicks on page for query 3
 @app.route('/query3', methods=['GET'])
-def get_query3()
+def get_query3():
     username=load_user_ID()
     results= db.getquery3(username)
-    return render_template('query3.html', results)
+    return render_template('query3.html', results=results)
 
 # this is what happens when the user clicks on page for query 4
 @app.route('/query4', methods=['GET'])
-def get_query4()
+def get_query4():
     username=load_user_ID()
     results= db.getquery4(username)
-    return render_template('query4.html', results)
+    return render_template('query4.html', results=results)
 
 # this is what happens when the user clicks on page for query 5
 @app.route('/query5', methods=['GET'])
-def get_query5()
+def get_query5():
     username=load_user_ID()
     results= db.getquery5(username)
-    return render_template('query5.html', results)
+    return render_template('query5.html', results=results)
 
 ################################################################
 ################            TO DO:             #################
@@ -167,31 +169,31 @@ def get_query5()
 
 # this is what happens when the user clicks on page for query 7
 @app.route('/query7', methods=['GET'])
-def get_query7()
+def get_query7():
     username=load_user_ID()
     results= db.getquery7(username)
-    return render_template('query7.html', results)
+    return render_template('query7.html', results=results)
 
 # this is what happens when the user clicks on page for query 8a
 @app.route('/query8a', methods=['GET'])
-def get_query8a()
+def get_query8a():
     username=load_user_ID()
     results= db.getquery8a(username)
-    return render_template('query8a.html', results)
+    return render_template('query8a.html', results=results)
 
 # this is what happens when the user clicks on page for query 8b
 @app.route('/query8b', methods=['GET'])
-def get_query8b()
+def get_query8b():
     username=load_user_ID()
     results= db.getquery8b(username)
-    return render_template('query8b.html', results)
+    return render_template('query8b.html', results=results)
 
 # this is what happens when the user clicks on page for query 8c
 @app.route('/query8c', methods=['GET'])
-def get_query8c()
+def get_query8c():
     username=load_user_ID()
     results= db.getquery8c(username)
-    return render_template('query8c.html', results)
+    return render_template('query8c.html', results=results)
 
 
 @app.route('/home', methods=['GET'])
@@ -281,6 +283,198 @@ def make_match():
     return render_template('home.html', interests=db.get_interests(), user=user, none_message="ERROR: problem adding match\n\n")
 
 
+
+###########################################
+####### UPDATE + DELETE VIEWS GET #########
+###########################################
+# view for udpate-customer page
+# @app.route('/update-customer', methods=['GET'])
+# def update_customer_get():
+#     statement
+#     results= db.update(statement)
+#     return render_template('update-customer.html', results=results)
+
+# # view for update-customer-interests page
+# @app.route('/update-customer-interests', methods=['GET'])
+# def update_customer_interests_get():
+#     username=load_user_ID()
+#     results= db.update(statement)
+#     return render_template('update-customer-interests.html', results=results)
+
+# # view for update-customer-crimes page
+# @app.route('/update-customer-crimes', methods=['GET'])
+# def update_customer_crimes_get():
+#     username=load_user_ID()
+#     results= db.update(statement)
+#     return render_template('update-customer-crimes.html', results=results)
+
+# # view for update-customer-children
+# @app.route('/update-customer-children', methods=['GET'])
+# def update_customer_children_get():
+#     username=load_user_ID()
+#     results= db.update(statement)
+#     return render_template('update-customer-children.html', results=results)
+
+# # view for update-interests page
+# @app.route('/update-interests', methods=['GET'])
+# def update_interests_get():
+#     username=load_user_ID()
+#     results= db.update(statement)
+#     return render_template('update-interests.html', results=results)
+
+# # view for update-crime-options page
+# @app.route('/update-crime-options', methods=['GET'])
+# def update_crime_options_get():
+#     username=load_user_ID()
+#     results= db.update(statement)
+#     return render_template('update-crime-options.html', results=results)
+
+# # view for delete-customer page
+# @app.route('/delete-customer', methods=['GET'])
+# def delete_customer_get():
+#     username=load_user_ID()
+#     results= db.delete_sql(statement)
+#     return render_template('delete-customer.html', results=results)
+
+# # view for delete-customer-interests page
+# @app.route('/delete-customer-interests', methods=['GET'])
+# def delete_customer_interests_get():
+#     username=load_user_ID()
+#     results= db.delete_sql(statement)
+#     return render_template('delete-customer-interests.html', results=results)
+
+# # view for delete-customer-crimes page
+# @app.route('/delete-customer-crimes', methods=['GET'])
+# def delete_customer_crimes_get():
+#     username=load_user_ID()
+#     results= db.delete_sql(statement)
+#     return render_template('delete-customer-interests.html', results=results)
+
+# # view for delete-customer-children page
+# @app.route('/delete-customer-children', methods=['GET'])
+# def delete_customer_children_get():
+#     username=load_user_ID()
+#     results= db.delete_sql(statement)
+#     return render_template('delete-customer-children.html', results=results)
+
+# # view for delete-interests page
+# @app.route('/delete-interests', methods=['GET'])
+# def delete_interests_get():
+#     username=load_user_ID()
+#     results= db.delete_sql(statement)
+#     return render_template('delete-interests.html', results=results)
+
+# # view for delete-crime page
+# @app.route('/delete-crime', methods=['GET'])
+# def delete_crime_get():
+#     username=load_user_ID()
+#     results= db.delete_sql(statement)
+#     return render_template('delete-crime.html', results=results)
+
+
+
+# ###########################################
+# ####### UPDATE + DELETE VIEWS POST ########
+# ###########################################
+
+# ### LOGIC FOR UPDATE:   in the get views we will display all of the options for which ones to udpate and we will have a field for each
+# ###                     option of what to update... we will need to implement checks to make sure the specialist doesnt cause errors 
+# ###                     in the DB
+# ###                     when they push enter, the post view will then use the selected one as the one to update
+# ###                     Then, the update statements will be performed using the primary keys (AKA find all tuples containing that key)
+# ###                     When performing this update, we will also make sure to update dependencies.
+
+
+# ### LOGIC FOR DELETION: in the get views we will display all of the options and have check boxes next to them.
+# ###                     then, the user will be able to delete those that they check
+# ###                     when they push enter, the post view will then use those that were check-marked as the ones to delete
+# ###                     The deletion statements will be performed using the primary keys (AKA find all tuples containing that key)
+# ###                     When performing these deletions, we will also make sure to delete dependencies.
+
+# # view for udpate-customer page
+# @app.route('/update-customer', methods=['POST'])
+# def update_customer_post():
+
+#     results= db.update(statement)
+#     return render_template('update-customer.html', results=results)
+
+# # view for update-customer-interests page
+# @app.route('/update-customer-interests', methods=['POST'])
+# def update_customer_interests_post():
+#     username=load_user_ID()
+#     results= db.update(statement)
+#     return render_template('update-customer-interests.html', results=results)
+
+# # view for update-customer-crimes page
+# @app.route('/update-customer-crimes', methods=['POST'])
+# def update_customer_crimes_post():
+#     username=load_user_ID()
+#     results= db.update(statement)
+#     return render_template('update-customer-crimes.html', results=results)
+
+# # view for update-customer-children
+# @app.route('/update-customer-children', methods=['POST'])
+# def update_customer_children_post():
+#     username=load_user_ID()
+#     results= db.update(statement)
+#     return render_template('update-customer-children.html', results=results)
+
+# # view for update-interests page
+# @app.route('/update-interests', methods=['POST'])
+# def update_interests_post():
+#     username=load_user_ID()
+#     results= db.update(statement)
+#     return render_template('update-interests.html', results=results)
+
+# # view for update-crime-options page
+# @app.route('/update-crime-options', methods=['POST'])
+# def update_crime_options_post():
+#     username=load_user_ID()
+#     results= db.update(statement)
+#     return render_template('update-crime-options.html', results=results)
+
+# # view for delete-customer page
+# @app.route('/delete-customer', methods=['POST'])
+# def delete_customer_post():
+#     username=load_user_ID()
+#     results= db.delete_sql(statement)
+#     return render_template('delete-customer.html', results=results)
+
+# # view for delete-customer-interests page
+# @app.route('/delete-customer-interests', methods=['POST'])
+# def delete_customer_interests_post():
+#     username=load_user_ID()
+#     results= db.delete_sql(statement)
+#     return render_template('delete-customer-interests.html', results=results)
+
+# # view for delete-customer-crimes page
+# @app.route('/delete-customer-crimes', methods=['POST'])
+# def delete_customer_crimes_post():
+#     username=load_user_ID()
+#     results= db.delete_sql(statement)
+#     return render_template('delete-customer-interests.html', results=results)
+
+# # view for delete-customer-children page
+# @app.route('/delete-customer-children', methods=['POST'])
+# def delete_customer_children_post():
+    
+#     results= db.delete_sql(statement)
+#     return render_template('delete-customer-children.html', results=results)
+
+# # view for delete-interests page
+# @app.route('/delete-interests', methods=['POST'])
+# def delete_interests_post():
+#     username=load_user_ID()
+#     results= db.delete_sql(statement)
+#     return render_template('delete-interests.html', results=results)
+
+# # view for delete-crime page
+# @app.route('/delete-crime', methods=['POST'])
+# def delete_crime_post():
+#     username=load_user_ID()
+#     results= db.delete_sql(statement)
+#     return render_template('delete-crime.html', results=results)
+
 # @app.route('/resources/<path:path>')
 # def send_resources(path):
 #     return send_from_directory('resources', path)
@@ -288,3 +482,10 @@ def make_match():
 
 if __name__ == '__main__':
     app.run()
+
+
+
+
+
+
+
