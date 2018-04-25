@@ -181,9 +181,209 @@ class Database(object):
         self.conn.commit()
         return 1
     # END THE STATEMENTS FOR INSERTION
+# BEGIN THE STATEMENTS FOR UPDATE
+    # basically these will be passed parameters by kwargs
+    # example: update_user ( "snf34", username= "sara") would just update the username of the previous username "sara"
+    def update_user(self, username, **kwargs): # update a user
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql_base = 'UPDATE Users WHERE username = %s '
+        if kwargs['password']:
+            sql= sql_base+ ' SET password= %s'
+            cur.execute(sql, (username, kwargs['password']))
+            self.conn.commit()
+        if kwargs['role']:
+            sql= sql_base+ ' SET role= %s'
+            cur.execute(sql, (username, kwargs['role']))
+            self.conn.commit()
+        return 1
+
+    def update_customer(self, ssn, **kwargs):  # update a customer 
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql_base = 'UPDATE Customers WHERE ssn = %s '
+        if kwargs['username']:
+            sql= sql_base+ ' SET username= %s'
+            cur.execute(sql, (ssn, kwargs['username']))
+            self.conn.commit()
+        if kwargs['first_name']:
+            sql= sql_base+ ' SET first_name= %s'
+            cur.execute(sql, (ssn, kwargs['first_name']))
+            self.conn.commit()
+        if kwargs['last_name']:
+            sql= sql_base+ ' SET last_name= %s'
+            cur.execute(sql, (ssn, kwargs['last_name']))
+            self.conn.commit()
+        if kwargs['DOB']:
+            sql= sql_base+ ' SET DOB= %s'
+            cur.execute(sql, (ssn, kwargs['DOB']))
+            self.conn.commit()
+        if kwargs['interested_in']:
+            sql= sql_base+ ' SET interested_in= %s'
+            cur.execute(sql, (ssn, kwargs['interested_in']))
+            self.conn.commit()
+        if kwargs['phone']:
+            sql= sql_base+ ' SET phone= %s'
+            cur.execute(sql, (ssn, kwargs['phone']))
+            self.conn.commit()
+        if kwargs['age']:
+            sql= sql_base+ ' SET age= %s'
+            cur.execute(sql, (ssn, kwargs['age']))
+            self.conn.commit()
+        if kwargs['gender']:
+            sql= sql_base+ ' SET gender= %s'
+            cur.execute(sql, (ssn, kwargs['gender']))
+            self.conn.commit()
+        if kwargs['children_count']:
+            sql= sql_base+ ' SET children_count= %s'
+            cur.execute(sql, (ssn, kwargs['children_count']))
+            self.conn.commit()
+        if kwargs['married_prev']:
+            sql= sql_base+ ' SET married_prev= %s'
+            cur.execute(sql, (ssn, kwargs['married_prev']))
+            self.conn.commit()
+         if kwargs['criminal']:
+            sql= sql_base+ ' SET criminal= %s'
+            cur.execute(sql, (ssn, kwargs['criminal']))
+            self.conn.commit()
+        if kwargs['account_opened']:
+            sql= sql_base+ ' SET account_opened= %s'
+            cur.execute(sql, (ssn, kwargs['account_opened']))
+            self.conn.commit()
+         if kwargs['account_closed']:
+            sql= sql_base+ ' SET account_closed= %s'
+            cur.execute(sql, (ssn, kwargs['account_closed']))
+            self.conn.commit()
+         if kwargs['status']:
+            sql= sql_base+ ' SET status= %s'
+            cur.execute(sql, (ssn, kwargs['status']))
+            self.conn.commit()
+        return 1
+
+    def update_customer_interest(self, ssn, interest, new_interest): # update a customer interest
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'UPDATE Customer_Interests WHERE ssn=%s AND interest= %s SET interest=%s'
+        cur.execute(sql, (ssn, interest, new_interest))
+        self.conn.commit()
+        return 1
+
+    def update_customer_crime(self, ssn, **kwargs): # update a customer crime
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql_base = 'UPDATE Customer_Crimes WHERE ssn = %s '
+        
+        if kwargs['password']:
+            sql= sql_base+ ' SET crime= %s'
+            cur.execute(sql, (ssn, kwargs['password']))
+            self.conn.commit()
+        if kwargs['date_recorded']:
+            sql= sql_base+ ' SET date_recorded= %s'
+            cur.execute(sql, (ssn, kwargs['date_recorded']))
+            self.conn.commit()
+        return 1
+    
+    def update_date(self, matchID, date_number, **kwargs): # update a date
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql_base = 'UPDATE Dates WHERE date_number= %d AND matchID= %s '
+        if kwargs['date_time']:
+            sql= sql_base + ' SET date_time= %s'
+            cur.execute(sql, (date_number, matchID, date_time))
+            self.conn.commit()
+        if kwargs['date_date']:
+            sql= sql_base + ' SET date_date= %s'
+            cur.execute(sql, (date_number, matchID, date_date))
+            self.conn.commit()
+        if kwargs['both_still_interested']:
+            sql= sql_base + ' SET both_still_interested= %s'
+            cur.execute(sql, (date_number, matchID, both_still_interested))
+            self.conn.commit()
+        if kwargs['happened']:
+            sql= sql_base + ' SET happened= %s'
+            cur.execute(sql, (date_number, matchID, happened))
+            self.conn.commit()
+        if kwargs['location']:
+            sql= sql_base + ' SET location= %s'
+            cur.execute(sql, (date_number, matchID, location))
+            self.conn.commit()
+        return 1
+
+    def update_match_fee(self, ssn, fee_num, **kwargs): # update a match fee
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql_base = 'UPDATE Match_Fees WHERE ssn = %s AND fee_number=%d '
+        if kwargs['amount']:
+            sql= sql_base + ' SET amount= %s'
+            cur.execute(sql, (ssn, fee_num, amount))
+            self.conn.commit()
+        if kwargs['date_charged']:
+            sql= sql_base + ' SET date_charged= %s'
+            cur.execute(sql, (ssn, fee_num, date_charged))
+            self.conn.commit()
+        if kwargs['paid']:
+            sql= sql_base + ' SET paid= %s'
+            cur.execute(sql, (ssn, fee_num, paid))
+            self.conn.commit()
+        if kwargs['date_paid']:
+            sql= sql_base + ' SET date_paid= %s'
+            cur.execute(sql, (ssn, fee_num, date_paid))
+            self.conn.commit()    
+        return 1
+
+    def update_registration_fee(self, ssn): # update a registration fee
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql_base = 'UPDATE Registration_Fees WHERE ssn = %s '
+        if kwargs['amount']:
+            sql= sql_base + ' SET amount= %s'
+            cur.execute(sql, (ssn, amount))
+            self.conn.commit()
+        if kwargs['date_charged']:
+            sql= sql_base + ' SET date_charged= %s'
+            cur.execute(sql, (ssn, date_charged))
+            self.conn.commit()
+        if kwargs['paid']:
+            sql= sql_base + ' SET paid= %s'
+            cur.execute(sql, (ssn, paid))
+            self.conn.commit()
+        if kwargs['date_paid']:
+            sql= sql_base + ' SET date_paid= %s'
+            cur.execute(sql, (ssn, date_paid))
+            self.conn.commit()    
+        return 1
+
+# END THE STATEMENTS FOR UPDATE
 
 
+# BEGIN THE STATEMENTS FOR CHECKING DATA!! -- THESE WILL RETURN "no error" or the error message
+    # check a date:
+    def check_date(self, date_check):
+        year= int(date_check[0:3])
+        dash1= date_check[4]
+        month= int(date_check[5:6])
+        dash2= date_check[7]
+        day= int(date_check[8:9])
+        if 1900<=year<=2018 && dash1== "-" && dash2== "-" &&  0<month<=12 &&  0<day<=31:
+            error_msg= "no error"
+        else:
+            error_msg= "The date " + str(date_check) + " is not a valid date for entry."
+        return error_msg
 
+    # check a number:
+    def check_number(self, num_check):
+        if(num_check >= 0):
+            error_msg= "no error"
+        else:
+            error_msg= "The number " + str(num_check) + " is not a valid number for entry."
+        return error_msg
+
+    # check an ssn to make sure it doesn't already exist
+    def check_ssn(self, ssn_check):
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql= 'SELECT ssn FROM Customers'
+        cur.execute(sql)
+        for ssn in results:
+            if(ssn_check == ssn):
+                error_msg = "The ssn " + ssn_check + " is already in the database."
+        self.conn.commit()
+        return error_msg
+
+
+# END THE STATEMENTS FOR CHECKING DATA!!
 
 
 
