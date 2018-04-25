@@ -240,7 +240,7 @@ class Database(object):
             sql= sql_base+ ' SET married_prev= %s'
             cur.execute(sql, (ssn, kwargs['married_prev']))
             self.conn.commit()
-         if kwargs['criminal']:
+        if kwargs['criminal']:
             sql= sql_base+ ' SET criminal= %s'
             cur.execute(sql, (ssn, kwargs['criminal']))
             self.conn.commit()
@@ -248,11 +248,11 @@ class Database(object):
             sql= sql_base+ ' SET account_opened= %s'
             cur.execute(sql, (ssn, kwargs['account_opened']))
             self.conn.commit()
-         if kwargs['account_closed']:
+        if kwargs['account_closed']:
             sql= sql_base+ ' SET account_closed= %s'
             cur.execute(sql, (ssn, kwargs['account_closed']))
             self.conn.commit()
-         if kwargs['status']:
+        if kwargs['status']:
             sql= sql_base+ ' SET status= %s'
             cur.execute(sql, (ssn, kwargs['status']))
             self.conn.commit()
@@ -357,7 +357,7 @@ class Database(object):
         month= int(date_check[5:6])
         dash2= date_check[7]
         day= int(date_check[8:9])
-        if 1900<=year<=2018 && dash1== "-" && dash2== "-" &&  0<month<=12 &&  0<day<=31:
+        if 1900<=year<=2018 and dash1== "-" and dash2== "-" and  0<month<=12 and  0<day<=31:
             error_msg= "no error"
         else:
             error_msg= "The date " + str(date_check) + " is not a valid date for entry."
@@ -615,18 +615,6 @@ class Database(object):
         return result
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     def getquery1(self, username, num, what_option):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         cur.execute('SELECT c.* FROM Customers c, Dates d, Matches m WHERE m.matchID= d.matchID'+
@@ -655,54 +643,64 @@ class Database(object):
 
     def getquery2(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        cur.execute('SELECT count(*) FROM Customers WHERE married_prev = True')
+        cur.execute('SELECT count(*) AS ct FROM Customers WHERE married_prev = %s', 'Y')
         result=cur.fetchall()
-        return result[0]
+        result_str= ("The total number of customers that were previously married that are in the DB is " + 
+                    str(result[0]['ct']) + " people.")
+        return result_str
 
     def getquery3(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        cur.execute('SELECT count(*) AS "count", gender FROM Customers GROUP BY gender')
+        cur.execute('SELECT gender, count(*) AS ct FROM Customers GROUP BY gender')
         result=cur.fetchall()
-
+        result_str=""
+        print(result)
         counter=0
-        for count, gender in result:
-            if(gender== "M"):
+        for gender in result:
+            gender= result[counter]['gender']
+            if str(gender)== "M":
                 gender_str= "males"
-            else:
+            elif str(gender) =="F":
                 gender_str= "females"
-            result_str[counter]= "For " +gender + ", there are "+ count +" people registered. "
+            result_str+= "For " + gender_str + ", there are "+ str(result[counter]['ct']) +" people registered. "
             counter+=1
 
         return result_str
 
     def getquery4(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        cur.execute('SELECT avg(temp.counter) AS average, temp.gender AS gender FROM (SELECT COUNT(*) AS counter, c.gender AS gender FROM Customers c, Dates d, Matches m WHERE d.matchID = m.matchID AND m.ssn= c.ssn GROUP BY c.gender)  as temp GROUP BY temp.gender')
+        cur.execute('SELECT  temp.gender AS gender, avg(temp.counter) AS average FROM (SELECT COUNT(*) AS counter, c.gender AS gender FROM Customers c, Dates d, Matches m WHERE d.matchID = m.matchID AND m.ssn= c.ssn GROUP BY c.gender)  as temp GROUP BY temp.gender')
         result=cur.fetchall()
 
         counter=0
-        result_str=""
-        for average, gender in result:
-            if(gender== "M"):
+        result_str="None"
+        for gender in result:
+            gender= result[counter]['gender']
+            if str(gender)== "M":
                 gender_str= "males"
-            else:
+            elif str(gender) =="F":
                 gender_str= "females"
-            result_str[counter]= "For " +str(gender) + ", there are an average of "+ str(average) +" date events. "
+            average= result[counter]['average']
+            result_str+= "For " + gender_str + ", there are an average of "+ str(average) +" date events. \n"
+
             counter+=1
+
         return result_str
         # for each gender, avg number of dates
 
     def getquery5(self, username):
+        count=0
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        cur.execute('SELECT crime FROM Crimes')
+        cur.execute('SELECT DISTINCT(crime) FROM Customer_Crimes')
         result=cur.fetchall()
         result_str=""
         for crime in result:
-            if result_str=="":
-                result_str= str(crime)
+            if count==0:
+                result_str= str(result[count]['crime'])
             else:
-                result_str+= ", " + str(crime)
-        result_return = "These are the crimes in the DB: "+ result_str
+                result_str+= ", " + str(result[count]['crime'])
+            count+=1
+        result_return = "These are the crimes in the DB that have been recorded for customers: "+ result_str
         return result_return
 
     def getquery6(self, username):
@@ -712,24 +710,31 @@ class Database(object):
 
     def getquery7(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        cur.execute('SELECT avg(age) FROM Customers_Children')
+        cur.execute('SELECT avg(age) AS average FROM Customers_Children')
         result=cur.fetchall()
-        result_str= "The average age of the customers' children in the DB is "+ result[0]
+        answer= result[0]['average']
+        ans=answer
+        if str(answer)=='None':
+            ans='NA (no children in DB at the moment)'
+
+        result_str= "The average age of the customers' children in the DB is "+ str(ans) +"."
         return result_str
 
     def getquery8a(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        cur.execute('SELECT avg(count(m.matchID)) FROM Matches m, Customers c WHERE m.ssn= c.ssn '+
-                    'AND c.children_count >0 GROUP BY m.ssn')
+        cur.execute('SELECT avg(ct) AS average FROM (SELECT COUNT(m.matchID) AS ct FROM Matches m, Customers c WHERE m.ssn= c.ssn '+
+                    'AND c.children_count >0 GROUP BY m.ssn) AS Derived_tab')
         result=cur.fetchall()
-        result_str= "There are on average " +result[0] + " match(es) for users who have one or more children."
+
+        result_str= "There are on average " + str(result[0]['average']) + " match(es) for users who have one or more children."
         return result_str
     
     def getquery8b(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        cur.execute('SELECT count(*) FROM Dates')
+        cur.execute('SELECT count(*) AS count FROM Dates')
         result=cur.fetchall()
-        result_str= "There have been "+result[0]+ " total dates for this dating site."
+
+        result_str= "There have been "+str(result[0]['count'])+ " total dates for this dating site."
         return result_str
 
     def getquery8c(self, username):
@@ -739,12 +744,69 @@ class Database(object):
                     'GROUP BY married_prev ORDER BY count(*) DESC LIMIT 1')
 
         result=cur.fetchall()
-        if(result[0]== "Y"):
+        if(result[0]['married_prev']== "Y"):
             mar_status= " previously married."
         else:
             mar_status= " not previously married."
         result_str = "The most common marital status amongst men is " +mar_status
 
+        return result_str
+
+    def getquery8d(self):
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+
+        cur.execute('SELECT married_prev FROM Customers WHERE gender="F" '+
+                    'GROUP BY married_prev ORDER BY count(*) DESC LIMIT 1')
+
+        result=cur.fetchall()
+        if(result[0]['married_prev']== "Y"):
+            mar_status= " previously married."
+        else:
+            mar_status= " not previously married."
+        result_str = "The most common marital status amongst women is " +mar_status
+
+        return result_str
+ 
+    def getquery8e(self): # least common interest in DB
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+
+        cur.execute('SELECT interest FROM Customer_Interests GROUP BY interest ORDER BY count(*) ASC LIMIT 1')
+        result=cur.fetchall()
+        least_common= result[0]['interest']
+        sql= 'SELECT interest FROM Customer_Interests GROUP BY interest HAVING count(*)= (SELECT count(*) AS ct FROM Customer_Interests WHERE interest= %s)'
+        cur.execute(sql, least_common)
+        result=cur.fetchall()
+        counter=0
+        least_common_list=""
+        for thing in result:
+            if counter!=0:
+                least_common_list+= ", "+ str(result[counter]['interest'])
+            else:
+                least_common_list+= str(result[counter]['interest'])
+            counter+=1
+        result_str = "The most common interest(s) amongst interests chosen by the users is: " +least_common_list +"."
+
+        return result_str
+
+    def getquery8f(self): # most common interest in DB
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+
+        cur.execute('SELECT interest FROM Customer_Interests GROUP BY interest ORDER BY count(*) DESC LIMIT 1')
+        result=cur.fetchall()
+        most_common= result[0]['interest']
+        sql= 'SELECT interest FROM Customer_Interests GROUP BY interest HAVING count(*)= (SELECT count(*) AS ct FROM Customer_Interests WHERE interest= %s)'
+        cur.execute(sql, most_common)
+        result=cur.fetchall()
+        counter=0
+        most_common_list=""
+        for thing in result:
+            if counter!=0:
+                most_common_list+= ", "+ str(result[counter]['interest'])
+            else:
+                most_common_list+= str(result[counter]['interest'])
+            counter+=1
+        result_str = "The most common interest(s) amongst interests chosen by the users is: " +most_common_list +"."
+ 
         return result_str
 
     def update_customer(self, statement):
