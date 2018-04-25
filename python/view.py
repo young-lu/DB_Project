@@ -19,8 +19,13 @@ app.port = config.APP_PORT
 app.debug = config.APP_DEBUG
 
 def load_current_user():
+    # print('loading current user')
     userId = request.cookies.get('userID')
+
     if not userId: return None
+    if request.cookies.get('role')== 'Customer':
+        return db.get_customer_by_name(userId)
+
     return db.get_user_by_name(userId)
 
 
@@ -152,8 +157,12 @@ def post_login():
         # Send the user to the home page and set a cookie to keep their session active
         # SECURITY NOTE: THIS IS NOT A GOOD WAY TO HANDLE USER AUTHORIZATION IN PRACTICE.
         # DO NOT DO THIS FOR A PRODUCTION WEBSITE (but it's good enough for this course project)
+
         resp = app.make_response(redirect('/home'))
         resp.set_cookie('userID', username)
+        resp.set_cookie('role', role)
+        print("resp: {0}".format(resp))
+        print()
         return resp
         # if (role=="Customer"):
         #     return render_template('home.html', username=username, password=password,role=role)
@@ -208,12 +217,6 @@ def get_query5():
     results= db.getquery5(username)
     return render_template('query5.html', results=results)
 
-################################################################
-################            TO DO:             #################
-################ INSERT QUERY 6 HERE!!!!!!!!!! #################
-################                               #################
-################################################################
-
 # this is what happens when the user clicks on page for query 7
 @app.route('/query7', methods=['GET'])
 def get_query7():
@@ -265,24 +268,19 @@ def get_query8f():
 @app.route('/home', methods=['GET'])
 def get_home():
     user = load_current_user()
-    interests = db.get_interests()
-    myssn = user['ssn']
-    my_matchIDs = []
-    my_matches = []
-    my_dates = db.get_dates(myssn)
-
-    for each in (db.get_matches_by_ssn(myssn)) : #finish this
-        my_matchIDs.append(each['ssn'])
-
-    # print(my_matchIDs)
-    # for each in my_matchIDs :
-    #     match_list = db.get_customers_by_match_id(each)
-    #     for each in match_list:
-    #         my_matches.append(each['ssn'])
-
     if not user:
         return redirect('/login')
-    return render_template('home.html', user=user, interests=interests, dates=my_dates)
+    interests = db.get_interests()
+    print(user)
+    if user['role'] == 'Customer':
+        myssn = user['ssn']
+        my_matchIDs = []
+        my_dates = db.get_dates(myssn)
+        for each in (db.get_matches_by_ssn(myssn)) : 
+            my_matchIDs.append(each['ssn'])
+        return render_template('home.html', user=user, interests=interests, dates=my_dates)
+    elif user['role'] == 'Specialist':
+        return render_template('special-home.html', user=user,tables=db.show_tables())
 
 
 @app.route('/find_match', methods=['POST'])
@@ -389,6 +387,22 @@ def review_date():
         return render_template('home.html', interests=db.get_interests(), dates=db.get_dates(user['ssn']), user=user,none_message='Date review submitted')
 
     return render_template('dates.html', dates=db.get_dates(user['ssn']), user= user, none_message='ERROR submitting date review' )
+
+@app.route('/get_special_insert', methods=['POST'])
+def get_special_insert() :
+
+    try:
+        table = request.form['insert_table'].lower()
+        # print('table: {0}'.format(table))
+        dest = 'insert_{0}.html'.format(table)
+        print(dest)
+        return render_template('{0}'.format(dest))
+
+    except:
+        print('ERROR in get_special_insert')
+        return redirect('/home')
+
+
 
 
 ###########################################

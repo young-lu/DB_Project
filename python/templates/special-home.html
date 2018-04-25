@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Specialist Home</title>
+  </head>
+  <h1>Welcome, {{ user['username'] }}</h1>
+  <body>
+    <section> 
+      <h3>Select a query to demonstrate: </h3><br>
+      <ol>
+        <li> <a href="/query1">Who are those who had [at least, at most, exactly] X number of date events?</a> </li>
+        <li><a href="/query2">How many people who were earlier married are the clients?</a></li>
+        <li><a href="/query3">How many males and females are registered?</a></li>
+        <li><a href="/query4">For each gender, what is the average number of dates?</a></li>
+        <li><a href="/query5">What type of crime was recorded in database for the “criminal_closed” cases?</a></li>
+        <li><a href="/query6">Query based on different characteristics to find matches.</a></li>
+        <li><a href="/query7">What is the average age of the children of the clients?</a></li>
+        <li><a href="/query8a">What is the average number of matches that the clients with >=1 child have?</a></li>
+        <li><a href="/query8b">What is the total number of dates that have occured?</a></li>
+        <li><a href="/query8c">What is the most common previous marital status amongst the men in the database?</a></li>
+        <li><a href="/query8c">What is the most common previous marital status amongst the women in the database?</a></li>
+        <li><a href="/query8d">What is the most common previous marital status amongst the men and women in the database?</a></li>
+        <li><a href="/query8e">What is the most least interest in the database?</a></li>
+        <li><a href="/query8f">What is the most common interest in the database?</a></li>
+      </ol>
+      <input type='submit' value="submit">
+    </section>
+
+    <!-- update data plz do this sara plz -->
+    <section>
+      <h3>Select an element to update:</h3><br>
+      <form action="get_special_update" method = "POST">
+        <select name="update">
+          {% for table in tables %}
+            <option value="{{ table }}">{{ table }}</option>
+          {% endfor %}
+        </select>
+        <input type='submit' value="submit">
+      </form>
+    </section>
+
+    <!-- insert data -->
+    <section>
+      <form action="get_special_insert" method = "POST">
+        <h3>Select an element to insert:</h3><br>
+        <select name='insert_table'>
+          {% for table in tables %}
+            <option value="{{ table }}">{{ table }}</option>
+          {% endfor %}
+        </select>
+        <input type='submit' value="submit">
+      </form>
+    </section>
+
+
+<!-- delete tuples -->
+    <section>
+      <form action="get_special_delete" method = "POST">
+        <h3>Select an element to delete:</h3><br>
+        <select name='delete'>
+          {% for table in tables %}
+            <option name="table" value="{{ table }}">{{ table }}</option>
+          {% endfor %}
+        </select>
+        <input type='submit' value="submit">
+      </form>
+    </section>
+
+  </body>
+
+  <footer >
+    <p>written by: Sara Fares and Connor Lu</p>
+    <p>COSC-280</p>
+    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+  </footer>
+</html>
