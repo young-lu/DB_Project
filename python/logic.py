@@ -197,6 +197,16 @@ class Database(object):
             self.conn.commit()
         return 1
 
+    def show_tables(self):
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        cur.execute('Show tables;')
+        result = cur.fetchall()
+        results = []
+        for each in range(len(result)) :
+            results.append(result[each]['Tables_in_dating_site_project'])
+        return results
+
+
     def add_child(self, ssn, age, at_home, childid) :
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql = 'UPDATE Customers SET children_count = "{1}" WHERE ssn = "{0}"'.format(ssn, childid)
@@ -481,6 +491,7 @@ class Database(object):
         except:
             return 0
 
+
     def get_matches_by_ssn(self, ssn) :
         """ return ssn's of matches of ssn """
         try :
@@ -529,11 +540,21 @@ class Database(object):
         result = cur.fetchall()[0]
         return result
 
+    def get_customer_by_name(self, username):
+        # TODO: implement this in DB
+        try:
+            cur = self.conn.cursor(pymysql.cursors.DictCursor)
+            cur.execute('SELECT * FROM Customers natural join Users WHERE (username = %s)', username)
+            result=cur.fetchall()
+            return result[0]
+        except:
+            return 0
+
     def get_user_by_name(self, username):
         # TODO: implement this in DB
         try:
             cur = self.conn.cursor(pymysql.cursors.DictCursor)
-            cur.execute('SELECT * FROM Customers WHERE (username = %s)', username)
+            cur.execute('SELECT * FROM Users WHERE (username = "{0}")'.format(username))
             result=cur.fetchall()
             return result[0]
         except:
@@ -726,7 +747,7 @@ class Database(object):
 
     def getquery6(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        hello=1
+        
         return hello
 
     def getquery7(self, username):

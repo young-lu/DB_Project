@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Specialist Home</title>
+  </head>
+  <h1>Welcome, {{ user['username'] }}</h1>
+  <body>
+    <!-- query data , plz do this sara plz-->
+    <section> 
+      <h3>Select a query to demonstrate: </h3><br>
+      <form action="get_special_query" method = "POST">
+      <select name="query">
+        <option value="q1">query 1</option>
+        <option value="q2">query 2</option>
+        <option value="q3">query 3</option>
+        <option value="q4">query 4</option>
+        <option value="q5">query 5</option>
+        <option value="q6">query 6</option>
+        <option value="q7">query 7</option>
+        <option value="q8a">query 8a</option>
+        <option value="q8b">query 8b</option>
+        <option value="q8c">query 8c</option>
+        <option value="q8d">query 8d</option>
+        <option value="q8f">query 8f</option>
+      </select>
+      <input type='submit' value="submit">
+    </form>
+    </section>
+
+    <!-- update data plz do this sara plz -->
+    <section>
+      <h3>Select an element to update:</h3><br>
+      <form action="get_special_update" method = "POST">
+        <select name="update">
+          {% for table in tables %}
+            <option value="{{ table }}">{{ table }}</option>
+          {% endfor %}
+        </select>
+        <input type='submit' value="submit">
+      </form>
+    </section>
+
+    <!-- insert data -->
+    <section>
+      <form action="get_special_insert" method = "POST">
+        <h3>Select an element to insert:</h3><br>
+        <select name='insert_table'>
+          {% for table in tables %}
+            <option value="{{ table }}">{{ table }}</option>
+          {% endfor %}
+        </select>
+        <input type='submit' value="submit">
+      </form>
+    </section>
+
+
+<!-- delete tuples -->
+    <section>
+      <form action="get_special_delete" method = "POST">
+        <h3>Select an element to delete:</h3><br>
+        <select name='delete'>
+          {% for table in tables %}
+            <option name="table" value="{{ table }}">{{ table }}</option>
+          {% endfor %}
+        </select>
+        <input type='submit' value="submit">
+      </form>
+    </section>
+
+  </body>
+
+  <footer >
+    <p>written by: Sara Fares and Connor Lu</p>
+    <p>COSC-280</p>
+    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+  </footer>
+</html>
