@@ -75,9 +75,6 @@ def insert():
         ec = request.form['eye_color']
         hc = request.form['hair_color']
 
-        print(ec)
-        print(hc)
-
     except:
         print('ERROR inserting customer')
         return redirect('/')
@@ -259,6 +256,8 @@ def find_match():
     min_age = request.form['min_age']
     interests = request.form.getlist("interest")
     my_dates = db.get_dates(ssn)
+    eye_color = request.form['eye_color']
+    hair_color = request.form['hair_color']
 
     try:
         exact = request.form['exact']
@@ -266,9 +265,9 @@ def find_match():
         exact = 0
 
     if not exact:
-        ssn_list = db.find_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests)
+        ssn_list = db.find_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests,eye_color, hair_color)
     elif exact:
-        ssn_list = db.find_exact_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests)
+        ssn_list = db.find_exact_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests,eye_color, hair_color)
 
     if not ssn_list:
         return render_template('home.html',interests=db.get_interests(),dates=my_dates, user=user,none_message="\nSorry, you did not match with anyone!\n")

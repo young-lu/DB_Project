@@ -199,7 +199,7 @@ class Database(object):
         """ show ALL data of customer with option to edit"""
         """ pass every piece of data in update_customer() """
 
-    def find_matches(self,ssn, interested_in, married_prev,max_kids,min_age,max_age,interests):
+    def find_matches(self,ssn, interested_in, married_prev,max_kids,min_age,max_age,interests, eye_color, hair_color):
         """Fetch a view from the database"""
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         interests = ", ".join('"' + interest + '"' for interest in interests)
@@ -207,11 +207,16 @@ class Database(object):
         sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE ssn != "{0}" AND'.format(ssn)
         if not married_prev :
             sql += " (married_prev = 'N' ) AND "
+        if eye_color != 'any':
+            sql += " (eye_color = '{0}' ) AND ".format(eye_color)
+        if hair_color != 'any':
+            sql += " (hair_color = '{0}' ) AND ".format(hair_color)
+
         sql += " (gender = '{0}') AND ".format(interested_in)
         sql += " (children_count <= {0}) AND ".format(max_kids)
         sql += " (age >= {0} AND age <= {1}) AND ".format(min_age,max_age)
         sql += " (interest IN ({0}))".format(interests)
-
+        print(sql)
         cur.execute(sql)
         ssn_list = cur.fetchall()
 
@@ -219,7 +224,7 @@ class Database(object):
             return 0
         return ssn_list
 
-    def find_exact_matches(self, ssn, interested_in, married_prev,max_kids,min_age,max_age,interests) :
+    def find_exact_matches(self, ssn, interested_in, married_prev,max_kids,min_age,max_age,interests,eye_color, hair_color) :
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         interest_string = ", ".join('"' + interest + '"' for interest in interests)
         sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE ssn != "{0}" AND'.format(ssn)
