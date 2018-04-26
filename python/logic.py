@@ -509,7 +509,7 @@ class Database(object):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         interests = ", ".join('"' + interest + '"' for interest in interests)
         # sql = 'SELECT DISTINCT(c.ssn) FROM Customers c, Customer_Interests ci WHERE '
-        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE ssn != "{0}" AND'.format(ssn)
+        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE status = "Open" AND ssn != "{0}" AND'.format(ssn)
         if not married_prev :
             sql += " (married_prev = 'N' ) AND "
         if eye_color != 'any':
@@ -533,7 +533,7 @@ class Database(object):
     def find_exact_matches(self, ssn, interested_in, married_prev,max_kids,min_age,max_age,interests,eye_color, hair_color) :
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         interest_string = ", ".join('"' + interest + '"' for interest in interests)
-        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE ssn != "{0}" AND'.format(ssn)
+        sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE status = "Open" AND ssn != "{0}" AND'.format(ssn)
         if not married_prev :
             sql += " (married_prev = 'N' ) AND "
         if eye_color != 'any':
