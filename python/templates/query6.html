@@ -1,5 +1,110 @@
  <!-- Query based on different characteristics to find matches. -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+  </head>
+  <p>Query the database based on any one or the combination of the characteristics to find potential list
+of match.<br> For each potential match, the information of that match should be shown.</p>
+  <body>
+		<form action="query6" method="POST">
+		      <p>
+		        <p>Previous marriage</p>
+		        	<input type= "radio" name="married" id ="never_married" value="never_married"/><label for="never_married">never married</label>
+		        	<input type= "radio" name="married" id ="previously_married" value="previously_married"/><label for="previously_married">previously married</label>
+		        	<input type= "radio" name="married" id ="both" value="both"/><label for="both">both</label>
+		      </p>
+
+		      <p>
+		      	<p>Gender</p>
+		        	<input type='radio' name='gender' id="male" value="male"/><label for= "male" >male</label>
+		        	<input type='radio' name='gender' id="female" value="female"/><label for= "female" >female</label>
+		        	<input type='radio' name='gender' id="any" value="any"/><label for= "any" >any gender</label>
+		    	</p>
+
+		    	<p>
+		        <label for="criminal">Criminal status</label>
+		        <select name="criminal" id="criminal">
+		        	<option value="Y">criminal</option>
+		        	<option value="N">not a Criminal</option>
+		        	<option value="any">both</option>
+		        </select>
+		      </p>
+
+		      <p>
+		        <label for="max_kids">maximum number of children</label>
+		        <input type="number" name="max_kids" id="max_kids" min="0" value="0"/>
+		        <label for="min_kids">minimum number of children</label>
+		        <input type="number" name="min_kids" id="min_kids" min="0" value="0"/>
+		      </p>
+
+		      <p>
+		        <label for="min_age">age range: </label>
+		        <input type="number" name="min_age" id="min_age" min="18" value="20"/> -
+		        <input type="number" name="max_age" id="max_age" min="0" value="80"/> 
+
+		      </p>
+
+		      <p>
+		      	<p>Query customers with selected interests:</p>
+		        {% for interest in interests %}
+		          <label for="{{ interest['interest'] }}">{{ interest["interest"] }}</label>
+		          <input type="checkbox" name="interest" id="{{ interest['interest'] }}" value="{{ interest['interest'] }}" /><br>
+		        {% endfor %}
+		        
+		        	<label for="any">ANY INTEREST</label>
+		          <input type="checkbox" name="any_interest" id="any" value="any" /><br>
+
+		        <p>Query customers with ALL selected interests</p>
+			        <label for="exact">Yes</label>
+			        <input type="checkbox" name="exact" id="exact"/>
+		      </p>
+		      <p>
+
+		          <input type="checkbox" name="brown_eyes" value="brown">brown eyes</input>
+		            <input type="checkbox" name="green_eyes" value="green">green eyes</input >
+		            <input type="checkbox" name="blue_eyes" value="blue">blue eyes</input >
+		            <input type="checkbox" name="any_eyes" value='any'>any eyes</input >
+		        </p>
+
+		        <p>
 
 
+		          <input type="checkbox" name="brown_hair" value="brown">brown hair</input>
+		            <input type="checkbox" name="blonde_hair" value="blonde">blonde hair</input >
+		            <input type="checkbox" name="black_hair" value="black">black hair</input > 
+		            <input type="checkbox" name="red_hair" value="blue">red hair</input >
+		            <input type="checkbox" name="any_hair" value='any'>any hair</input >
+		        </p>
 
- 
+		        <input type="submit" value="Query"/> 
+
+		     <h3>Results:</h3>   
+
+			{% for q in queries %}
+				<p>{{ q['ssn']}} |  {{ q['first_name'] }} {{ q['last_name'] }} 
+				<br>    birthday:  {{ q['DOB'] }}
+		        <br>    seeking (M or F):  {{ q['interested_in'] }} 
+		        <br>    age:  {{ q['age'] }} 
+		        <br>	phone: {{ q['phone'] }}
+		        <br>    gender:  {{ q['gender'] }} 
+		        <br>    number of children:  {{ q['children_count'] }} 
+		        <br>    married previously (Y or N):  {{ q['married_prev'] }} 
+		        <br>    criminal (Y or N):  {{ q['criminal'] }} 
+		        <br>    account open date:  {{ q['account_opened'] }} 
+		        <br>    eye color:  {{ q['eye_color'] }} 
+		        <br>    hair color:  {{ q['hair_color'] }} 
+		        <br>    account close date:  {{ q['account_closed'] }} 
+		        <br>    status:  {{ q['status'] }}
+			{% endfor %}
+		</form> 
+		<a href="/home">home</a>
+	</body>
+  <footer >
+    <p>written by: Sara Fares and Connor Lu</p>
+    <p>COSC-280</p>
+    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+  </footer>
+
+
+</html>
