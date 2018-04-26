@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Select which tuple you'd like to delete and hit the submit button.</title>
+    <link rel="stylesheet" href="main.css"/>
+  </head>
+  <p>{{ msg }}</p>
+
+<form action="update_customer" method="POST">
+	<select name= "customer">
+	{% for each in results %}
+		<option value="{{ each['ssn'] }}" >
+			ssn = {{ each['ssn'] }}, first_name = {{ each['first_name'] }}, last_name = {{ each['last_name'] }},
+			DOB = {{ each['DOB'] }}, age = {{ each['age'] }}, phone = {{ each['phone'] }}, gender = {{ each['gender'] }}, interested_in = {{ each['interested_in'] }}, hair = {{ each['hair_color'] }}, eyes = {{ each['eye_color'] }}, account status= {{ each['status'] }}, criminal = {{ each['criminal'] }}
+		</option> <br>
+	{% endfor %}
+	</select>
+    <p>
+      <label for="first_name">First Name:</label> <input type="text" name="first_name" id="first_name" />
+    </p>
+    <p>
+      <label for="last_name">Last Name:</label> <input type="text" name="last_name" id="last_name" />
+    </p>
+    <p>
+      <label for="username">Username: </label><input type="text" name="username" id="username">
+    </p>
+    <p>
+      <label for="phone">Phone Number:</label> <input type="text" name="phone" id="Phone" />
+    </p>
+    <p>
+      <label for="DOB">Date of Birth:</label> <input type="date" name="DOB" id="DOB" value="1000-01-01" />
+    </p>
+    <p>
+    	<label for ="eye_color">Eye Color: </label>
+    	 <select name="eye_color" id="eye_color"> 
+            <option selected="selected" value="no_change">no change</option>
+            <option value="brown">brown</option>
+            <option value="green">green</option>
+            <option value="blue">blue</option>
+    	</select>
+    </p>
+
+    <p>
+    	<label for ="hair_color">Hair Color: </label>
+    	 <select name="hair_color" id="hair_color"> 
+            <option selected="selected" value="no_change">no change</option>
+            <option value="brown">brown</option>
+            <option value="blonde">blonde</option>
+            <option value="black">black</option>
+            <option value="red">red</option>
+   		 </select>
+    </p>
+    <p>
+    	<label for ="gender">Gender: </label>
+    	 <select name="gender" id="gender"> 
+            <option selected="selected" value="no_change">no change</option>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+    	</select>
+    </p>
+    <p>
+    	<label for ="interested_in">Interested in: </label>
+    	 <select name="interested_in" id="interested_in"> 
+            <option selected="selected" value="no_change">no change</option>
+            <option value="M">Males</option>
+            <option value="F">Females</option>
+    	</select>
+    </p>
+
+   	<p>
+      <label for="children_count">Number of Children:</label><input type="number" name="children_count" id="children_count" min="0" />
+    </p>
+
+    <p>
+    	<label for="married_prev">Married previously: </label>
+    	<select name="married_prev" id="married_prev"> 
+            <option selected="selected" value="no_change">no change</option>
+            <option value="Y">Yes</option>
+            <option value="N">No</option>
+    	</select>
+    </p>
+     <p>
+    	<label for="criminal">Client is a criminal: </label>
+    	<select name="criminal" id="criminal"> 
+            <option selected="selected" value="no_change">no change</option>
+            <option value="Y">Yes</option>
+            <option value="N">No</option>
+    	</select>
+    </p>
+    <p>
+    	<label for="account_opened">Account opened on :</label> <input type="date" name="account_opened" id="account_opened" value="1000-01-01" />
+    </p>
+    <p>
+    	<label for="account_closed">Account closed on :</label> <input type="date" name="account_closed" id="account_closed" value="1000-01-01" />
+    </p>
+    <p>    	
+    	<label for="status">Client is a criminal: </label>
+    	<select name="status" id="status"> 
+            <option selected="selected" value="no_change">no change</option>
+            <option value="Closed">Closed</option>
+            <option value="Open">Open</option>
+    	</select>
+   	</p>
+		
+	<p>
+         <input type="submit" value="update customer"/>
+    </p>
+</form>	

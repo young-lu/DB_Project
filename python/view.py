@@ -798,23 +798,96 @@ def special_insert_datesuccess() :
 
 
 
-
 ###########################################
 ####### UPDATE + DELETE VIEWS GET #########
 ###########################################
-# view for udpate-customer page
-# @app.route('/update-customer', methods=['GET'])
-# def update_customer_get():
-#     statement
-#     results= db.update(statement)
-#     return render_template('update-customer.html', results=results)
 
-# # view for update-customer-interests page
-# @app.route('/update-customer-interests', methods=['GET'])
-# def update_customer_interests_get():
-#     username=load_user_ID()
-#     results= db.update(statement)
-#     return render_template('update-customer-interests.html', results=results)
+#view for update_customer page
+@app.route('/update_customer', methods=['GET'])
+def update_customer_get():
+    results= db.return_tuples('Customers')
+    return render_template('update_customer.html', results=results)
+
+# view for update-customer page
+@app.route('/update_customer', methods=['POST'])
+def update_customer_post():
+    # first get which customer to change by ssn 
+    ssn = request.form['customer']
+    kwargs_to_pass= {}
+    if request.form['first_name']:
+        first_name= request.form['first_name']
+        # add it to the kwargs
+        kwargs_to_pass['first_name']=  first_name
+
+    if request.form['last_name']:
+        last_name= request.form['last_name']
+        # add it to the kwargs
+        kwargs_to_pass['last_name']=  last_name
+
+    if request.form['username']:
+        username= request.form['username']
+        # add it to the kwargs
+        kwargs_to_pass['username']=  username
+
+    if request.form['phone']:
+        phone= request.form['phone']
+        # add it to the kwargs
+        kwargs_to_pass['phone']=  phone
+
+    if request.form['DOB']!='1000-01-01':
+        DOB= request.form['DOB']
+        # add it to the kwargs
+        kwargs_to_pass['DOB']=  DOB
+
+    if request.form['eye_color'] != "no_change":
+        eye_color= request.form['eye_color']
+        kwargs_to_pass['eye_color']=  eye_color
+
+    if request.form['hair_color']!= "no_change":
+        hair_color= request.form['hair_color']
+        # add it to the kwargs
+        kwargs_to_pass['hair_color']= hair_color
+
+    if request.form['gender'] != "no_change":
+        gender= request.form['gender']
+        # add it to the kwargs
+        kwargs_to_pass['gender']= gender
+
+    if request.form['interested_in'] != "no_change":
+        interested_in= request.form['interested_in']
+        kwargs_to_pass['interested_in']=interested_in
+
+    if request.form['children_count']:
+        children_count= request.form['children_count']
+        kwargs_to_pass['children_count']= children_count
+
+    if request.form['married_prev'] != "no_change":
+        married_prev= request.form['married_prev']
+        kwargs_to_pass['married_prev']= married_prev
+
+    if request.form['criminal'] != "no_change":
+        criminal= request.form['criminal']
+        kwargs_to_pass['criminal']=criminal
+
+    if request.form['account_opened']!='1000-01-01' :
+        account_opened= request.form['account_opened']
+        kwargs_to_pass['account_opened']=account_opened
+
+    if request.form['account_closed']!= '1000-01-01':
+        account_closed= request.form['account_closed']
+        kwargs_to_pass['account_closed']= account_closed
+        
+    if request.form['status'] != "no_change":
+        status= request.form['status']
+        kwargs_to_pass['status']= status
+    for key in kwargs_to_pass.keys():
+        print(key)
+    db.update_customer(ssn, **kwargs_to_pass)  # update the customer 
+
+    results= db.return_tuples('Customers')
+    return render_template('update_customer.html', results=results)
+
+
 
 # # view for update-customer-crimes page
 # @app.route('/update-customer-crimes', methods=['GET'])

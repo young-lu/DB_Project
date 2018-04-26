@@ -10,7 +10,6 @@
     </h1>
      <section>
       <form action="insert" method="POST">
-        <h2>Join the Club!</h2>
         <p>
           <label for="FirstName">First Name:</label> <input type="text" name="firstname" id="FirstName" maxlength="40"/>
         </p>
@@ -18,6 +17,7 @@
           <label for="LastName">Last Name:</label> <input type="text" name="lastname" id="LastName" maxlength="40"/>
         </p>
         <p>
+
           <label for="Username">Username: </label><input type="text" name="username" id="Username"  maxlength="40"/>
         </p>
         <p>
@@ -45,7 +45,8 @@
         </p>
         <p>
           {% for interest in interests %}
-            <input type="checkbox" name="interests" id="{{interest}}" value="{{interest['interest']}}"><label for="{{interest}}">{{interest['interest']}}</label> <br>
+            <input type="checkbox" name="interests" id="{{interest}}" value="{{interest['interest']}}"><label for="{{interest}}">{{interest['interest']}}</label> 
+            <br>
           {% endfor %}
         </p>
 
@@ -80,21 +81,6 @@
         </p>
       </form>
     </section>
-
-    <section>
-      <h2>Users:</h2>
-      <ol>
-        {% for person in people %}
-          <li>{{person['username']}}</li>
-        {% endfor %}
-      </ol>
-    </section>
-
-    <section id="Login">
-      <h3>Already have an account?</h3>
-      <form action="login" method="GET">
-        <input type="submit" value="Login"/>
-      </form>
     
   </body>
   <footer>
