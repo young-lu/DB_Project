@@ -363,91 +363,109 @@ class Database(object):
             self.conn.commit()
         return 1
 
-    def update_customer_interest(self, ssn, interest, new_interest): # update a customer interest
-        cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql = 'UPDATE Customer_Interests WHERE ssn=%s AND interest= %s SET interest=%s'
-        cur.execute(sql, (ssn, interest, new_interest))
-        self.conn.commit()
-        return 1
+    # def update_customer_interest(self, ssn, interest, new_interest): # update a customer interest
+    #     cur = self.conn.cursor(pymysql.cursors.DictCursor)
+    #     sql = 'UPDATE Customer_Interests WHERE ssn=%s AND interest= %s SET interest=%s'
+    #     cur.execute(sql, (ssn, interest, new_interest))
+    #     self.conn.commit()
+    #     return 1
 
     def update_customer_crime(self, ssn, **kwargs): # update a customer crime
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql_base = 'UPDATE Customer_Crimes WHERE ssn = %s '
-        
-        if kwargs['password']:
-            sql= sql_base+ ' SET crime= %s'
-            cur.execute(sql, (ssn, kwargs['password']))
+        sql_base = 'UPDATE Customer_Crimes '
+        sql_pt2 =' WHERE ssn = %s'
+        if 'crime' in kwargs.keys():
+            sql= sql_base+ ' SET crime= %s ' +sql_pt2
+            cur.execute(sql, (kwargs['crime'], ssn))
             self.conn.commit()
-        if kwargs['date_recorded']:
-            sql= sql_base+ ' SET date_recorded= %s'
-            cur.execute(sql, (ssn, kwargs['date_recorded']))
+        if 'date_recorded' in kwargs.keys():
+            sql= sql_base+ ' SET date_recorded= %s' +sql_pt2
+            cur.execute(sql, (kwargs['date_recorded'], ssn))
             self.conn.commit()
         return 1
-    
+
+    def update_customer_children(self, ssn, childID, **kwargs): # update a customer's child
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql_base = 'UPDATE Customers_Children '
+        sql_pt2 =' WHERE ssn = %s AND childID= ' +childID
+        if 'age' in kwargs.keys():
+            sql= sql_base+ ' SET age= ' +str(kwargs['age']) +sql_pt2
+            cur.execute(sql, ssn)
+            self.conn.commit()
+        if 'lives_with_them' in kwargs.keys():
+            sql= sql_base+ ' SET lives_with_them= %s ' +sql_pt2
+            cur.execute(sql, (kwargs['lives_with_them'], ssn))
+            self.conn.commit()
+        
+        return 1
+
     def update_date(self, matchID, date_number, **kwargs): # update a date
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql_base = 'UPDATE Dates WHERE date_number= %d AND matchID= %s '
-        if kwargs['date_time']:
-            sql= sql_base + ' SET date_time= %s'
-            cur.execute(sql, (date_number, matchID, date_time))
+        sql_base = 'UPDATE Dates '
+        sql_pt2= ' WHERE matchID= %s AND date_number= ' + str(date_number)
+        if 'date_time' in kwargs.keys():
+            sql= sql_base + ' SET date_time= %s'+ sql_pt2
+            cur.execute(sql, (date_time, matchID))
             self.conn.commit()
-        if kwargs['date_date']:
-            sql= sql_base + ' SET date_date= %s'
-            cur.execute(sql, (date_number, matchID, date_date))
+        if 'date_date' in kwargs.keys():
+            sql= sql_base + ' SET date_date= %s'+ sql_pt2
+            cur.execute(sql, (date_date, matchID))
             self.conn.commit()
-        if kwargs['both_still_interested']:
-            sql= sql_base + ' SET both_still_interested= %s'
-            cur.execute(sql, (date_number, matchID, both_still_interested))
+        if 'both_still_interested' in kwargs.keys():
+            sql= sql_base + ' SET both_still_interested= %s'+ sql_pt2
+            cur.execute(sql, (both_still_interested, matchID))
             self.conn.commit()
-        if kwargs['happened']:
-            sql= sql_base + ' SET happened= %s'
-            cur.execute(sql, (date_number, matchID, happened))
+        if 'happened' in kwargs.keys():
+            sql= sql_base + ' SET happened= %s'+ sql_pt2
+            cur.execute(sql, (happened, matchID))
             self.conn.commit()
-        if kwargs['location']:
-            sql= sql_base + ' SET location= %s'
-            cur.execute(sql, (date_number, matchID, location))
+        if 'location' in kwargs.keys():
+            sql= sql_base + ' SET location= %s' + sql_pt2
+            cur.execute(sql, (location, matchID))
             self.conn.commit()
         return 1
 
     def update_match_fee(self, ssn, fee_num, **kwargs): # update a match fee
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql_base = 'UPDATE Match_Fees WHERE ssn = %s AND fee_number=%d '
-        if kwargs['amount']:
-            sql= sql_base + ' SET amount= %s'
-            cur.execute(sql, (ssn, fee_num, amount))
+        sql_base = 'UPDATE Match_Fees '
+        sql_pt2= ' WHERE ssn = %s AND fee_number= ' + str(fee_num)
+        if 'amount' in kwargs.keys():
+            sql= sql_base + ' SET amount= %s' +sql_pt2
+            cur.execute(sql, (amount, ssn)) 
             self.conn.commit()
-        if kwargs['date_charged']:
-            sql= sql_base + ' SET date_charged= %s'
-            cur.execute(sql, (ssn, fee_num, date_charged))
+        if 'date_charged' in kwargs.keys():
+            sql= sql_base + ' SET date_charged= %s' +sql_pt2
+            cur.execute(sql, (date_charged, ssn))
             self.conn.commit()
-        if kwargs['paid']:
-            sql= sql_base + ' SET paid= %s'
-            cur.execute(sql, (ssn, fee_num, paid))
+        if 'paid' in kwargs.keys():
+            sql= sql_base + ' SET paid= %s' +sql_pt2
+            cur.execute(sql, (paid, ssn))
             self.conn.commit()
-        if kwargs['date_paid']:
-            sql= sql_base + ' SET date_paid= %s'
-            cur.execute(sql, (ssn, fee_num, date_paid))
+        if 'date_paid' in kwargs.keys():
+            sql= sql_base + ' SET date_paid= %s' +sql_pt2
+            cur.execute(sql, (date_paid, ssn))
             self.conn.commit()    
         return 1
 
-    def update_registration_fee(self, ssn): # update a registration fee
+    def update_registration_fee(self, ssn, **kwargs): # update a registration fee
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql_base = 'UPDATE Registration_Fees WHERE ssn = %s '
+        sql_base = 'UPDATE Registration_Fees '
+        sql_pt2 = ' WHERE ssn = %s '
         if kwargs['amount']:
-            sql= sql_base + ' SET amount= %s'
-            cur.execute(sql, (ssn, amount))
+            sql= sql_base + ' SET amount= %s' +sql_pt2
+            cur.execute(sql, (amount, ssn))
             self.conn.commit()
         if kwargs['date_charged']:
-            sql= sql_base + ' SET date_charged= %s'
-            cur.execute(sql, (ssn, date_charged))
+            sql= sql_base + ' SET date_charged= %s' +sql_pt2
+            cur.execute(sql, (date_charged, ssn))
             self.conn.commit()
         if kwargs['paid']:
-            sql= sql_base + ' SET paid= %s'
-            cur.execute(sql, (ssn, paid))
+            sql= sql_base + ' SET paid= %s' +sql_pt2
+            cur.execute(sql, (paid, ssn))
             self.conn.commit()
         if kwargs['date_paid']:
-            sql= sql_base + ' SET date_paid= %s'
-            cur.execute(sql, (ssn, date_paid))
+            sql= sql_base + ' SET date_paid= %s' +sql_pt2
+            cur.execute(sql, (date_paid, ssn))
             self.conn.commit()    
         return 1
 

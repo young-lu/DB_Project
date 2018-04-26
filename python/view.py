@@ -889,76 +889,104 @@ def update_customer_post():
 
 
 
-# # view for update-customer-crimes page
-# @app.route('/update-customer-crimes', methods=['GET'])
-# def update_customer_crimes_get():
-#     username=load_user_ID()
-#     results= db.update(statement)
-#     return render_template('update-customer-crimes.html', results=results)
+# view for update_customer_children page
+@app.route('/update_customer_children', methods=['GET'])
+def update_customer_children_get():
+    results= db.return_tuples('Customers_Children')
+    return render_template('update_customer_children.html', results=results)
 
-# # view for update-customer-children
-# @app.route('/update-customer-children', methods=['GET'])
-# def update_customer_children_get():
-#     username=load_user_ID()
-#     results= db.update(statement)
-#     return render_template('update-customer-children.html', results=results)
+# view for update_customer_children page
+@app.route('/update_customer_crime', methods=['GET'])
+def update_customer_crime_get():
+    crimes= db.return_tuples('Crimes')
+    results= db.return_tuples('Customer_Crimes')
+    return render_template('update_customer_crime.html', results=results, crimes= crimes)
 
-# # view for update-interests page
-# @app.route('/update-interests', methods=['GET'])
-# def update_interests_get():
-#     username=load_user_ID()
-#     results= db.update(statement)
-#     return render_template('update-interests.html', results=results)
+# view for update_customer_children page
+@app.route('/update_date', methods=['GET'])
+def update_date_get():
+    results= db.return_tuples('Dates')
+    return render_template('update_date.html', results=results)
 
-# # view for update-crime-options page
-# @app.route('/update-crime-options', methods=['GET'])
-# def update_crime_options_get():
-#     username=load_user_ID()
-#     results= db.update(statement)
-#     return render_template('update-crime-options.html', results=results)
+# view for update_customer_children page
+@app.route('/update_match_fee', methods=['GET'])
+def update_match_fee_get():
+    results= db.return_tuples('Match_Fees')
+    return render_template('update_match_fee.html', results=results)
 
-# # view for delete-customer page
-# @app.route('/delete-customer', methods=['GET'])
-# def delete_customer_get():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-customer.html', results=results)
+# view for update_customer_children page
+@app.route('/update_registration_fee', methods=['GET'])
+def update_registration_fee_get():
+    results= db.return_tuples('Registration_Fees')
+    return render_template('update_registration_fee.html', results=results)
 
-# # view for delete-customer-interests page
-# @app.route('/delete-customer-interests', methods=['GET'])
-# def delete_customer_interests_get():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-customer-interests.html', results=results)
+#########################################################
+#####              POST PAGES FOR UPDATE            #####
+#########################################################
 
-# # view for delete-customer-crimes page
-# @app.route('/delete-customer-crimes', methods=['GET'])
-# def delete_customer_crimes_get():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-customer-interests.html', results=results)
+# view for update_customer_children page
+@app.route('/update_customer_children', methods=['POST'])
+def update_customer_children_post():
+    result_full= request.form['children']
+    result_split= result_full.split('|')
+    ssn = result_split[0]
+    childID = result_split[1]
 
-# # view for delete-customer-children page
-# @app.route('/delete-customer-children', methods=['GET'])
-# def delete_customer_children_get():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-customer-children.html', results=results)
+    kwargs_to_pass= {}
+    if request.form['age']:
+        age= request.form['age']
+        kwargs_to_pass['age']= age
+    if request.form['lives_with_them']!= 'no_change':
+        lives_with_them= request.form['lives_with_them']
+        kwargs_to_pass['lives_with_them']= lives_with_them
 
-# # view for delete-interests page
-# @app.route('/delete-interests', methods=['GET'])
-# def delete_interests_get():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-interests.html', results=results)
+    for key in kwargs_to_pass.keys():
+        print(key)
 
-# # view for delete-crime page
-# @app.route('/delete-crime', methods=['GET'])
-# def delete_crime_get():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-crime.html', results=results)
+    db.update_customer_children(ssn, childID, **kwargs_to_pass)  # update the customer's kid
+    results= db.return_tuples('Customers_Children')
+    return render_template('update_customer_children.html', results=results)
 
+# view for update_customer_crime page
+@app.route('/update_customer_crime', methods=['POST'])
+def update_customer_crime_post():
+    ssn = request.form['criminal']
+    kwargs_to_pass= {}
+
+    if request.form['crime'] != "no_change":
+        crime= request.form['crime']
+        kwargs_to_pass['crime']= crime
+
+    if request.form['date_recorded']!= '1000-01-01':
+        account_closed= request.form['account_closed']
+        kwargs_to_pass['account_closed']= account_closed
+
+    for key in kwargs_to_pass.keys():
+        print(key)
+    db.update_customer_crime(ssn, **kwargs_to_pass)  # update the customer 
+    crimes= db.return_tuples('Crimes')
+    results= db.return_tuples('Customer_Crimes')
+    return render_template('update_customer_crime.html', results=results, crimes=crimes)
+
+# view for update_customer_children page
+@app.route('/update_date', methods=['POST'])
+def update_date_post():
+    results= db.return_tuples('Dates')
+    return render_template('update_date.html', results=results)
+
+# view for update_customer_children page
+@app.route('/update_match_fee', methods=['POST'])
+def update_match_fee_post():
+    results= db.return_tuples('Match_Fees')
+    return render_template('update_match_fee.html', results=results)
+
+# view for update_customer_children page
+@app.route('/update_registration_fee', methods=['POST'])
+def update_registration_fee_post():
+
+
+    results= db.return_tuples('Registration_Fees')
+    return render_template('update_registration_fee.html', results=results)
 
 
 # ###########################################

@@ -7,8 +7,8 @@
   <p>{{ msg }}</p>
 
 <form action="update_customer_crime" method="POST">
-	<select name= "crime">
-	{% for each in to_delete %}
+	<select name= "criminal">
+	{% for each in results %}
 		<option value="{{ each['ssn'] }}" >
 			ssn = {{ each['ssn'] }}, crime = {{ each['crime'] }}, date_recorded = {{ each['date_recorded'] }}
 		</option> <br>
@@ -16,6 +16,21 @@
 	</select>
 
 	<!-- INSERT ALL THE STUFF TO UDPATE -->
+	<p>
+    	<label for="crime">Crime: </label>
+    	<select name="crime" id="crime"> 
+    		<option value="no_change" selected="selected">
+            {% for each in crimes %}
+				<option value="{{ each['crime'] }}" >
+					{{ each['crime'] }}
+				</option> <br>
+			{% endfor %}
+    	</select>
+    </p>
+    <p>
+    	<label for="date_recorded">Date recorded:</label> <input type="date" name="date_recorded" id="date_recorded" value="1000-01-01" />
+    </p>
+
 	<p>
          <input type="submit" value="update customer crime"/>
 	</p>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Select which tuple you'd like to update and hit the submit button.</title>
+    <link rel="stylesheet" href="main.css"/>
+  </head>
+  <p>{{ msg }}</p>
+
+<form action="update_customer_children" method="POST">
+	<select name= "children">
+	{% for each in results %}
+		<option value="{{ each['ssn'] }}|{{each['childID']}}" >
+			ssn = {{ each['ssn'] }}, childID) = {{ each['childID'] }}, age = {{ each['age'] }}, lives with this parent = {{ each['lives_with_them']}}
+		</option> <br>
+	{% endfor %}
+	</select>
+
+	<!-- INSERT ALL THE STUFF TO UDPATE -->
+	<p>
+    	<label for="lives_with_them">Lives with this parent: </label>
+    	<select name="lives_with_them" id="lives_with_them"> 
+    		<option value="no_change" selected="selected">No change</option>
+			<option value="Y" >Yes</option>
+			<option value="N" >No</option>
+    	</select>
+
+    </p>
+    <p>
+    	<label for="age">Age:</label> <input type="number" name="age" id="age" min="0" />
+    </p>
+
+	<p>
+         <input type="submit" value="update customer child"/>
+	</p>
+</form>	
