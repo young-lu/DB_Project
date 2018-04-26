@@ -98,7 +98,6 @@ CREATE TABLE Dates # primary key is the combination of date_number and matchID
 		date_number INT NOT NULL,
 		date_time TIME NOT NULL,
 		date_date DATE NOT NULL,
-		both_still_interested CHAR(1) NOT NULL DEFAULT 'Y',
 		happened CHAR(1) NOT NULL DEFAULT 'N',
 		location VARCHAR(40) NOT NULL,
 		matchID CHAR(10) NOT NULL,

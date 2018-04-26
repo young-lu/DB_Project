@@ -902,19 +902,19 @@ def update_customer_crime_get():
     results= db.return_tuples('Customer_Crimes')
     return render_template('update_customer_crime.html', results=results, crimes= crimes)
 
-# view for update_customer_children page
+# view for update_date page
 @app.route('/update_date', methods=['GET'])
 def update_date_get():
     results= db.return_tuples('Dates')
     return render_template('update_date.html', results=results)
 
-# view for update_customer_children page
+# view for update_match_fee page
 @app.route('/update_match_fee', methods=['GET'])
 def update_match_fee_get():
     results= db.return_tuples('Match_Fees')
     return render_template('update_match_fee.html', results=results)
 
-# view for update_customer_children page
+# view for update_registration_fee page
 @app.route('/update_registration_fee', methods=['GET'])
 def update_registration_fee_get():
     results= db.return_tuples('Registration_Fees')
@@ -971,6 +971,28 @@ def update_customer_crime_post():
 # view for update_customer_children page
 @app.route('/update_date', methods=['POST'])
 def update_date_post():
+    result_full= request.form['date']
+    result_split= result_full.split('|')
+    date_num = result_split[1]
+    matchID = result_split[0]
+
+    kwargs_to_pass= {}
+    if request.form['happened'] != 'no_change':
+        happened= request.form['happened']
+        kwargs_to_pass['happened']= happened
+
+    if request.form['location']:
+        location= request.form['location']
+        kwargs_to_pass['location']= location
+
+    if request.form['date_date']!= '1000-01-01':
+        date_date= request.form['date_date']
+        kwargs_to_pass['date_date']= date_date
+
+    for key in kwargs_to_pass.keys():
+        print(key)
+    db.update_date(matchID, date_num, **kwargs_to_pass)  # update the customer 
+
     results= db.return_tuples('Dates')
     return render_template('update_date.html', results=results)
 
