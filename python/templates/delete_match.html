@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Select which tuple you'd like to delete and hit the submit button.</title>
+    <link rel="stylesheet" href="main.css"/>
+  </head>
+  <p>{{ msg }}</p>
+
+<form action="delete_match" method="POST">
+	<select name= "match">
+	{% for each in to_delete %}
+		<option value="{{ each['matchID'] }}" >
+			ssn = {{ each['ssn'] }}, matchID= {{ each['matchID'] }}
+		</option> <br>
+	{% endfor %}
+	</select>
+	<p>
+         <input type="submit" value="delete match-- this will delete both tuples with that matchID!!"/>
+    </p>
+</form>	

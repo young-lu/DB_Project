@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Select which tuple you'd like to delete and hit the submit button.</title>
+    <link rel="stylesheet" href="main.css"/>
+  </head>
+  <p>{{ msg }}</p>
+
+<form action="delete_customer_interest" method="POST">
+	<select name= "customer">
+	{% for each in to_delete %}
+		<option value="{{ each['ssn']+'|'+each['interest']}}" >
+			ssn = {{ each['ssn'] }}, interest= {{ each['interest'] }}
+		</option> <br>
+	{% endfor %}
+	</select>
+	<p>
+         <input type="submit" value="delete customer's interest"/>
+    </p>
+</form>	
