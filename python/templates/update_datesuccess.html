@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Update DateSuccess</title>
+	</head>
+	<h2>Select a date review to update</h2>
+	<body>
+		<form action="update_datesuccess" method="POST">
+				<!-- matchid -->
+
+				<!-- datenumber -->
+
+				<!-- success or no -->
+
+				<!-- ssn -->
+
+				<!-- display dates -->
+
+				{% for date in dates %}
+					<input type="radio" name="date" value="{{ date['matchID'] }},{{ date['date_number'] }},{{ date['ssn'] }}" id="{{ date['matchID'] }},{{ date['date_number'] }}"/>
+					<label for="{{ date['matchID'] }},{{ date['date_number'] }}"> date #{{ date['date_number'] }} for match #{{ date['matchID']}} -{{ date['username'] }}</label><br>
+				{% endfor %}
+				<p><h3>update the review of this date to
+				<select name="review">
+					<option value="Y">Success</option>
+					<option value="N">Failure</option>
+				</select></h3>
+			</p>
+			<input type="submit" value="Update"/>
+
+		</form>
+	</body>
+
+</html>

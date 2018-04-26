@@ -153,8 +153,9 @@ def post_login():
         # elif (role=="Entry-level"):
         #     return render_template('entry-home.html', username=username, password=password,role=role)
 
-@app.route('/entry_level_query', methods=['POST'])
-def entry_level_query() :
+@app.route('/staff_query', methods=['POST'])
+def staff_query() :
+    user = load_current_user()
     married = request.form['married']
     max_kids = request.form['max_kids']
     min_kids = request.form['min_kids']
@@ -165,7 +166,7 @@ def entry_level_query() :
     any_interest = request.form.get('any_interest')
 
     if (int(max_kids) < int(min_kids)) or (int(max_age) < int(min_age)) :
-        return render_template('query6.html', interests=db.get_interests())
+        return redirect('/home')
 
     interests = request.form.getlist('interest')
 
@@ -245,31 +246,75 @@ c.account_closed, c.status FROM Customers c, Customer_Interests ci WHERE c.ssn =
             sql += ' and ci.interest IN  ({0}) ORDER BY c.ssn'.format(interest_string)
     # print(sql)
     queries = db.getquery6(sql)
-    return render_template('staff-home.html', queries=queries, interests=db.get_interests())
 
+    if user['role'] == 'Entry-level':
+        return render_template('staff-home.html',user=user, queries=queries, interests=db.get_interests())
+    elif user['role']== 'Specialist' :
+        return render_template('special-home.html', user=user,queries=queries, interests=db.get_interests())
 
+    return redirect('/home')
 
 @app.route('/query_dropdown', methods=['GET'])
 def get_query_menu():
     return render_template('queries_drop_down.html')
 
+@app.route('/update-delete-menu', methods=['GET'])
+def get_update_delete_menu():
+    return render_template('update_delete_menu.html')
+
+@app.route('/update_datesuccess', methods=['GET'])
+def load_update_datesuccess() :
+    return render_template('update_datesuccess.html', dates=db.get_all_dates())
+
+@app.route('/update_datesuccess', methods=['POST'])
+def update_datesuccess() :
+    date = request.form['date'].split(",")
+    matchID = date[0]
+    date_number = date[1]
+    ssn = date[2]
+    review = request.form['review']
+
+    db.update_datesuccess(matchID, ssn, review, date_number)
+
+    return redirect('home')
+
+
+# {{ date['matchID'] }},{{ date['date_number'] }},{{ date['ssn'] }}
+# matchID
+# ssn
+# success
+# date_number 
+
 
 # this is what happens when the user pushes the link to query1
-@app.route('/query1', methods=['GET'])
-def get_query1():
-    results= ""
-    return render_template('query1.html', results=results)
+@app.route('/load_query1', methods=['GET'])
+def load_query1():
+        return render_template('query1.html')
 
 # this is what happens when the user pushes enter on the query1 page.. actually perfom + display the query
 @app.route('/query1', methods=['POST']) 
-def post_query1():
-    # check what the user wants to query 
-    option_str = request.form['option_query1']
-    number = request.form['number_dates']    
-    # perform the query
-    username=load_user_ID()
-    results= db.getquery1(username, number, option)
-    return render_template('query1.html', results=results)
+def get_query1():
+    operation = request.form['operator']
+    number_dates = request.form['number_dates']
+
+    sql = 'select distinct(d.matchid) as MatchID, c2.username as user1, c1.username as user2, d.happened as happened, d.date_number as DateNumber,\
+d.location as location, d.date_date as date_date, d.date_time as time, m.ssn as ssn1, n.ssn as ssn2 \
+from Customers c1, Customers c2, Dates d, matches m, matches n where c1.ssn = m.ssn and c2.ssn=n.ssn and d.matchid = m.matchid and d.matchid = n.matchid and m.ssn != n.ssn '
+
+    sql += ' AND d.date_number {0} "{1}" '.format(operation, number_dates)
+    sql += 'order by matchid, date_number'
+
+    print(sql)
+    queries = db.getquery1(sql)
+    queries = queries[1::2]
+    for each in queries:
+        print(each)
+        print('\n')
+
+    return render_template('query1.html', results=queries)
+    # except :
+    #     print('ERROR IN QUERY1 POST REQUEST')
+    #     return render_template('query1.html') 
 
 # this is what happens when the user clicks on page for query 2
 @app.route('/query2', methods=['GET'])
@@ -481,12 +526,6 @@ def get_query8f():
 #############       end views for insertion        #############
 ################################################################
 
-
-
-
-
-
-
 @app.route('/home', methods=['GET'])
 def get_home():
     user = load_current_user()
@@ -499,9 +538,9 @@ def get_home():
         my_dates = db.get_dates(myssn)
         for each in (db.get_matches_by_ssn(myssn)) : 
             my_matchIDs.append(each['ssn'])
-        return render_template('home.html', user=user, interests=interests, dates=my_dates)
+        return render_template('home.html', user=user, fees=db.get_total_fees(myssn), interests=interests, dates=my_dates)
     elif user['role'] == 'Specialist':
-        return render_template('special-home.html', user=user,tables=db.show_tables())
+        return render_template('special-home.html', user=user,tables=db.show_tables(),interests=interests)
     elif user['role'] == 'Entry-level':
         return render_template('staff-home.html', user=user, interests=interests)
 
@@ -519,16 +558,20 @@ def find_match():
     my_dates = db.get_dates(ssn)
     eye_color = request.form['eye_color']
     hair_color = request.form['hair_color']
+    all_interests = request.form.get('any_interest')
     exact = request.form.get('exact')
+    if all_interests:
+        print('any_interest')
 
+    total_fees = db.get_total_fees(ssn)
 
     if not exact:
-        ssn_list = db.find_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests,eye_color, hair_color)
+        ssn_list = db.find_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests,eye_color, hair_color, all_interests)
     elif exact:
         ssn_list = db.find_exact_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests,eye_color, hair_color)
 
     if not ssn_list:
-        return render_template('home.html',interests=db.get_interests(),dates=my_dates, user=user,none_message="\nSorry, you did not match with anyone!\n")
+        return render_template('home.html',interests=db.get_interests(),dates=my_dates, fees=total_fees, user=user,none_message="\nSorry, you did not match with anyone!\n")
 
     matches = []
     for ssn in ssn_list:
@@ -607,7 +650,7 @@ def review_date():
     print(date_num)
 
     if db.submit_date(user['ssn'], review, matchID, date_num):
-        return render_template('home.html', interests=db.get_interests(), dates=db.get_dates(user['ssn']), 
+        return render_template('home.html', interests=db.get_interests(),fees=db.get_total_fees(user['ssn']), dates=db.get_dates(user['ssn']), 
                                 user=user,none_message='Date review submitted')
 
     return render_template('dates.html', dates=db.get_dates(user['ssn']), user= user, 

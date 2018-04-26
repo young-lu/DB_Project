@@ -286,6 +286,26 @@ class Database(object):
         print(result)
         return result
 
+    def get_total_fees(self,ssn):
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        cur.execute('select sum(amount) as total from match_fees where ssn like "{0}"'.format(ssn))
+        mfees = cur.fetchall()[0]['total']
+        if not mfees:
+            mfees = 0
+        else:
+            mfees = int(mfees)
+
+
+        cur.execute('select sum(amount) as total from registration_fees where ssn like "{0}"'.format(ssn))
+        rfee = cur.fetchall()[0]['total']
+        if not rfee:
+            rfee = 0
+        else:
+            rfee = int(rfee)
+
+        return (rfee + mfees)
+
+
 
     def update_customer(self, ssn, **kwargs):  # update a customer 
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
@@ -487,7 +507,8 @@ class Database(object):
         
     def get_all_matches(self) :
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        cur.execute('select distinct(d.matchid) as id, m.ssn as ssn1, n.ssn as ssn2 from dates d, matches m, matches n where d.matchId = m.matchid and d.matchid = n.matchid and m.ssn != n.ssn')
+        cur.execute('select distinct(d.matchid) as id, m.ssn as ssn1, n.ssn as ssn2 from dates d, matches m, matches n \
+            where d.matchId = m.matchid and d.matchid = n.matchid and m.ssn != n.ssn')
         # cur.execute('select * from dates d, matches m, matches n where d.matchId = m.matchid and d.matchid = n.matchid and m.ssn != n.ssn')
         result = cur.fetchall()
         result = result[1::2]
@@ -495,16 +516,37 @@ class Database(object):
 
     def get_all_date_pairs(self) :
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        cur.execute('select d.happened as happened, d.date_number as DateNumber, d.matchid as MatchID, d.location as location, d.date_date as date_date, d.date_time as time, m.ssn as ssn1, n.ssn as ssn2 from Dates d, matches m, matches n where d.matchid = m.matchid and d.matchid = n.matchid and m.ssn != n.ssn order by matchid, date_number')
+        cur.execute('select d.happened as happened, d.date_number as DateNumber, d.matchid as MatchID, d.location as location, \
+            d.date_date as date_date, d.date_time as time, m.ssn as ssn1, n.ssn as ssn2 FROM Dates d, matches m, matches n WHERE d.matchid = \
+            m.matchid and d.matchid = n.matchid and m.ssn != n.ssn order by matchid, date_number')
         result = cur.fetchall()
         result=result[1::2]
         return result
+
+    def get_all_dates(self) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'select * from datesuccess d, customers c where d.ssn =c.ssn'
+        cur.execute(sql)
+        result=cur.fetchall()
+        return result
+
+    def update_datesuccess(self, matchID, ssn, success, date_number) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = ' UPDATE DateSuccess  SET success = "{0}" WHERE ssn LIKE "{1}" \
+                AND matchID LIKE "{2}" AND date_number ="{3}"'.format(success,ssn,matchID,date_number)
+        
+        result = cur.execute(sql)
+        self.conn.commit()
+
+        return result
+
+
 
     # def update_customer():
         """ show ALL data of customer with option to edit"""
         """ pass every piece of data in update_customer() """
 
-    def find_matches(self,ssn, interested_in, married_prev,max_kids,min_age,max_age,interests, eye_color, hair_color):
+    def find_matches(self,ssn, interested_in, married_prev,max_kids,min_age,max_age,interests, eye_color, hair_color, all_interests):
         """Fetch a view from the database"""
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         interests = ", ".join('"' + interest + '"' for interest in interests)
@@ -519,8 +561,9 @@ class Database(object):
 
         sql += " (gender = '{0}') AND ".format(interested_in)
         sql += " (children_count <= {0}) AND ".format(max_kids)
-        sql += " (age >= {0} AND age <= {1}) AND ".format(min_age,max_age)
-        sql += " (interest IN ({0}))".format(interests)
+        sql += " (age >= {0} AND age <= {1}) ".format(min_age,max_age)
+        if not all_interests:
+            sql += "AND  (interest IN ({0}))".format(interests)
         print(sql)
         cur.execute(sql)
         ssn_list = cur.fetchall()
@@ -762,31 +805,37 @@ class Database(object):
         results = cur.fetchall()
         return results
 
-    def getquery1(self, username, num, what_option):
-        cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        cur.execute('SELECT c.* FROM Customers c, Dates d, Matches m WHERE m.matchID= d.matchID'+
-                        ' AND c.ssn= m.ssn'+
-                        ' GROUP BY m.ssn'+
-                        ' HAVING count(*) %s %n', what_option, num)
-        result= cur.fetchall()
-        counter=0
-        if get_user_role(username) == 'Entry-level':
-            counter=0
-            for (ssn, username, first_name, last_name, DOB, interested_in, phone, age, gender, 
-            children_count, married_prev, criminal) in result:
-                result_str[counter] = (first_name +" " +last_name + " whose birthday is " + DOB + " is interested in " +interested_in+
-                ", is " + age + " years old " + ", and is of gender " + gender +".")
-            counter+= 1
-        else:
-            counter=0
-            for (ssn, username, first_name, last_name, DOB, interested_in, phone, age, gender, 
-            children_count, married_prev, criminal) in result:
-                result_str[counter] = (first_name +" " +last_name + " whose birthday is " + DOB + " is interested in " +interested_in+
-                ", is " + age + " years old " + ", and is of gender " + gender +". Their ssn is " +ssn + " and their phone # is " + phone)
-                counter+= 1
+    # def getquery1(self, username, num, what_option):
+    #     cur = self.conn.cursor(pymysql.cursors.DictCursor)
+    #     cur.execute('SELECT c.* FROM Customers c, Dates d, Matches m WHERE m.matchID= d.matchID'+
+    #                     ' AND c.ssn= m.ssn'+
+    #                     ' GROUP BY m.ssn'+
+    #                     ' HAVING count(*) %s %n', what_option, num)
+    #     result= cur.fetchall()
+    #     counter=0
+    #     if get_user_role(username) == 'Entry-level':
+    #         counter=0
+    #         for (ssn, username, first_name, last_name, DOB, interested_in, phone, age, gender, 
+    #         children_count, married_prev, criminal) in result:
+    #             result_str[counter] = (first_name +" " +last_name + " whose birthday is " + DOB + " is interested in " +interested_in+
+    #             ", is " + age + " years old " + ", and is of gender " + gender +".")
+    #         counter+= 1
+    #     else:
+    #         counter=0
+    #         for (ssn, username, first_name, last_name, DOB, interested_in, phone, age, gender, 
+    #         children_count, married_prev, criminal) in result:
+    #             result_str[counter] = (first_name +" " +last_name + " whose birthday is " + DOB + " is interested in " +interested_in+
+    #             ", is " + age + " years old " + ", and is of gender " + gender +". Their ssn is " +ssn + " and their phone # is " + phone)
+    #             counter+= 1
 
-        result=cur.fetchall()
-        return result_str
+    #     result=cur.fetchall()
+    #     return result_str
+
+    def getquery1(self, sql) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        cur.execute(sql)
+        result = cur.fetchall()
+        return result
 
     def getquery2(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)

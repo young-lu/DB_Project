@@ -4,42 +4,34 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Query the number of users with specific number of date events (at most, at least, exactly).</title>
+    <title>Query1</title>
     <link rel="stylesheet" href="main.css"/>
   </head>
 
 <!-- insert a go button that shows the results -->
 <!--  GO BUTTON --> 
 <!-- and then display the results --> 
+<h3>Query the number of users with specific number of date events (at most, at least, exactly).</h3>
 
 <form action="query1" method="POST">
       <p>
-      	<!-- get option that the user chooses --> 
-        <label for="option_query1">Who are those who had:</label>
-        <select>
-			<!-- get value of what the user wants to query from dropdown menu --> 
- 			 <option value=">=">at least</option>
- 			 <option value="<=">at most</option>
- 			 <option value="=">exactly</option>
-		</select>
+        <p>Query customers who had:<p>
+        <input type='radio' name='operator' id= "atleast" value=">="/><label for='atleast'>at least</label>
+        <input type='radio' name='operator' id= "atmost" value="<="/><label for='atmost'>at most</label>
+        <input type='radio' name='operator' id= "exactly" value="="/><label for='exactly'>exactly</label>
       </p>
-      <p>
-      	<!-- get number of dates --> 
-        <label for="number_dates">(input number of dates (>=0)):</label><input id="number_dates" name="number_dates" type="number" min="0" />
+      <p> 
+        <input id="number_dates" name="number_dates" type="number" min="0" /><label for="number_dates"> (number of dates )</label>
       </p>
-      <p>
-      	  number of dates??
-      </p>
-      <p>
-        <input type="submit" value="submit_query" />
-      </p>
+      <p> dates together. </p>
+        <input type="submit" value="query" />
 </form>
 
 
-<!--         print result (if post has completed)             -->
     <section>
     <h1>These are the users with the desired stipulations on the date events:</h1>
       {% for each in results %}
-        {{ each }} <br>
+        <br>{{ each['user1'] }} and {{ each['user2'] }} // MatchID: {{ each['MatchID']}}
       {% endfor %}
     </section>
+</html>  
