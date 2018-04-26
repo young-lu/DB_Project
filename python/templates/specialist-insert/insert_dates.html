@@ -1,0 +1,27 @@
+<html lang="en">
+  <head>
+    <title>Interest Dates!</title>
+  </head>
+  <h3>Insert dates for existing matches into the database</h3>
+  <body>
+  	<form action="special_insert_dates" method="POST">
+      <select name="matchID">
+      {% for match in matches %}
+        <option value="{{ match['id'] }}">Match #{{ match['id']}}: {{ match['ssn1']}} and {{ match['ssn2'] }}</option>
+      {% endfor %}
+      </select>
+      <p>
+          <input type="date" value="Schedule date" name="date"/> <br><!-- bug: date must be in the future-->
+          <input type="time" name="time"/><br> 
+          <input type="text" name="location" value="Location of date"/>
+          <input type="submit" value ="Ask on a date!"/>
+        </p>
+    </form>
+  </body>
+<a href="/home">homepage</a>
+<footer>
+    <p>written by: Sara Fares and Connor Lu</p>
+    <p>COSC-280</p>
+    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+  </footer>
+</html>
