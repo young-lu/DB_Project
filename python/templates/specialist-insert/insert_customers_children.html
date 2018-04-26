@@ -1,0 +1,29 @@
+<html lang="en">
+  <head>
+    <title>Insert Customers' Children </title>
+  </head>
+  <h3>Insert children of customers into the database </h3>
+  <body>
+  	<form action="special_insert_customers_children" method="POST">
+  	   <p><p>select a customer</p>
+          <select name= 'customer'>
+          {% for person in people %}
+            <option value="{{ person['ssn'] }}">{{ person['username']}}</option>
+          {% endfor %}
+        </select>
+      </p>
+      <input type='number' name='age' min='1' id='age' value='1'/>
+      <label for='age'>age</label><br>
+      <select name='at_home'>
+        <option value="Y">living at home</option>
+        <option value="N">moved out</option>
+      </select><input type='submit' value= "insert">
+    </form>
+  </body>
+<a href="/home">homepage</a>
+<footer>
+    <p>written by: Sara Fares and Connor Lu</p>
+    <p>COSC-280</p>
+    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+  </footer>
+</html>

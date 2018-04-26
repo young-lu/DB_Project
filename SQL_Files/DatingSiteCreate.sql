@@ -155,9 +155,12 @@ CREATE TABLE DateSuccess(
 	matchID char(10) NOT NULL,
 	ssn VARCHAR(40) NOT NULL,
 	success CHAR(1) NOT NULL DEFAULT 'Y',
-	PRIMARY KEY (matchID,ssn),
+	date_number INT NOT NULL,
+	PRIMARY KEY (matchID,ssn, date_number),
 	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
-	FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE 
+	FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE ,
+	FOREIGN KEY (date_number) REFERENCES Dates (date_number) ON DELETE CASCADE 
+
 );
 
     
@@ -184,6 +187,9 @@ BEGIN
 		WHERE ssn= NEW.ssn;
 	UPDATE Customers
 		SET status = 'Closed'
+		WHERE ssn= NEW.ssn;
+	UPDATE Customers -- connor added this
+		SET criminal = 'Y'
 		WHERE ssn= NEW.ssn;
 END; //
 

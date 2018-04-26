@@ -40,6 +40,29 @@ class Database(object):
         self.conn.commit()
         return result
 
+    def insert_role(self,role):
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'INSERT INTO Roles (role) VALUES ("{0}")'.format(role)
+        print(sql)
+        result = cur.execute(sql)
+        self.conn.commit()
+        return result
+
+    def insert_matches(self, ssn1, ssn2, mid) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+
+        sql = 'INSERT INTO Matches  VALUES ("{1}","{0}")'.format(ssn1,mid)
+        print(sql)
+        result = cur.execute(sql)
+        self.conn.commit()
+        sql = 'INSERT INTO Matches VALUES ("{1}","{0}")'.format(ssn2,mid)
+        result = cur.execute(sql)
+        print(sql)
+        self.conn.commit()
+        
+        return result
+
+
     def insert_customer(self, ssn, first_name, last_name, username, DOB, interested_in, phone,
                     gender, eye_color, hair_color, children_count, married_prev): 
         """ account_closed must be added to the database later """
@@ -51,11 +74,11 @@ class Database(object):
         thisyear = datetime.datetime.now().year
         age = int(thisyear) - int(yob)
         age= str(age)
-        thisyear
 
         sql = 'INSERT INTO Customers (ssn, first_name, last_name, username, DOB, interested_in, phone, age, gender, \
                 children_count, married_prev, account_opened, eye_color, hair_color ) \
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+        print(sql)
         result = cur.execute(sql, (ssn, first_name, last_name, username, 
                         dob, interested_in, phone, age, gender, children_count, married_prev, today, eye_color, hair_color))
         self.conn.commit()
@@ -68,9 +91,48 @@ class Database(object):
         self.conn.commit()
         return result
 
-    def insert_customer_interests(self, ssn, interest_list):
-        for intrst in (interest_list):
-            self.insert_customer_interest(ssn, intrst)
+    def insert_match(self, ssn1, ssn2, matchID) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql1 = 'INSERT INTO Matches (matchID, ssn) VALUES ("{0}","{1}")'.format(matchID,ssn1)
+        sql2 = 'INSERT INTO Matches (matchID, ssn) VALUES ("{0}","{1}")'.format(matchID,ssn2)
+        # print('INSERT MATCH SQL1: {0}'.format(sql1))
+        # print('INSERT MATCH SQL2: {0}'.format(sql2))
+        try :
+            result = cur.execute(sql1)
+            self.conn.commit()
+            result += cur.execute(sql2)
+            self.conn.commit()
+            return result
+        except:
+            print('ERROR INSERTING MATCH')
+            return 0
+
+    def insert_date(self, date_time, date_date, location, matchID) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+
+        sql = 'SELECT MAX(date_number) FROM Dates WHERE matchID = "{0}"'.format(matchID)
+        print(sql)
+        cur.execute(sql)
+        try :
+            date_num = (int(cur.fetchall()[0]['MAX(date_number)']) + 1)
+        except:
+            print('except')
+            date_num = 1
+
+        sql = 'INSERT INTO Dates (date_number, date_time, date_date, location, matchID) \
+                VALUES ("{0}", "{1}", "{2}", "{3}", "{4}")'.format(date_num,date_time,date_date,location, matchID)
+        print(sql)
+        result = cur.execute(sql)
+        self.conn.commit()
+        return result
+
+    def insert_crime(self, crime) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'INSERT INTO Crimes (crime) VALUES ("{0}")'.format(crime)
+        print(sql)
+        result = cur.execute(sql)
+        self.conn.commit()
+        return result
 
 
     # BEGIN THE STATEMENTS FOR DELETION
@@ -153,19 +215,20 @@ class Database(object):
 
     # BEGIN THE STATEMENTS FOR INSERTION
     # already have some for inserting: user, customer, customer-interest, match, date + DONT NEED ONE FOR : registration + match fees b/c they're already triggered
-    def insert_customer_crime(self, ssn, crime ): # insert a customer crime-- ssn, crime, 
-                                                    #date_recorded--> defaults to current_date( no need to add it in!)
+    def insert_customer_crime(self, ssn, crime ): # insert a customer crime-- ssn, crime, date_recorded--> defaults to current_date( no need to add it in!)
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql = 'INSERT INTO Customer_Crimes(ssn, crime) VALUES (%s, %s)'
-        cur.execute(sql, (ssn, crime))
+        today = datetime.datetime.now().date()
+        sql = 'INSERT INTO Customer_Crimes(ssn, crime, date_recorded) VALUES ("{0}", "{1}", "{2}")'.format(ssn, crime, today)
+        print(sql)
+        result = cur.execute(sql)
         self.conn.commit()
         # RE OPEN THE CLIENTS ACCOUNT!!
-        status='open'
-        criminal= 'N'
-        sql = 'UPDATE Customers WHERE ssn=%s SET account_closed=NULL AND status = %s AND criminal=%s'
-        cur.execute(sql, (ssn, status, criminal))
-        self.conn.commit()
-        return 1
+        # status='open'
+        # criminal= 'N'
+        # sql = 'UPDATE Customers WHERE ssn=%s SET account_closed=NULL AND status = %s AND criminal=%s'
+        # cur.execute(sql, (ssn, status, criminal))
+        # self.conn.commit()
+        return result
 
     def insert_interest(self, interest, category): # insert an interest
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
@@ -416,16 +479,31 @@ class Database(object):
 
 # END THE STATEMENTS FOR CHECKING DATA!!
 
-
-
-    def get_people(self):
+    def get_users(self):
         """fetch all people from the database"""
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
 
         cur.execute('SELECT * FROM Users')
 
-        return CursorIterator(cur)
+        result = CursorIterator(cur)
+        print(result)
+        return result
         
+    def get_all_matches(self) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        cur.execute('select distinct(d.matchid) as id, m.ssn as ssn1, n.ssn as ssn2 from dates d, matches m, matches n where d.matchId = m.matchid and d.matchid = n.matchid and m.ssn != n.ssn')
+        # cur.execute('select * from dates d, matches m, matches n where d.matchId = m.matchid and d.matchid = n.matchid and m.ssn != n.ssn')
+        result = cur.fetchall()
+        result = result[1::2]
+        return result
+
+    def get_all_date_pairs(self) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        cur.execute('select d.happened as happened, d.date_number as DateNumber, d.matchid as MatchID, d.location as location, d.date_date as date_date, d.date_time as time, m.ssn as ssn1, n.ssn as ssn2 from Dates d, matches m, matches n where d.matchid = m.matchid and d.matchid = n.matchid and m.ssn != n.ssn order by matchid, date_number')
+        result = cur.fetchall()
+        result=result[1::2]
+        return result
+
     # def update_customer():
         """ show ALL data of customer with option to edit"""
         """ pass every piece of data in update_customer() """
@@ -480,7 +558,8 @@ class Database(object):
 
         cur.execute('SELECT interest, category FROM Interests ORDER BY category;')
 
-        return CursorIterator(cur)
+        result=cur.fetchall()
+        return result
 
     def get_customer_by_ssn(self, ssn) :
         try:
@@ -517,6 +596,26 @@ class Database(object):
         except :
             print('ERROR: get_dates_by_ssn()')
             return 0
+
+
+
+    def get_all_customers(self) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'SELECT * FROM Customers'
+        cur.execute(sql)
+        result = cur.fetchall()
+        return result
+
+    def get_all_crimes(self) :
+        cur = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = 'SELECT * FROM Crimes'
+        cur.execute(sql)
+        results = cur.fetchall()
+        result=[]
+        for each in results:
+            result.append(each['crime'])
+        # print (result)
+        return result
 
 
     def get_customers_by_match_id(self, matchID) :
@@ -607,13 +706,9 @@ class Database(object):
     def submit_date(self, ssn, success, matchid, date_num) :
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         try :
-            sql = 'INSERT INTO DateSuccess VALUES("{0}", "{1}", "{2}")'.format(matchid,ssn, success)
+            sql = 'INSERT INTO DateSuccess (matchid,ssn, success, date_number) VALUES("{0}", "{1}", "{2}", "{3}")'.format(matchid,ssn, success,date_num)
             cur.execute(sql)
             self.conn.commit()
-
-            print ('datesuccess_worked')
-            print('ID AND DATE NUM: {0} #{1}'.format(matchid, date_num))
-
             sql = 'UPDATE Dates SET happened="Y" WHERE matchID= "{0}" AND date_number= "{1}"'.format(matchid,date_num)
             result = cur.execute(sql)
             self.conn.commit()
@@ -621,40 +716,6 @@ class Database(object):
         except:
             print('ERROR: submit_date()')
             return 0
-
-    def insert_new_match(self, ssn1, ssn2, matchID) :
-        cur = self.conn.cursor(pymysql.cursors.DictCursor)
-        sql1 = 'INSERT INTO Matches (matchID, ssn) VALUES ("{0}","{1}")'.format(matchID,ssn1)
-        sql2 = 'INSERT INTO Matches (matchID, ssn) VALUES ("{0}","{1}")'.format(matchID,ssn2)
-        print('INSERT MATCH SQL1: {0}'.format(sql1))
-        print('INSERT MATCH SQL2: {0}'.format(sql2))
-
-        try :
-            result = cur.execute(sql1)
-            result += cur.execute(sql2)
-            self.conn.commit()
-            return result
-        except:
-            print('ERROR INSERTING MATCH')
-            return 0
-
-    def insert_new_date(self, date_time, date_date, location, matchID) :
-        cur = self.conn.cursor(pymysql.cursors.DictCursor)
-
-        sql = 'SELECT MAX(date_number) FROM Dates WHERE matchID = "{0}"'.format(matchID)
-        cur.execute(sql)
-        # print(cur.fetchall()[0]['MAX(date_number)'])
-        try :
-            date_num = int(cur.fetchall()[0]['MAX(date_number)']) + 1
-        except:
-            date_num = 1
-
-        sql = 'INSERT INTO Dates (date_number, date_time, date_date, location, matchID) \
-                VALUES ("{0}", "{1}", "{2}", "{3}", "{4}")'.format(date_num,date_time,date_date,location, matchID)
-        # print(sql)
-        result = cur.execute(sql)
-        self.conn.commit()
-        return result
 
 
     def getquery1(self, username, num, what_option):

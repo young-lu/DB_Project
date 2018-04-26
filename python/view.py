@@ -34,17 +34,6 @@ def load_user_ID():
     if not userId: return None
     return userId
 
-# def get_customer_dates(ssn) :
-#     userId = request.cookies.get('userID')
-#     if not userId: return None
-#     my_matchIDs = []
-#     my_dates = []
-
-#     for each in (db.get_matches_by_ssn(ssn)):
-#         my_matchIDs.append(each['matchID'])
-
-#     date_list = (db.get_dates(ssn, my_matchIDs))
-#     return date_list
 
 def get_date_names(dates) :
     try:
@@ -58,7 +47,7 @@ def get_date_names(dates) :
 @app.route('/', methods=['GET'])
 def index():
     """Get the main page"""
-    people = db.get_people()
+    people = db.get_users()
     interests = db.get_interests()
     return render_template('index.html', people=people, interests=interests)
 
@@ -73,16 +62,11 @@ def insert():
         ssn = request.form['ssn']
         dob = request.form['dob']
         gender = request.form['gender']
-        children = request.form['children']
-        c = []
-        for i in range(int(children)):
-            c.append(' ')
         seeking = request.form['seeking']
         username = request.form['username']
         password = request.form['password']
         ec = request.form['eye_color']
         hc = request.form['hair_color']
-        print('CHILDREN: {0}:'.format(children))
 
     except:
         print('ERROR inserting customer')
@@ -118,8 +102,6 @@ def add_child() :
     age = request.form['age']
     at_home = request.form['at_home']
     count = db.get_children_count(ssn)
-    print('count:')
-    print(count )
 
     db.add_child(ssn,age,at_home, count + 1)
 
@@ -139,7 +121,7 @@ def get_login():
     if user:
         # send user to home page if they are already logged in
         return redirect('/home')
-    people = db.get_people()
+    people = db.get_users()
     return render_template('login.html', users=people)
 
 
@@ -271,7 +253,6 @@ def get_home():
     if not user:
         return redirect('/login')
     interests = db.get_interests()
-    print(user)
     if user['role'] == 'Customer':
         myssn = user['ssn']
         my_matchIDs = []
@@ -333,13 +314,14 @@ def make_match():
     print(ID)
 
     if matchssn in my_matches :
-        return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user, none_message="you are already matched with that user!\n\n")
-        # if db.insert_new_date(time, date, location, db.get/
-    elif (db.insert_new_match(myssn, matchssn, ID)) :
-        if db.insert_new_date(time, date, location, ID) :
+        return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user, 
+                                none_message="you are already matched with that user!\n\n")
+    elif (db.insert_match(myssn, matchssn, ID)) :
+        if db.insert_date(time, date, location, ID) :
             # return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user,none_message="match made with {0}!\n".format(db.get_customer_by_ssn(matchssn)['first_name']))
             return redirect('/home')
-    return render_template('home.html', interests=db.get_interests(), dates=my_dates, user=user, none_message="ERROR: problem adding match\n\n")
+    return render_template('home.html', interests=db.get_interests(), dates=my_dates, 
+                            user=user, none_message="ERROR: problem adding match\n\n")
 
 @app.route('/dates', methods=['POST'])
 def manage_dates() :
@@ -369,7 +351,7 @@ def add_date() :
     time = request.form['time']
     location = request.form['location']
 
-    if db.insert_new_date(time, date, location, rematchID) :
+    if db.insert_date(time, date, location, rematchID) :
         return redirect('/dates')
 
     return render_template('dates.html', dates=db.get_dates(user['ssn']), user= user, none_message='ERROR adding date' )
@@ -382,25 +364,198 @@ def review_date():
     date = request.form['radio_date']
     matchID = date.split(',')[0]
     date_num = date.split(',')[1]
+    print(matchID)
+    print(date_num)
 
     if db.submit_date(user['ssn'], review, matchID, date_num):
-        return render_template('home.html', interests=db.get_interests(), dates=db.get_dates(user['ssn']), user=user,none_message='Date review submitted')
+        return render_template('home.html', interests=db.get_interests(), dates=db.get_dates(user['ssn']), 
+                                user=user,none_message='Date review submitted')
 
-    return render_template('dates.html', dates=db.get_dates(user['ssn']), user= user, none_message='ERROR submitting date review' )
+    return render_template('dates.html', dates=db.get_dates(user['ssn']), user= user, 
+                            none_message='ERROR submitting date review')
 
 @app.route('/get_special_insert', methods=['POST'])
 def get_special_insert() :
+    table = request.form['insert_table'].lower()
+    print('table: {0}'.format(table))
+    dest = '/specialist-insert/insert_{0}.html'.format(table)
+    people=[]
+    for each in db.get_all_customers():
+        people.append(each)
+    crimes = db.get_all_crimes()
+    interests= db.get_interests()
+    matches = db.get_all_matches()
+    dates = db.get_all_date_pairs()
+    # for each in dates:
+    #     print('\n')
+    #     print(each)
 
+    return render_template('{0}'.format(dest), people=people, crimes=crimes, 
+                            matches=matches, interests=interests, dates=dates)
+    print('ERROR in get_special_insert')
+    return redirect('/home')
+
+@app.route('/special_insert_user', methods=['POST'])
+def special_insert_user() :
     try:
-        table = request.form['insert_table'].lower()
-        # print('table: {0}'.format(table))
-        dest = '/specialist-insert/insert_{0}.html'.format(table)
-        print(dest)
-        return render_template('{0}'.format(dest))
+        username = request.form['username']
+        password = request.form['password']
+        role = request.form['role']
+        db.insert_user(username, password, role)
+        # print('special insert success')
+        return redirect('/home')
+    except:
+        print("SPECIAL INSERT ERROR")
+        return render_template('special-home.html', user=load_current_user(),tables=db.show_tables())
+
+@app.route('/special_insert_role', methods=['POST'])
+def special_insert_role() :
+    try:
+        role = request.form['role']
+        db.insert_role(role)
+        return redirect('/home')
+    except:
+        print("SPECIAL INSERT ERROR")
+        return render_template('special-home.html', user=load_current_user(),tables=db.show_tables())
+
+
+@app.route('/special_insert_matches', methods=['POST'])
+def special_insert_matches() :
+    try:
+        ssn1 = request.form['ssn1']
+        ssn2 = request.form['ssn2']
+        mid = int(db.get_largest_matchID()) + 1
+        my_dates = db.get_dates(ssn1)
+        my_matches=[]
+        for each in (db.get_matches_by_ssn(ssn1)) : #finish this
+            my_matches.append(each['ssn'])
+        if ssn2 in my_matches :
+            return render_template('special-home.html', user=load_current_user(),tables=db.show_tables())
+        
+        db.insert_match(ssn1, ssn2, mid)
+        return redirect('/home')
 
     except:
-        print('ERROR in get_special_insert')
+        print("SPECIAL INSERT ERROR")
+        return render_template('special-home.html', user=load_current_user(),tables=db.show_tables())
+
+@app.route('/special_insert_crime', methods=['POST'])
+def special_insert_crime() :
+    try:
+        crime = request.form['crime']
+        db.insert_crime(crime)
         return redirect('/home')
+    except :
+        print("SPECIAL INSERT ERROR")
+        return render_template('special-home.html', user=load_current_user(),tables=db.show_tables())
+
+@app.route('/special_insert_customer_crimes', methods=['POST'])
+def special_insert_customer_crime() :
+    try:
+        ssn = request.form['customer']
+        crime = request.form['crime']
+        db.insert_customer_crime(ssn,crime)
+        return redirect('/home')
+    except :
+        print("SPECIAL CUSTOMER_CRIMES INSERT ERROR")
+        return render_template('special-home.html', user=load_current_user(),tables=db.show_tables())
+
+@app.route('/special_insert_customer_interests', methods=['POST'])
+def special_insert_customer_interests():
+    try:
+        interest = request.form['interest']
+        ssn = request.form['customer']
+
+        db.insert_customer_interest(ssn, interest)
+        return redirect('/home')
+    except:
+        print("SPECIAL CUSTOMER_interests INSERT ERROR")
+        return render_template('special-home.html', user=load_current_user(),tables=db.show_tables())
+
+@app.route('/special_insert_customer', methods=['POST'])
+def special_insert_customer() :
+    try:
+        firstname, lastname = request.form['firstname'], request.form['lastname']
+        phone = request.form['phone']
+        ssn = request.form['ssn']
+        dob = request.form['dob']
+        gender = request.form['gender']
+        seeking = request.form['seeking']
+        username = request.form['username']
+        password = request.form['password']
+        ec = request.form['eye_color']
+        hc = request.form['hair_color']
+        try: 
+            married_prev= request.form['married_prev']
+            if married_prev:
+                married_prev = 'Y'
+        except:
+            married_prev = 'N'
+
+        db.insert_user(username,password,"Customer")
+        db.insert_customer(ssn, firstname, lastname, username, dob,
+                            seeking, phone, gender, ec, hc, 0, married_prev)
+        return redirect('/home')
+
+    except:
+        print("SPECIAL Customer INSERT ERROR")
+        return render_template('special-home.html', user=load_current_user(),tables=db.show_tables())
+
+@app.route('/special_insert_customers_children', methods=["POST"])    
+def special_insert_customers_children() :
+    try:
+        ssn = request.form['customer']
+        age = request.form['age']
+        at_home = request.form['at_home']
+        count = db.get_children_count(ssn)
+        db.add_child(ssn,age,at_home, count + 1)
+        return redirect('/home')
+    except: 
+        print("SPECIAL Customers Children INSERT ERROR")
+        return render_template('special-home.html', user=load_current_user(),tables=db.show_tables())
+
+@app.route('/special_insert_interests', methods=['POST'])
+def special_insert_interests() :
+    try: 
+        interest = request.form['interest']
+        category = request.form['category']
+        db.insert_interest(interest, category)
+        return redirect('/home')
+    except :
+        print("SPECIAL interests INSERT ERROR")
+        return render_template('special-home.html', user=load_current_user(),tables=db.show_tables())
+
+@app.route('/special_insert_dates', methods=['POST'])
+def special_insert_dates() :
+    try :
+        matchID = request.form['matchID']
+        date = request.form['date']
+        time = request.form['time']
+        location = request.form['location']
+        db.insert_date(time, date, location, matchID) 
+        return redirect('/home')
+    except:
+        print("SPECIAL dates INSERT ERROR")
+        return render_template('special-home.html', user=load_current_user(),tables=db.show_tables())
+
+@app.route('/special_insert_datesuccess', methods=['POST'])
+def special_insert_datesuccess() :
+    try:
+        date = request.form['radio_date'].split(',')
+        date_num = date[0]
+        mid = date[1]
+        ssn1 = date[2]
+        ssn2 = date[3]
+
+        review_ssn1 = request.form['review_ssn1']
+        review_ssn2 = request.form['review_ssn2']
+
+        db.submit_date(ssn1, review_ssn1, mid, date_num)
+        db.submit_date(ssn2, review_ssn2,mid, date_num)
+        return redirect('/home')
+    except:
+        print("SPECIAL DateSuccess INSERT ERROR")
+        return render_template('special-home.html', user=load_current_user(),tables=db.show_tables())
 
 
 
