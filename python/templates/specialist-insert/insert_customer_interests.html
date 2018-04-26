@@ -1,0 +1,31 @@
+<html lang="en">
+  <head>
+    <title>Insert Customer Interests! </title>
+  </head>
+  <h3>Insert new customer interests by which they match</h3>
+  <body>
+  	<form action="special_insert_customer_interests" method="POST">
+  	   <p><p>select a customer</p>
+          <select name= 'customer'>
+          {% for person in people %}
+            <option value="{{ person['ssn'] }}">{{ person['username']}}</option>
+          {% endfor %}
+        </select>
+      </p>
+      <p><p>select an interest</p>
+          <select name= 'interest' >
+          {% for int in interests %}
+            <option value="{{ int['interest'] }}">{{ int['interest'] }}</option>
+          {% endfor %}
+        </select>
+      </p>
+      <input type='submit' value= "insert">
+    </form>
+  </body>
+<a href="/home">homepage</a>
+<footer>
+    <p>written by: Sara Fares and Connor Lu</p>
+    <p>COSC-280</p>
+    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+  </footer>
+</html>

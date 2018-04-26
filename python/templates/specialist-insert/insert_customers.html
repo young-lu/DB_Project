@@ -1,15 +1,11 @@
-<!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>DatingService.gu</title>
-    <link rel="stylesheet" type="text/css" href="main.css" />
+    <title>Insert Customer Interests! </title>
   </head>
+  <h3>Insert new customers by in the system</h3>
   <body>
-    <h1 class="title">
-      <img src="img/hills.jpg" alt="Dating Service">
-    </h1>
-     <section>
-      <form action="insert" method="POST">
+  	<section>
+	<form action="special_insert_customer" method="POST">
         <p>
           <label for="FirstName">First Name:</label> <input type="text" name="firstname" id="FirstName" maxlength="40"/>
         </p>
@@ -17,7 +13,6 @@
           <label for="LastName">Last Name:</label> <input type="text" name="lastname" id="LastName" maxlength="40"/>
         </p>
         <p>
-
           <label for="Username">Username: </label><input type="text" name="username" id="Username"  maxlength="40"/>
         </p>
         <p>
@@ -34,20 +29,13 @@
         </p>
         <div ><p>Gender:</p><label for="M">Male</label><input type="radio" name="gender" id="M" value="M" /><label for="F">Female</label><input type="radio" name="gender" id="F" value="F" />
         </div>
-        <!-- <p>
-          <label for="Children">Number of Children:</label><input type="number" name="children" id="Children" min="0" value="0"/>
-        </p> -->
+
         <p>
-          <label for="Married_Prev">I was married previously: </label><input type="checkbox" name="married_prev" id="Married_Prev" value="TRUE">
+          <label for="Married_Prev"> Customer was married previously: </label>
+          <input type="checkbox" name="married_prev" id="Married_Prev" value="TRUE">
         </p>
         <p>
-          My hobbies include&hellip;
-        </p>
-        <p>
-          {% for interest in interests %}
-            <input type="checkbox" name="interests" id="{{interest}}" value="{{interest['interest']}}"><label for="{{interest}}">{{interest['interest']}}</label> 
-            <br>
-          {% endfor %}
+          Interests&hellip;
         </p>
 
         <p>
@@ -67,25 +55,17 @@
           </select><label for='hc'> Hair Color</label>
         </p>
 
-        <h3>
-          I'm interested in: 
-        </h3>
-        <p>
+        <h3>I'm interested in: </h3>
           <input type="radio" name="seeking" id="M" value="M"><label for="M">Males</label>
-        </p>
-        <p>
           <input type="radio" name="seeking" id="F" value="F"><label for="F">Females</label>
-        </p>
-        <p>
           <input type="submit" value="[join dating service]"/>
-        </p>
-      </form>
-    </section>
-    
+	</form>
+  	</section>
   </body>
-  <footer>
-    <p>written by: Sara Fares and Connor Lu</p>
-    <p>COSC-280</p>
-    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+	<a href="/home">homepage</a>
+	<footer>
+    	<p>written by: Sara Fares and Connor Lu</p>
+    	<p>COSC-280</p>
+    	<a href="https://github.com/young-lu/DB_Project">code repository</a>
   </footer>
 </html>

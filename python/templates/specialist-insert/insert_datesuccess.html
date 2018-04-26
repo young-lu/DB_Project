@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Insert Date Review</title>
+  </head>
+  <h3>Insert Date Reviews</h3>
+  <body>
+  	<form action="special_insert_datesuccess" method="POST">
+        {% for radio_date in dates %}
+        {% if radio_date['happened'] == 'N' %}
+      <p>
+        <input type='radio' name="radio_date" id="{{ radio_date['DateNumber'] }},{{ radio_date['MatchID'] }}" value="{{ radio_date['DateNumber'] }},{{ radio_date['MatchID'] }},{{ radio_date['ssn1'] }},{{ radio_date['ssn2'] }}">
+        <label for="{{ radio_date['DateNumber'] }},{{ radio_date['MatchID'] }}">Date #{{ radio_date['DateNumber'] }} for {{ radio_date['ssn1']}} and {{ radio_date['ssn2'] }} @ {{ radio_date['date_time'] }}  // {{ radio_date['location'] }}</label><br> </p>
+        {% endif %}
+        {% endfor %}
+        <p>How was the date for the left hand side customer?
+        <select name= "review_ssn1">
+          <option value='Y'>Success</option>
+          <option value="N">Failure</option>
+        </select>
+
+        <p>How was the date for the right hand side customer?
+        <select name= "review_ssn2">
+          <option value='Y'>Success</option>
+          <option value="N">Failure</option>
+        </select>
+
+      <input type='submit' value= "insert">
+    </form>
+  </body>
+
+<a href="/home">homepage</a>
+<footer>
+    <p>written by: Sara Fares and Connor Lu</p>
+    <p>COSC-280</p>
+    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+  </footer>
+
+
+</html>
+
+
