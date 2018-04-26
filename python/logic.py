@@ -403,25 +403,20 @@ class Database(object):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql_base = 'UPDATE Dates '
         sql_pt2= ' WHERE matchID= %s AND date_number= ' + str(date_number)
-        if 'date_time' in kwargs.keys():
-            sql= sql_base + ' SET date_time= %s'+ sql_pt2
-            cur.execute(sql, (date_time, matchID))
-            self.conn.commit()
+        
         if 'date_date' in kwargs.keys():
             sql= sql_base + ' SET date_date= %s'+ sql_pt2
-            cur.execute(sql, (date_date, matchID))
+            cur.execute(sql, (kwargs['date_date'], matchID))
             self.conn.commit()
-        if 'both_still_interested' in kwargs.keys():
-            sql= sql_base + ' SET both_still_interested= %s'+ sql_pt2
-            cur.execute(sql, (both_still_interested, matchID))
-            self.conn.commit()
+
         if 'happened' in kwargs.keys():
             sql= sql_base + ' SET happened= %s'+ sql_pt2
-            cur.execute(sql, (happened, matchID))
+            cur.execute(sql, (kwargs['happened'], matchID))
             self.conn.commit()
+
         if 'location' in kwargs.keys():
             sql= sql_base + ' SET location= %s' + sql_pt2
-            cur.execute(sql, (location, matchID))
+            cur.execute(sql, (kwargs['location'], matchID))
             self.conn.commit()
         return 1
 

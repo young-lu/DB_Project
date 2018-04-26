@@ -10,10 +10,11 @@
 	<select name= "date">
 	{% for each in to_delete %}
 		<option value="{{ each['matchID'] }}|{{ each['date_number'] }}" >
-			matchID= {{ each['matchID'] }}, date number= {{ each['date_number'] }}, has it happened= {{ each['happened'] }}, day of the date= {{ each['date_date'] }}, time of the date= {{ each['date_time'] }},  location= {{ each['location'] }}, are they both still interested= {{ each['both_still_interested'] }}
+			matchID= {{ each['matchID'] }}, date number= {{ each['date_number'] }}, has it happened= {{ each['happened'] }}, day of the date= {{ each['date_date'] }}, time of the date= {{ each['date_time'] }},  location= {{ each['location'] }}
 		</option> <br>
 	{% endfor %}
 	</select>
+	
 	<p>
          <input type="submit" value="delete date"/>
     </p>

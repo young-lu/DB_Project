@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Select which tuple you'd like to delete and hit the submit button.</title>
+    <link rel="stylesheet" href="main.css"/>
+  </head>
+  <p>{{ msg }}</p>
+
+<form action="update_date" method="POST">
+	<select name= "date">
+	{% for each in results %}
+		<option value="{{ each['matchID'] }}|{{ each['date_number'] }}" >
+			matchID= {{ each['matchID'] }}, date number= {{ each['date_number'] }}, has it happened= {{ each['happened'] }}, day of the date= {{ each['date_date'] }},  location= {{ each['location'] }}
+		</option> <br>
+	{% endfor %}
+	</select>
+	<!-- INSERT ALL THE STUFF TO UDPATE -->
+	<p>
+    	<label for="happened">Has the date happened: </label>
+    	<select name="happened" id="happened"> 
+    		<option value="no_change" selected="selected">No change</option>
+			<option value="Y" >Yes</option>
+			<option value="N" >No</option>
+    	</select>
+    </p>
+    
+    <p>
+    	<label for="date_date">Date of the date: </label> <input type="date" name="date_date" id="date_date" value="1000-01-01" />
+    </p>
+
+    <p>
+    	<label for="location">Location: </label> <input type="text" name="location" id="location" />
+    </p>
+
+	<p>
+
+	<p>
+         <input type="submit" value="update date"/>
+    </p>
+
+</form>	
