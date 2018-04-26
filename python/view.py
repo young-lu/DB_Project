@@ -991,7 +991,7 @@ def update_date_post():
 
     for key in kwargs_to_pass.keys():
         print(key)
-    db.update_date(matchID, date_num, **kwargs_to_pass)  # update the customer 
+    db.update_date(matchID, date_num, **kwargs_to_pass)  # update the date 
 
     results= db.return_tuples('Dates')
     return render_template('update_date.html', results=results)
@@ -999,13 +999,61 @@ def update_date_post():
 # view for update_customer_children page
 @app.route('/update_match_fee', methods=['POST'])
 def update_match_fee_post():
+    result_full= request.form['match_fee']
+    result_split= result_full.split('|')
+    fee_number = result_split[1]
+    ssn = result_split[0]
+
+    kwargs_to_pass= {}
+    if request.form['amount'] and request.form['amount']<1000 :
+        amount= request.form['amount']
+        kwargs_to_pass['amount']= amount
+
+    if request.form['paid']!='no_change':
+        paid= request.form['paid']
+        kwargs_to_pass['paid']= paid
+
+    if request.form['date_charged']!= '1000-01-01':
+        date_charged= request.form['date_charged']
+        kwargs_to_pass['date_charged']= date_charged
+
+    if request.form['date_paid']!= '1000-01-01':
+        date_paid= request.form['date_paid']
+        kwargs_to_pass['date_paid']= date_paid
+
+    for key in kwargs_to_pass.keys():
+        print(key)
+
+    db.update_match_fee(ssn, fee_number, **kwargs_to_pass)  # update the match fee 
     results= db.return_tuples('Match_Fees')
     return render_template('update_match_fee.html', results=results)
 
 # view for update_customer_children page
 @app.route('/update_registration_fee', methods=['POST'])
 def update_registration_fee_post():
+    ssn= request.form['registration_fee']
 
+    kwargs_to_pass= {}
+    if request.form['amount'] and request.form['amount']<1000 :
+        amount= request.form['amount']
+        kwargs_to_pass['amount']= amount
+
+    if request.form['paid']!='no_change':
+        paid= request.form['paid']
+        kwargs_to_pass['paid']= paid
+
+    if request.form['date_charged']!= '1000-01-01':
+        date_charged= request.form['date_charged']
+        kwargs_to_pass['date_charged']= date_charged
+
+    if request.form['date_paid']!= '1000-01-01':
+        date_paid= request.form['date_paid']
+        kwargs_to_pass['date_paid']= date_paid
+
+    for key in kwargs_to_pass.keys():
+        print(key)
+
+    db.update_registration_fee(ssn, **kwargs_to_pass)  # update the match fee 
 
     results= db.return_tuples('Registration_Fees')
     return render_template('update_registration_fee.html', results=results)
