@@ -426,19 +426,19 @@ class Database(object):
         sql_pt2= ' WHERE ssn = %s AND fee_number= ' + str(fee_num)
         if 'amount' in kwargs.keys():
             sql= sql_base + ' SET amount= %s' +sql_pt2
-            cur.execute(sql, (amount, ssn)) 
+            cur.execute(sql, (kwargs['amount'], ssn)) 
             self.conn.commit()
         if 'date_charged' in kwargs.keys():
             sql= sql_base + ' SET date_charged= %s' +sql_pt2
-            cur.execute(sql, (date_charged, ssn))
+            cur.execute(sql, (kwargs['date_charged'], ssn))
             self.conn.commit()
         if 'paid' in kwargs.keys():
             sql= sql_base + ' SET paid= %s' +sql_pt2
-            cur.execute(sql, (paid, ssn))
+            cur.execute(sql, (kwargs['paid'], ssn))
             self.conn.commit()
         if 'date_paid' in kwargs.keys():
             sql= sql_base + ' SET date_paid= %s' +sql_pt2
-            cur.execute(sql, (date_paid, ssn))
+            cur.execute(sql, (kwargs['date_paid'], ssn))
             self.conn.commit()    
         return 1
 
@@ -446,21 +446,21 @@ class Database(object):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         sql_base = 'UPDATE Registration_Fees '
         sql_pt2 = ' WHERE ssn = %s '
-        if kwargs['amount']:
+        if 'amount' in kwargs.keys():
             sql= sql_base + ' SET amount= %s' +sql_pt2
-            cur.execute(sql, (amount, ssn))
+            cur.execute(sql, (kwargs['amount'], ssn))
             self.conn.commit()
-        if kwargs['date_charged']:
+        if 'date_charged' in kwargs.keys():
             sql= sql_base + ' SET date_charged= %s' +sql_pt2
-            cur.execute(sql, (date_charged, ssn))
+            cur.execute(sql, (kwargs['date_charged'], ssn))
             self.conn.commit()
-        if kwargs['paid']:
+        if 'paid' in kwargs.keys():
             sql= sql_base + ' SET paid= %s' +sql_pt2
-            cur.execute(sql, (paid, ssn))
+            cur.execute(sql, (kwargs['paid'], ssn))
             self.conn.commit()
-        if kwargs['date_paid']:
+        if 'date_paid' in kwargs.keys():
             sql= sql_base + ' SET date_paid= %s' +sql_pt2
-            cur.execute(sql, (date_paid, ssn))
+            cur.execute(sql, (kwargs['date_paid'], ssn))
             self.conn.commit()    
         return 1
 

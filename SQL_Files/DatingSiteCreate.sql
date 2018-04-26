@@ -266,6 +266,7 @@ END; //
 	-- also update the database to reflect the balance due for that person
 
 -- NOT TESTED
+
 CREATE TRIGGER update_registration_fee
 AFTER INSERT ON Matches FOR EACH ROW
 BEGIN
@@ -274,7 +275,7 @@ BEGIN
 					GROUP BY m.ssn
 					HAVING count(matchID)=7)
 	THEN 
-		INSERT INTO Registration_Fees VALUES (100, CURRENT_DATE, NULL, 'False', NEW.ssn);
+		INSERT INTO Registration_Fees VALUES (100, CURRENT_DATE, NULL, 'N', NEW.ssn);
 	END IF;
 END; //
 DELIMITER ;
