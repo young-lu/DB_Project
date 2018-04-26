@@ -36,6 +36,13 @@
           <label for="{{ interest['interest'] }}">{{ interest["interest"] }}</label>
           <input type="checkbox" name="interest" id="{{ interest['interest'] }}" value="{{ interest['interest'] }}" /><br>
         {% endfor %}
+        <label for="any">ANY INTEREST</label>
+        <input type="checkbox" name="any_interest" id="any" value='1'/><br>
+      </p>
+
+      <h5>Should your match have ALL of your interests?</h5
+        <label for="exact">Yes</label>
+        <input type="checkbox" name="exact" id="exact"/>
       </p>
       <p>
           <select name="eye_color" id="ec"> 
@@ -56,10 +63,7 @@
           </select><label for='hc'> Hair Color</label>
         </p>
       <p>
-        <h5>Should your match have ALL of your interests?</h5
-        <label for="exact">Yes</label>
-        <input type="checkbox" name="exact" id="exact"/>
-      </p>
+        
       <input type="submit" value="Match Me!"/> 
     </form> 
   </section>
@@ -70,6 +74,7 @@
       {% for each in user %}
         {{ each }}: {{ user[each] }}<br>
       {% endfor %}
+      <p>Total fees logged: {{ fees }}<p>
   </section>
 
 <!--past  dates  -->
