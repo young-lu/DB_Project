@@ -306,10 +306,14 @@ class Database(object):
         sql_base = 'UPDATE Customers '
         basept2= '  WHERE ssn = %s'
         if 'username' in kwargs.keys():
-            # get old username and change the users table with that username too
-            # TO DO HERE
-            sql= sql_base+ ' SET username= %s' +basept2
-            cur.execute(sql, (kwargs['username'], ssn))
+            # get old username 
+            sql="SELECT username FROM Customers WHERE ssn = %s"
+            cur.execute(sql, ssn)
+            result= cur.fetchall()
+            username= result[0]['username']
+            # and change the users table with that username too
+            sql1= 'UPDATE Users SET username = %s WHERE username = %s'
+            cur.execute(sql1, (kwargs['username'], username))
             self.conn.commit()
         if 'first_name' in kwargs.keys():
             sql= sql_base+ ' SET first_name= %s'+basept2
@@ -319,8 +323,8 @@ class Database(object):
             sql= sql_base+ ' SET last_name= %s'+basept2
             cur.execute(sql, (kwargs['last_name'], ssn))
             self.conn.commit()
-        if 'username' in kwargs.keys():
-            sqlDOBsql_base+ ' SET DOB= %s'+basept2
+        if 'DOB' in kwargs.keys():
+            sql=sql_base+ ' SET DOB= %s'+basept2
             cur.execute(sql, (kwargs['DOB'], ssn))
             self.conn.commit()
         if 'interested_in' in kwargs.keys():

@@ -600,7 +600,6 @@ def special_insert_datesuccess() :
 
 
 
-
 ###########################################
 ####### UPDATE + DELETE VIEWS GET #########
 ###########################################
@@ -637,26 +636,26 @@ def update_customer_post():
         # add it to the kwargs
         kwargs_to_pass['phone']=  phone
 
-    if request.form['DOB']:
+    if request.form['DOB']!='1000-01-01':
         DOB= request.form['DOB']
         # add it to the kwargs
         kwargs_to_pass['DOB']=  DOB
 
-    if request.form['eye_color']:
+    if request.form['eye_color'] != "no_change":
         eye_color= request.form['eye_color']
         kwargs_to_pass['eye_color']=  eye_color
 
-    if request.form['hair_color']:
+    if request.form['hair_color']!= "no_change":
         hair_color= request.form['hair_color']
         # add it to the kwargs
         kwargs_to_pass['hair_color']= hair_color
 
-    if request.form['gender']:
+    if request.form['gender'] != "no_change":
         gender= request.form['gender']
         # add it to the kwargs
         kwargs_to_pass['gender']= gender
 
-    if request.form['interested_in']:
+    if request.form['interested_in'] != "no_change":
         interested_in= request.form['interested_in']
         kwargs_to_pass['interested_in']=interested_in
 
@@ -664,23 +663,23 @@ def update_customer_post():
         children_count= request.form['children_count']
         kwargs_to_pass['children_count']= children_count
 
-    if request.form['married_prev']:
+    if request.form['married_prev'] != "no_change":
         married_prev= request.form['married_prev']
         kwargs_to_pass['married_prev']= married_prev
 
-    if request.form['criminal']:
+    if request.form['criminal'] != "no_change":
         criminal= request.form['criminal']
         kwargs_to_pass['criminal']=criminal
 
-    if request.form['account_opened']:
+    if request.form['account_opened']!='1000-01-01' :
         account_opened= request.form['account_opened']
         kwargs_to_pass['account_opened']=account_opened
 
-    if request.form['account_closed']:
+    if request.form['account_closed']!= '1000-01-01':
         account_closed= request.form['account_closed']
         kwargs_to_pass['account_closed']= account_closed
         
-    if request.form['status']:
+    if request.form['status'] != "no_change":
         status= request.form['status']
         kwargs_to_pass['status']= status
     for key in kwargs_to_pass.keys():
