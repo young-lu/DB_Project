@@ -1,5 +1,102 @@
  <!-- Query based on different characteristics to find matches. -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+  </head>
+  <p>Query the database based on any one or the combination of the characteristics to find potential list
+of match.<br> For each potential match, the information of that match should be shown.</p>
+  <body>
+		<form action="query6" method="POST">
+		      <p>
+		        <label for="Married">Previous marriage</label>
+		        <select name="married" id="Married">
+		        	<option value="never_married">never married</option>
+		        	<option value="previously_married">previously married</option>
+		        	<option value="both">both</option>
+		        </select>
+		      </p>
+
+		      <p>
+		      	<label for="gender">Gender</label>
+		        <select  name="gender" id="gender">
+		        	<option value="male">male</option>
+		        	<option value="female">female</option>
+		        	<option value="any">any gender</option>
+		        </select>
+		    	</p>
+
+		      <p>
+		        <label for="max_kids">maximum number of children</label>
+		        <input type="number" name="max_kids" id="max_kids" min="0" value="0"/>
+		        <label for="min_kids">minimum number of children</label>
+		        <input type="number" name="min_kids" id="min_kids" min="0" value="0"/>
+		      </p>
+
+		      <p>
+		        <label for="max_age">age range: </label>
+		        <input type="number" name="max_age" id="max_age" min="0" value="80"/> -
+		        <!-- <label for="min_age">minimnum age/label> -->
+		        <input type="number" name="min_age" id="min_age" min="18" value="20"/>
+		      </p>
+
+		      <p>
+		      	<p>Query customers with selected interests:</p>
+		        {% for interest in interests %}
+		          <label for="{{ interest['interest'] }}">{{ interest["interest"] }}</label>
+		          <input type="checkbox" name="interest" id="{{ interest['interest'] }}" value="{{ interest['interest'] }}" /><br>
+		        {% endfor %}
 
 
+		        <p>Query customers with ALL selected interests</p>
+			        <label for="exact">Yes</label>
+			        <input type="checkbox" name="exact" id="exact"/>
+		      </p>
+		      <p>
+		          <!-- <select name="eye_color" id="ec">  -->
+		            <!-- <option value="brown">brown</option>
+		            <option value="green">green</option>
+		            <option value="blue">blue</option>
+		            <option value='any'>any</option> -->
+		          <!-- </select><label for='ec'> Eye Color</label> -->
 
- 
+		          <input type="checkbox" name="brown_eyes" value="brown">brown eyes</input>
+		            <input type="checkbox" name="green_eyes" value="green">green eyes</input >
+		            <input type="checkbox" name="blue_eyes" value="blue">blue eyes</input >
+		            <input type="checkbox" name="any_eyes" value='any'>any eyes</input >
+		        </p>
+
+		        <p>
+		         <!--  <select name="hair_color" id='hc'> 
+		            <option value="brown">brown</option>
+		            <option value="blonde">blonde</option>
+		            <option value="black">black</option>
+		            <option value="red">red</option>
+		            <option value='any'>any</option>
+		          </select><label for='hc'> Hair Color</label> -->
+
+		          <input type="checkbox" name="brown_hair" value="brown">brown hair</input>
+		            <input type="checkbox" name="blonde_hair" value="blonde">blonde hair</input >
+		            <input type="checkbox" name="black_hair" value="black">black hair</input > 
+		            <input type="checkbox" name="red_hair" value="blue">red hair</input >
+		            <input type="checkbox" name="any_hair" value='any'>any hair</input >
+		        </p>
+
+		        <input type="submit" value="Query"/> 
+
+		     <h3>Results:</h3>   
+
+			{% for q in queries %}
+				{{ q['ssn']}} |  {{ q['first_name'] }} {{ q['last_name'] }}<br>
+			{% endfor %}
+		</form> 
+		<a href="/home">home</a>
+	</body>
+  <footer >
+    <p>written by: Sara Fares and Connor Lu</p>
+    <p>COSC-280</p>
+    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+  </footer>
+
+
+</html>

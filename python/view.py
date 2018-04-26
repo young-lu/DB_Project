@@ -206,6 +206,97 @@ def get_query5():
     results= db.getquery5(username)
     return render_template('query5.html', results=results)
 
+@app.route('/load_query6', methods=['GET'])
+def load_query6():
+
+    return render_template('query6.html', interests=db.get_interests())
+
+
+@app.route('/query6', methods=['POST'])
+def get_query6():
+    married = request.form['married']
+    max_kids = request.form['max_kids']
+    min_kids = request.form['min_kids']
+    max_age = request.form['max_age']
+    min_age = request.form['min_age']
+    gender = request.form['gender']
+
+    interests = request.form.getlist('interest')
+
+    exact = request.form.get('exact')
+
+    brown_eyes = request.form.get('brown_eyes')
+    green_eyes = request.form.get('green_eyes')
+    blue_eyes = request.form.get('blue_eyes')
+    any_eyes = request.form.get('any_eyes')
+    brown_hair = request.form.get('brown_hair')
+    blonde_hair = request.form.get('blonde_hair')
+    black_hair = request.form.get('black_hair')
+    red_hair = request.form.get('red_hair')
+    any_hair = request.form.get('any_hair')
+
+    sql = 'SELECT DISTINCT(c.ssn), c.username, c.first_name, c.last_name, c.DOB, c.interested_in, c.phone, c.age,\
+c.gender, c.children_count, c.married_prev, c.criminal, c.account_opened, c.eye_color, c.hair_color, \
+c.account_closed, c.status FROM Customers c, Customer_Interests ci WHERE c.ssn = ci.ssn AND '
+    interest_string = ", ".join('"' + interest + '"' for interest in interests)
+    if married != "both":
+        if married == 'never_married':
+            sql += ' c.married_prev = "N" AND ' 
+        elif married == 'previously_married':
+            sql += ' c.married_prev = "Y" AND '
+
+
+
+    if gender != 'any': 
+        if gender == 'male' :
+            sql += ' c.gender = "male" AND '
+
+        elif gender == 'female' :
+            sql += ' c.gender = "female" AND '
+
+
+    if not any_eyes :
+        eye_list= []
+        if brown_eyes :
+            eye_list.append('brown')
+        if green_eyes :
+            eye_list.append('green')
+        if blue_eyes :
+            eye_list.append('blue')
+
+        eyes = ",".join('"' + color + '"' for color in eye_list)
+        sql += ' c.eye_color IN ({0}) AND '.format(eyes)
+
+
+
+    if not any_hair :
+        hair_list =[]
+        if brown_hair:
+            hair_list.append('brown')
+        if blonde_hair:
+            hair_list.append('blonde')
+        if black_hair:
+            hair_list.append('black')
+        if red_hair:
+            hair_list.append('red')
+
+        hair = ",".join('"' + color + '"' for color in hair_list)
+        sql += ' c.hair_color IN ({0}) AND '.format(hair)
+
+    sql += ' c.children_count <=  "{0}" AND c.children_count >= "{1}" AND '.format(max_kids,min_kids)
+    sql += ' c.age <=  "{0}" AND c.age >= "{1}" AND '.format(max_age,min_age)
+
+    if exact and (interests) :
+        sql += " (ci.interest IN ({0})) GROUP BY c.ssn HAVING COUNT(*) = {1}".format(interest_string,len(interests))
+
+    if not exact  and (interests) :
+        sql += ' ci.interest IN  ({0}) ORDER BY c.ssn'.format(interest_string)
+
+    queries = db.getquery6(sql)
+
+    return render_template('query6.html',queries=queries)
+
+
 # this is what happens when the user clicks on page for query 7
 @app.route('/query7', methods=['GET'])
 def get_query7():
@@ -318,11 +409,8 @@ def find_match():
     my_dates = db.get_dates(ssn)
     eye_color = request.form['eye_color']
     hair_color = request.form['hair_color']
+    exact = request.form.get('exact')
 
-    try:
-        exact = request.form['exact']
-    except:
-        exact = 0
 
     if not exact:
         ssn_list = db.find_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests,eye_color, hair_color)
@@ -958,5 +1046,5 @@ if __name__ == '__main__':
     app.run()
 
 
-
+c.ssn, c.username, c.first_name, c.last_name, c.DOB, c.interested_in, c.phone, c.age, c.gender, c.children_count, c.married_prev, c.criminal, c.account_opened, c.eye_color, c.hair_color, c.account_closed, c.status
 

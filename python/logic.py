@@ -529,13 +529,19 @@ class Database(object):
             return 0
         return ssn_list
 
+# TEST THIS 
     def find_exact_matches(self, ssn, interested_in, married_prev,max_kids,min_age,max_age,interests,eye_color, hair_color) :
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
         interest_string = ", ".join('"' + interest + '"' for interest in interests)
         sql = 'SELECT DISTINCT(ssn) FROM Customers NATURAL JOIN Customer_Interests WHERE ssn != "{0}" AND'.format(ssn)
         if not married_prev :
             sql += " (married_prev = 'N' ) AND "
-        sql +=  "(gender = '{0}') AND ".format(interested_in)
+        if eye_color != 'any':
+            sql += " (eye_color = '{0}' ) AND ".format(eye_color)
+        if hair_color != 'any':
+            sql += " (hair_color = '{0}' ) AND ".format(hair_color)
+
+        sql += " (gender = '{0}') AND ".format(interested_in)
         sql += " (children_count <= {0}) AND ".format(max_kids)
         sql += " (age >= {0} AND age <= {1}) AND".format(min_age,max_age)
         sql += " (interest IN ({0})) GROUP BY ssn HAVING COUNT(*) = {1}".format(interest_string,len(interests))
@@ -829,6 +835,16 @@ class Database(object):
         return result_str
         # for each gender, avg number of dates
 
+        # 
+        # 
+        # 
+        # 
+        # Do we need the username as an argument on ANY of these???
+        # 
+        # 
+        # 
+        # 
+
     def getquery5(self, username):
         count=0
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
@@ -844,10 +860,14 @@ class Database(object):
         result_return = "These are the crimes in the DB that have been recorded for customers: "+ result_str
         return result_return
 
-    def getquery6(self, username):
+    def getquery6(self, sql):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
+
+        cur.execute(sql)
+
+        result = cur.fetchall()
         
-        return hello
+        return result
 
     def getquery7(self, username):
         cur = self.conn.cursor(pymysql.cursors.DictCursor)
