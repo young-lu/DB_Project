@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Select which tuple you'd like to update and hit the submit button.</title>
+    <link rel="stylesheet" href="main.css"/>
+  </head>
+  <p>{{ msg }}</p>
+
+<form action="update_match_fee" method="POST">
+	<select name= "match_fee">
+	{% for each in results %}
+		<option value="{{ each['ssn'] }}|{{ each['fee_number'] }}" >
+			ssn = {{ each['ssn'] }}, fee number = {{each['fee_number']}}, amount= {{ each['amount'] }}, date_charged= {{ each['date_charged']}}, date_paid= {{ each['date_paid']}}, paid= {{ each['paid']}}
+		</option> <br>
+	{% endfor %}
+	</select>
+
+
+	<!-- INSERT ALL THE STUFF TO UDPATE -->
+	<p>
+    	<label for="paid">Paid: </label>
+    	<select name="paid" id="paid"> 
+    		<option value="no_change" selected="selected">No change</option>
+    		<option value="Y" selected="selected">Yes</option>
+    		<option value="N" selected="selected">No</option>
+    	</select>
+    </p>
+
+    <p>
+    	<label for="date_charged">Date charged: </label> <input type="date" name="date_charged" id="date_charged" value="1000-01-01" />
+    </p>
+
+    <p>
+    	<label for="date_paid">Date paid: </label> <input type="date" name="date_paid" id="date_paid" value="1000-01-01" />
+    </p>
+    <p>
+    	<label for="amount">Fee amount: </label> <input type="number" name="amount" id="amount" min="0"/>
+    </p>
+   
+
+	<p>
+         <input type="submit" value="update match fee"/>
+	</p>
+</form>	

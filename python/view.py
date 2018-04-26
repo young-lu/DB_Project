@@ -841,94 +841,265 @@ def special_insert_datesuccess() :
 
 
 
-
 ###########################################
 ####### UPDATE + DELETE VIEWS GET #########
 ###########################################
-# view for udpate-customer page
-# @app.route('/update-customer', methods=['GET'])
-# def update_customer_get():
-#     statement
-#     results= db.update(statement)
-#     return render_template('update-customer.html', results=results)
 
-# # view for update-customer-interests page
-# @app.route('/update-customer-interests', methods=['GET'])
-# def update_customer_interests_get():
-#     username=load_user_ID()
-#     results= db.update(statement)
-#     return render_template('update-customer-interests.html', results=results)
+#view for update_customer page
+@app.route('/update_customer', methods=['GET'])
+def update_customer_get():
+    results= db.return_tuples('Customers')
+    return render_template('update_customer.html', results=results)
 
-# # view for update-customer-crimes page
-# @app.route('/update-customer-crimes', methods=['GET'])
-# def update_customer_crimes_get():
-#     username=load_user_ID()
-#     results= db.update(statement)
-#     return render_template('update-customer-crimes.html', results=results)
+# view for update-customer page
+@app.route('/update_customer', methods=['POST'])
+def update_customer_post():
+    # first get which customer to change by ssn 
+    ssn = request.form['customer']
+    kwargs_to_pass= {}
+    if request.form['first_name']:
+        first_name= request.form['first_name']
+        # add it to the kwargs
+        kwargs_to_pass['first_name']=  first_name
 
-# # view for update-customer-children
-# @app.route('/update-customer-children', methods=['GET'])
-# def update_customer_children_get():
-#     username=load_user_ID()
-#     results= db.update(statement)
-#     return render_template('update-customer-children.html', results=results)
+    if request.form['last_name']:
+        last_name= request.form['last_name']
+        # add it to the kwargs
+        kwargs_to_pass['last_name']=  last_name
 
-# # view for update-interests page
-# @app.route('/update-interests', methods=['GET'])
-# def update_interests_get():
-#     username=load_user_ID()
-#     results= db.update(statement)
-#     return render_template('update-interests.html', results=results)
+    if request.form['username']:
+        username= request.form['username']
+        # add it to the kwargs
+        kwargs_to_pass['username']=  username
 
-# # view for update-crime-options page
-# @app.route('/update-crime-options', methods=['GET'])
-# def update_crime_options_get():
-#     username=load_user_ID()
-#     results= db.update(statement)
-#     return render_template('update-crime-options.html', results=results)
+    if request.form['phone']:
+        phone= request.form['phone']
+        # add it to the kwargs
+        kwargs_to_pass['phone']=  phone
 
-# # view for delete-customer page
-# @app.route('/delete-customer', methods=['GET'])
-# def delete_customer_get():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-customer.html', results=results)
+    if request.form['DOB']!='1000-01-01':
+        DOB= request.form['DOB']
+        # add it to the kwargs
+        kwargs_to_pass['DOB']=  DOB
 
-# # view for delete-customer-interests page
-# @app.route('/delete-customer-interests', methods=['GET'])
-# def delete_customer_interests_get():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-customer-interests.html', results=results)
+    if request.form['eye_color'] != "no_change":
+        eye_color= request.form['eye_color']
+        kwargs_to_pass['eye_color']=  eye_color
 
-# # view for delete-customer-crimes page
-# @app.route('/delete-customer-crimes', methods=['GET'])
-# def delete_customer_crimes_get():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-customer-interests.html', results=results)
+    if request.form['hair_color']!= "no_change":
+        hair_color= request.form['hair_color']
+        # add it to the kwargs
+        kwargs_to_pass['hair_color']= hair_color
 
-# # view for delete-customer-children page
-# @app.route('/delete-customer-children', methods=['GET'])
-# def delete_customer_children_get():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-customer-children.html', results=results)
+    if request.form['gender'] != "no_change":
+        gender= request.form['gender']
+        # add it to the kwargs
+        kwargs_to_pass['gender']= gender
 
-# # view for delete-interests page
-# @app.route('/delete-interests', methods=['GET'])
-# def delete_interests_get():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-interests.html', results=results)
+    if request.form['interested_in'] != "no_change":
+        interested_in= request.form['interested_in']
+        kwargs_to_pass['interested_in']=interested_in
 
-# # view for delete-crime page
-# @app.route('/delete-crime', methods=['GET'])
-# def delete_crime_get():
-#     username=load_user_ID()
-#     results= db.delete_sql(statement)
-#     return render_template('delete-crime.html', results=results)
+    if request.form['children_count']:
+        children_count= request.form['children_count']
+        kwargs_to_pass['children_count']= children_count
 
+    if request.form['married_prev'] != "no_change":
+        married_prev= request.form['married_prev']
+        kwargs_to_pass['married_prev']= married_prev
+
+    if request.form['criminal'] != "no_change":
+        criminal= request.form['criminal']
+        kwargs_to_pass['criminal']=criminal
+
+    if request.form['account_opened']!='1000-01-01' :
+        account_opened= request.form['account_opened']
+        kwargs_to_pass['account_opened']=account_opened
+
+    if request.form['account_closed']!= '1000-01-01':
+        account_closed= request.form['account_closed']
+        kwargs_to_pass['account_closed']= account_closed
+        
+    if request.form['status'] != "no_change":
+        status= request.form['status']
+        kwargs_to_pass['status']= status
+    for key in kwargs_to_pass.keys():
+        print(key)
+    db.update_customer(ssn, **kwargs_to_pass)  # update the customer 
+
+    results= db.return_tuples('Customers')
+    return render_template('update_customer.html', results=results)
+
+
+
+# view for update_customer_children page
+@app.route('/update_customer_children', methods=['GET'])
+def update_customer_children_get():
+    results= db.return_tuples('Customers_Children')
+    return render_template('update_customer_children.html', results=results)
+
+# view for update_customer_children page
+@app.route('/update_customer_crime', methods=['GET'])
+def update_customer_crime_get():
+    crimes= db.return_tuples('Crimes')
+    results= db.return_tuples('Customer_Crimes')
+    return render_template('update_customer_crime.html', results=results, crimes= crimes)
+
+# view for update_date page
+@app.route('/update_date', methods=['GET'])
+def update_date_get():
+    results= db.return_tuples('Dates')
+    return render_template('update_date.html', results=results)
+
+# view for update_match_fee page
+@app.route('/update_match_fee', methods=['GET'])
+def update_match_fee_get():
+    results= db.return_tuples('Match_Fees')
+    return render_template('update_match_fee.html', results=results)
+
+# view for update_registration_fee page
+@app.route('/update_registration_fee', methods=['GET'])
+def update_registration_fee_get():
+    results= db.return_tuples('Registration_Fees')
+    return render_template('update_registration_fee.html', results=results)
+
+#########################################################
+#####              POST PAGES FOR UPDATE            #####
+#########################################################
+
+# view for update_customer_children page
+@app.route('/update_customer_children', methods=['POST'])
+def update_customer_children_post():
+    result_full= request.form['children']
+    result_split= result_full.split('|')
+    ssn = result_split[0]
+    childID = result_split[1]
+
+    kwargs_to_pass= {}
+    if request.form['age']:
+        age= request.form['age']
+        kwargs_to_pass['age']= age
+    if request.form['lives_with_them']!= 'no_change':
+        lives_with_them= request.form['lives_with_them']
+        kwargs_to_pass['lives_with_them']= lives_with_them
+
+    for key in kwargs_to_pass.keys():
+        print(key)
+
+    db.update_customer_children(ssn, childID, **kwargs_to_pass)  # update the customer's kid
+    results= db.return_tuples('Customers_Children')
+    return render_template('update_customer_children.html', results=results)
+
+# view for update_customer_crime page
+@app.route('/update_customer_crime', methods=['POST'])
+def update_customer_crime_post():
+    ssn = request.form['criminal']
+    kwargs_to_pass= {}
+
+    if request.form['crime'] != "no_change":
+        crime= request.form['crime']
+        kwargs_to_pass['crime']= crime
+
+    if request.form['date_recorded']!= '1000-01-01':
+        account_closed= request.form['account_closed']
+        kwargs_to_pass['account_closed']= account_closed
+
+    for key in kwargs_to_pass.keys():
+        print(key)
+    db.update_customer_crime(ssn, **kwargs_to_pass)  # update the customer 
+    crimes= db.return_tuples('Crimes')
+    results= db.return_tuples('Customer_Crimes')
+    return render_template('update_customer_crime.html', results=results, crimes=crimes)
+
+# view for update_customer_children page
+@app.route('/update_date', methods=['POST'])
+def update_date_post():
+    result_full= request.form['date']
+    result_split= result_full.split('|')
+    date_num = result_split[1]
+    matchID = result_split[0]
+
+    kwargs_to_pass= {}
+    if request.form['happened'] != 'no_change':
+        happened= request.form['happened']
+        kwargs_to_pass['happened']= happened
+
+    if request.form['location']:
+        location= request.form['location']
+        kwargs_to_pass['location']= location
+
+    if request.form['date_date']!= '1000-01-01':
+        date_date= request.form['date_date']
+        kwargs_to_pass['date_date']= date_date
+
+    for key in kwargs_to_pass.keys():
+        print(key)
+    db.update_date(matchID, date_num, **kwargs_to_pass)  # update the date 
+
+    results= db.return_tuples('Dates')
+    return render_template('update_date.html', results=results)
+
+# view for update_customer_children page
+@app.route('/update_match_fee', methods=['POST'])
+def update_match_fee_post():
+    result_full= request.form['match_fee']
+    result_split= result_full.split('|')
+    fee_number = result_split[1]
+    ssn = result_split[0]
+
+    kwargs_to_pass= {}
+    if request.form['amount'] and request.form['amount']<1000 :
+        amount= request.form['amount']
+        kwargs_to_pass['amount']= amount
+
+    if request.form['paid']!='no_change':
+        paid= request.form['paid']
+        kwargs_to_pass['paid']= paid
+
+    if request.form['date_charged']!= '1000-01-01':
+        date_charged= request.form['date_charged']
+        kwargs_to_pass['date_charged']= date_charged
+
+    if request.form['date_paid']!= '1000-01-01':
+        date_paid= request.form['date_paid']
+        kwargs_to_pass['date_paid']= date_paid
+
+    for key in kwargs_to_pass.keys():
+        print(key)
+
+    db.update_match_fee(ssn, fee_number, **kwargs_to_pass)  # update the match fee 
+    results= db.return_tuples('Match_Fees')
+    return render_template('update_match_fee.html', results=results)
+
+# view for update_customer_children page
+@app.route('/update_registration_fee', methods=['POST'])
+def update_registration_fee_post():
+    ssn= request.form['registration_fee']
+
+    kwargs_to_pass= {}
+    if request.form['amount'] and request.form['amount']<1000 :
+        amount= request.form['amount']
+        kwargs_to_pass['amount']= amount
+
+    if request.form['paid']!='no_change':
+        paid= request.form['paid']
+        kwargs_to_pass['paid']= paid
+
+    if request.form['date_charged']!= '1000-01-01':
+        date_charged= request.form['date_charged']
+        kwargs_to_pass['date_charged']= date_charged
+
+    if request.form['date_paid']!= '1000-01-01':
+        date_paid= request.form['date_paid']
+        kwargs_to_pass['date_paid']= date_paid
+
+    for key in kwargs_to_pass.keys():
+        print(key)
+
+    db.update_registration_fee(ssn, **kwargs_to_pass)  # update the match fee 
+
+    results= db.return_tuples('Registration_Fees')
+    return render_template('update_registration_fee.html', results=results)
 
 
 # ###########################################
