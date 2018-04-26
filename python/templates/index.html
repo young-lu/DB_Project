@@ -10,7 +10,6 @@
     </h1>
      <section>
       <form action="insert" method="POST">
-        <h2>Join the Club!</h2>
         <p>
           <label for="FirstName">First Name:</label> <input type="text" name="firstname" id="FirstName" />
         </p>
@@ -18,16 +17,13 @@
           <label for="LastName">Last Name:</label> <input type="text" name="lastname" id="LastName" />
         </p>
         <p>
-          <label for="Username">Username: </label><input type="text" name="username" id="Username">
+          <label for="Username">Username:</label> <input type="text" name="username" id="Username">
         </p>
         <p>
-          <label for="Password">Password: </label><input type="text" name="password" id="Password">
+          <label for="Password">Password: </label> <input type="text" name="password" id="Password">
         </p>
         <p>
           <label for="Phone">Phone Number:</label> <input type="text" name="phone" id="Phone" />
-        </p>
-        <p>
-          <label for="SSN">SSN:</label> <input type="text" name="ssn" id="SSN"/>
         </p>
         <p>
           <label for="DOB">Date of Birth:</label> <input type="date" name="dob" id="DOB" value="1990-01-01" />
@@ -45,7 +41,8 @@
         </p>
         <p>
           {% for interest in interests %}
-            <input type="checkbox" name="interests" id="{{interest}}" value="{{interest['interest']}}"><label for="{{interest}}">{{interest['interest']}}</label> <br>
+            <input type="checkbox" name="interests" id="{{interest}}" value="{{interest['interest']}}"><label for="{{interest}}">{{interest['interest']}}</label> 
+            <br>
           {% endfor %}
         </p>
 
@@ -80,21 +77,6 @@
         </p>
       </form>
     </section>
-
-    <section>
-      <h2>Users:</h2>
-      <ol>
-        {% for person in people %}
-          <li>{{person['username']}}</li>
-        {% endfor %}
-      </ol>
-    </section>
-
-    <section id="Login">
-      <h3>Already have an account?</h3>
-      <form action="login" method="GET">
-        <input type="submit" value="Login"/>
-      </form>
     
   </body>
   <footer>

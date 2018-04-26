@@ -11,7 +11,7 @@
 	{% for each in to_delete %}
 		<option value="{{ each['ssn'] }}" >
 			ssn = {{ each['ssn'] }}, first_name = {{ each['first_name'] }}, last_name = {{ each['last_name'] }},
-			DOB = first_name = {{ each['DOB'] }}, age = {{ each['age'] }}, phone = {{ each['phone'] }}, gender = {{ each['gender'] }}, interested_in = {{ each['interested_in'] }}
+			DOB = {{ each['DOB'] }}, age = {{ each['age'] }}, phone = {{ each['phone'] }}, gender = {{ each['gender'] }}, interested_in = {{ each['interested_in'] }}
 		</option> <br>
 	{% endfor %}
 	</select>
