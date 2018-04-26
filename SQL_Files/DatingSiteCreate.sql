@@ -16,7 +16,7 @@ CREATE TABLE Users -- primary key is username
 		username VARCHAR(40) NOT NULL,
 		password VARCHAR(40) NOT NULL,
 		role VARCHAR(40) NOT NULL,
-		FOREIGN KEY (role) REFERENCES Roles (role) ON DELETE CASCADE,
+		FOREIGN KEY (role) REFERENCES Roles (role) ON DELETE CASCADE ON UPDATE CASCADE,
 		PRIMARY KEY (username)
 	);
 
@@ -40,7 +40,7 @@ CREATE TABLE Customers
 		hair_color VARCHAR(40) NOT NULL,
 		account_closed DATE NULL, 
 		status VARCHAR(16) NOT NULL DEFAULT 'Open',
-		FOREIGN KEY (username) REFERENCES Users (username),
+		FOREIGN KEY (username) REFERENCES Users (username) ON UPDATE CASCADE ON DELETE CASCADE,
 		PRIMARY KEY (ssn),
 		check (children_count>=0),
 		check (gender = 'M' OR 	gender = 'F'),
@@ -57,7 +57,9 @@ CREATE TABLE Customers_Children
 		childID INT NOT NULL,
 		age INT NOT NULL,
 		lives_with_them CHAR(1) NOT NULL,
-		PRIMARY KEY (ssn, childID)
+		FOREIGN KEY (ssn) REFERENCES Customers  (ssn),
+		PRIMARY KEY (ssn, childID),
+		check (lives_with_them = 'N' OR lives_with_them = 'Y')
 	);
 
 DROP TABLE IF EXISTS `Interests`;
@@ -74,7 +76,7 @@ CREATE TABLE Customer_Interests # primary key is the combination of ssn and inte
 	(
 		ssn VARCHAR(40) NOT NULL,
 		interest VARCHAR(40) NOT NULL,
-		FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
+		FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE ON UPDATE CASCADE,
 		FOREIGN KEY (interest) REFERENCES Interests (interest),
 		PRIMARY KEY (ssn, interest)
 	);
@@ -84,8 +86,8 @@ DROP TABLE IF EXISTS `Matches`;
 CREATE TABLE Matches # primary key is matchID, ssn (each match has two tuples)
 	(
 		matchID CHAR(10) NOT NULL,
-		ssn VARCHAR(40) NOT NULL, # put the ssn's in in whatever order (does not matter! so long as we dont re add them in the opposite order)
-		FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
+		ssn VARCHAR(40) NOT NULL, 
+		FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE ON UPDATE CASCADE,
 		PRIMARY KEY (matchID, ssn)
 	);
 
@@ -100,7 +102,7 @@ CREATE TABLE Dates # primary key is the combination of date_number and matchID
 		happened CHAR(1) NOT NULL DEFAULT 'N',
 		location VARCHAR(40) NOT NULL,
 		matchID CHAR(10) NOT NULL,
-		FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE,
+		FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE ON UPDATE CASCADE,
 		PRIMARY KEY (date_number, matchID),
 		check (happened = 'Y' or happened = 'N')
 	);
@@ -121,7 +123,7 @@ CREATE TABLE Customer_Crimes #primary key is ssn
 		ssn VARCHAR(40) NOT NULL,
 		crime VARCHAR(40) NOT NULL,
 		date_recorded DATE NOT NULL,
-		FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
+		FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE ON UPDATE CASCADE,,
 		PRIMARY KEY (ssn)
 	);
 
@@ -133,7 +135,7 @@ CREATE TABLE Match_Fees( # the match fee occurs after user goes for a 3rd differ
 	paid CHAR(1) NOT NULL DEFAULT 'N',
 	ssn VARCHAR(40) NOT NULL,
 	fee_number INT NOT NULL,
-	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
+	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE ON UPDATE CASCADE,,
 	PRIMARY KEY (ssn, fee_number),
 	check (paid= 'N' OR paid= 'Y')
 );
@@ -145,7 +147,7 @@ CREATE TABLE Registration_Fees( # the registration fee occurs after user goes fo
 	date_paid DATE NULL, 
 	paid CHAR(1) NOT NULL DEFAULT 'N',
 	ssn VARCHAR(40) NOT NULL,
-	FOREIGN KEY (ssn) REFERENCES Matches (ssn) ON DELETE CASCADE,
+	FOREIGN KEY (ssn) REFERENCES Matches (ssn) ON DELETE CASCADE ON UPDATE CASCADE,,
 	PRIMARY KEY (ssn),
 	check (paid = 'Y' or paid = 'NULL')
 );
@@ -157,9 +159,9 @@ CREATE TABLE DateSuccess(
 	success CHAR(1) NOT NULL DEFAULT 'Y',
 	date_number INT NOT NULL,
 	PRIMARY KEY (matchID,ssn, date_number),
-	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE,
-	FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE ,
-	FOREIGN KEY (date_number) REFERENCES Dates (date_number) ON DELETE CASCADE 
+	FOREIGN KEY (ssn) REFERENCES Customers (ssn) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (matchID) REFERENCES Matches (matchID) ON DELETE CASCADE,
+	FOREIGN KEY (date_number) REFERENCES Dates (date_number) ON DELETE CASCADE  
 
 );
 
