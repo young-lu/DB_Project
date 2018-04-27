@@ -900,7 +900,7 @@ class Database(object):
         result=cur.fetchall()
 
         counter=0
-        result_str="None"
+        result_str=""
         for gender in result:
             gender= result[counter]['gender']
             if str(gender)== "M":
@@ -1049,7 +1049,7 @@ class Database(object):
         result_str = "The most common interest(s) amongst interests chosen by the users is: " +most_common_list +"."
         return result_str
 
-    """ update functions --->  what page format should we use? this will affect how we write the function"""
+    """ update functions --->  page format should we use? this will affect how we write the function"""
         # def update_user(self, username, password, role): 
         #      cur = self.conn.cursor(pymysql.cursors.DictCursor)
         #     sql = 'UPDATE Users (username, password, role) \
