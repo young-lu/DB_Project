@@ -294,22 +294,17 @@ def load_query1():
 # this is what happens when the user pushes enter on the query1 page.. actually perfom + display the query
 @app.route('/query1', methods=['POST']) 
 def get_query1():
+
     operation = request.form['operator']
     number_dates = request.form['number_dates']
 
-    sql = 'select distinct(d.matchid) as MatchID, c2.username as user1, c1.username as user2, d.happened as happened, d.date_number as DateNumber,\
-d.location as location, d.date_date as date_date, d.date_time as time, m.ssn as ssn1, n.ssn as ssn2 \
-from Customers c1, Customers c2, Dates d, matches m, matches n where c1.ssn = m.ssn and c2.ssn=n.ssn and d.matchid = m.matchid and d.matchid = n.matchid and m.ssn != n.ssn '
+    sql = 'select distinct(c.ssn), c.username, c.first_name, c.last_name from Customers c, (select m.ssn as ssn, m.matchID as matchID, T.count \
+FROM matches m, (Select matchID, count(date_number) as count from dates group by matchID) as T \
+where T.matchID = m.matchID and T.count {0} {1}) AS T2 where c.ssn = T2.ssn'.format(operation,number_dates)
 
-    sql += ' AND d.date_number {0} "{1}" '.format(operation, number_dates)
-    sql += 'order by matchid, date_number'
-
-    print(sql)
     queries = db.getquery1(sql)
-    queries = queries[1::2]
-    for each in queries:
-        print(each)
-        print('\n')
+
+    print('queries: {0}'.format(queries))
 
     return render_template('query1.html', results=queries)
     # except :
@@ -559,14 +554,17 @@ def find_match():
     eye_color = request.form['eye_color']
     hair_color = request.form['hair_color']
     all_interests = request.form.get('any_interest')
-    exact = request.form.get('exact')
     if all_interests:
-        print('any_interest')
+        interests= "any"
+    else:
+        interests = request.form.getlist("interest")
 
+
+    exact = request.form.get('exact')
     total_fees = db.get_total_fees(ssn)
 
     if not exact:
-        ssn_list = db.find_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests,eye_color, hair_color, all_interests)
+        ssn_list = db.find_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests,eye_color, hair_color)
     elif exact:
         ssn_list = db.find_exact_matches(ssn, interested_in, married,max_kids,min_age,max_age,interests,eye_color, hair_color)
 

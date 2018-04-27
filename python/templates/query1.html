@@ -76,11 +76,19 @@
         <input type="submit" value="query" />
 </form>
 
-
     <section>
     <h1>These are the users with the desired stipulations on the date events:</h1>
+
       {% for each in results %}
-        <br>{{ each['user1'] }} and {{ each['user2'] }} // MatchID: {{ each['MatchID']}}
+        {{ each['username'] }}: {{ each['first_name'] }} {{ each['last_name'] }}<br>
       {% endfor %}
+
+      <a href="/home">Home</a>
+    
     </section>
+    <footer>
+    <p>written by: Sara Fares and Connor Lu</p>
+    <p>COSC-280</p>
+    <a href="https://github.com/young-lu/DB_Project">code repository</a>
+  </footer>
 </html>  
